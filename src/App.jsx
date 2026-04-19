@@ -214,7 +214,12 @@ const DB = {
           { id:"stmarkscc", emoji:"😂", place:"St. Marks Comedy Club", type:"comedy", desc:"Comedy club on St. Marks Place. Great for a first date.", booking:null, maps:"St+Marks+Comedy+Club+East+Village", reviews:829, price:"$$", reservable:false, stars:4.3 },
           { id:"topsecretcc", emoji:"😂", place:"Top Secret Comedy Club", type:"comedy", desc:"Intimate comedy show in the East Village.", booking:"https://www.topsecretcomedy.com/", maps:"Top+Secret+Comedy+Club+East+Village", reviews:252, price:"$$", reservable:true, stars:4.9 },
         ] },
-    happyHour: [],
+    happyHour: [
+          { place:"Lovers of Today", type:"Speakeasy Bar", desc:"50% off cocktails early evening. Most romantic happy hour in the neighborhood.", deal:"50% off cocktails", hours:"Daily 5–8pm", booking:null, maps:"Lovers+of+Today+East+Village+NYC", reviews:640, price:"$$", reservable:false, stars:4.6 },
+          { place:"Alison St. Marks", type:"Oyster Bar", desc:"The best value happy hour in the East Village. Don't miss the oysters.", deal:"$1.50 oysters + $9 wine", hours:"Tue–Fri noon–7pm", booking:null, maps:"Alison+St+Marks+East+Village+NYC", reviews:520, price:"$$", reservable:false, stars:4.5 },
+          { place:"Death & Co", type:"Cocktail Bar", desc:"Early hour discounts at one of NYC's most acclaimed bars.", deal:"$12 cocktails", hours:"Mon–Fri 5–7pm", booking:"deathandcompany.com", maps:"Death+and+Co+East+Village+NYC", reviews:2077, price:"$$$", reservable:true, stars:4.5 },
+          { place:"The Wayland", type:"Neighborhood Bar", desc:"Laid-back happy hour with great cocktails and a relaxed crowd.", deal:"$8 wines + $6 beers", hours:"Daily 4–7pm", booking:null, maps:"The+Wayland+East+Village+NYC", reviews:885, price:"$$", reservable:true, stars:4.6 },
+        ],
   },
   west_village: {
     bars: {
@@ -299,7 +304,12 @@ const DB = {
         
           { id:"moonflowerwv", emoji:"🌸", place:"Moonflower", type:"floral cocktail bar", desc:"Tiny floral cocktail bar. Intimate and absolutely unique.", booking:null, maps:"Moonflower+West+Village+NYC", reviews:114, price:"$$", reservable:false, stars:4.5 },
         ] },
-    happyHour: [],
+    happyHour: [
+          { place:"Amelie Wine Bar", type:"French Wine Bar", desc:"Half-price bottles on select wines. Best wine happy hour in the Village.", deal:"50% off select bottles", hours:"Tue–Fri 5–7pm", booking:"amelienyc.com", maps:"Amelie+Wine+Bar+West+Village+NYC", reviews:1444, price:"$$", reservable:true, stars:4.6 },
+          { place:"Jeffrey's Grocery", type:"Oyster Bar", desc:"$1 oysters and $8 wines on Waverly Place. Get there early.", deal:"$1 oysters + $8 wine", hours:"Mon–Fri 5–6:30pm", booking:"jeffreysgrocery.com", maps:"Jeffreys+Grocery+West+Village+NYC", reviews:2200, price:"$$", reservable:true, stars:4.5 },
+          { place:"Dante West Village", type:"Cocktail Bar", desc:"World's 50 Best Bars. Negroni hour you won't forget.", deal:"$12 negronis", hours:"Daily 3–6pm", booking:"dante-nyc.com", maps:"Dante+West+Village+NYC", reviews:1199, price:"$$$", reservable:true, stars:4.5 },
+          { place:"Corner Bistro", type:"Dive Bar", desc:"$5 beers all day every day. The West Village's best value.", deal:"$5 beers all day", hours:"Daily 11:30am–4am", booking:null, maps:"Corner+Bistro+West+Village+NYC", reviews:4200, price:"$", reservable:false, stars:4.2 },
+        ],
   },
   midtown: {
     bars: {
@@ -392,7 +402,14 @@ const DB = {
         
           { id:"swingersnomd", emoji:"⛳", place:"Swingers NoMad", type:"crazy golf + bar", desc:"Immersive crazy golf with cocktails. One of the best date activities in Midtown.", booking:"https://www.swingersusa.com/", maps:"Swingers+NoMad+Midtown+NYC", reviews:1257, price:"$$", reservable:true, stars:4.4 },
         ] },
-    happyHour: [],
+    happyHour: [
+          { place:"Jimmy's Corner", type:"Dive Bar", desc:"Under $4 drinks all day in the heart of Times Square. NYC's best kept secret.", deal:"$3.50 wells all day", hours:"Daily 11:30am–close", booking:null, maps:"Jimmys+Corner+Bar+Times+Square+NYC", reviews:2200, price:"$", reservable:false, stars:4.3 },
+          { place:"Lodi at Rockefeller", type:"Italian Cafe", desc:"Aperitivo hour at Rock Center. Spritzes and Italian snacks.", deal:"$12 spritzes + $10 wine", hours:"Mon–Fri 4–6pm", booking:"lodirestaurant.com", maps:"Lodi+Restaurant+Rockefeller+Center+NYC", reviews:2400, price:"$$", reservable:true, stars:4.5 },
+          { place:"Valerie", type:"Gin Library Bar", desc:"70+ gins and happy hour deals in a stunning Manhattan Golden Age room.", deal:"$12 cocktails + $8 beer", hours:"Mon–Fri 4–7pm", booking:"valerienewyork.com", maps:"Valerie+Bar+Midtown+NYC", reviews:2213, price:"$$", reservable:true, stars:4.4 },
+          { place:"Tanner Smith's", type:"Prohibition Lounge", desc:"Pre-theater cocktail hour in the Theater District.", deal:"$12 cocktails + $6 beer", hours:"Mon–Fri 4–7pm", booking:"tannersmiths.com", maps:"Tanner+Smiths+Theater+District+NYC", reviews:1800, price:"$$", reservable:true, stars:4.4 },
+          { place:"Albert's Bar", type:"Hidden Hotel Bar", desc:"Tucked inside the Marriott on 45th. Almost nobody knows it exists.", deal:"$9 beers + $11 cocktails", hours:"Mon–Fri 4–7pm", booking:null, maps:"Alberts+Bar+Midtown+NYC", reviews:493, price:"$$", reservable:false, stars:4.5 },
+          { place:"The Rum House", type:"Jazz Saloon", desc:"Nightly live jazz in a dark Edison Hotel saloon. Pre-theater gem.", deal:"$10 cocktails + $6 beer", hours:"Daily 4–7pm", booking:null, maps:"The+Rum+House+Edison+Hotel+NYC", reviews:620, price:"$$", reservable:false, stars:4.3 },
+        ],
   },
   lic: {
     bars: {
@@ -479,13 +496,19 @@ const DB = {
           { id:"gamingcity", emoji:"🎮", place:"Gaming City", type:"arcade + bar", desc:"Huge arcade bar -- games, drinks, great date energy.", booking:null, maps:"Gaming+City+Long+Island+City", reviews:2766, price:"$$", reservable:false, stars:4.9 },
           { id:"drinkologyact", emoji:"🍸", place:"Drinkology NYC", type:"cocktail experience", desc:"Interactive cocktail experience and bar.", booking:"https://www.drinkologynyc.com/", maps:"Drinkology+NYC+Long+Island+City", reviews:429, price:"$$", reservable:true, stars:4.8 },
         ] },
-    happyHour: [],
+    happyHour: [
+          { place:"Dutch Kills", type:"Cocktail Bar", desc:"Best value craft cocktails in all of Queens. Early hour specials.", deal:"$12 cocktails", hours:"Tue–Fri 5–7pm", booking:null, maps:"Dutch+Kills+Bar+Long+Island+City+Queens", reviews:1299, price:"$$", reservable:false, stars:4.4 },
+          { place:"American Brass", type:"Waterfront Bar", desc:"Oysters and discounted drinks with the Manhattan skyline as your backdrop.", deal:"$1.50 oysters + $8 wine", hours:"Mon–Fri 5–6:30pm", booking:"americanbrass.com", maps:"American+Brass+Long+Island+City+Queens", reviews:2200, price:"$$", reservable:true, stars:4.3 },
+          { place:"LIC Bar", type:"Neighborhood Bar", desc:"Cheap beers in the backyard garden. Most relaxed happy hour in LIC.", deal:"$5 beers + $6 wells", hours:"Daily 4–7pm", booking:null, maps:"LIC+Bar+Long+Island+City+Queens", reviews:1400, price:"$", reservable:false, stars:4.2 },
+          { place:"The Beast Next Door", type:"Wine + Cocktail Bar", desc:"Charcuterie and discounted drinks on Vernon Blvd.", deal:"$8 wines + $10 cocktails", hours:"Mon–Fri 4–7pm", booking:null, maps:"The+Beast+Next+Door+Long+Island+City+Queens", reviews:787, price:"$$", reservable:true, stars:4.6 },
+        ],
   },
 };
 
 
 const getQuestion = (a) => {
   if (!a.neighborhood) return { id:"neighborhood", special:"neighborhood" };
+  if (a.focus === "ourpick") return null; // skip all questions after neighborhood
   if (!a.budget) return { id:"budget", emoji:"💰", q:"What's the budget?", opts:[
     {l:"Free ($0)",v:"free",i:"🌿"},{l:"Under $50",v:"under50",i:"🪙"},
     {l:"$50-$150",v:"mid",i:"💵"},{l:"$150+",v:"splurge",i:"💎"}
@@ -520,7 +543,31 @@ const getQuestion = (a) => {
 const getSpots = (a) => {
   if (a.budget === "free") return (DB[a.neighborhood]?.activities?.free || []).slice(0, 6);
   const nb = DB[a.neighborhood] || DB.williamsburg;
-  if (a.focus === "happyhour") return (nb.happyHour || []).slice(0, 6);
+
+  // Date type review filter — applied everywhere
+  const dateOk = (spot) => {
+    if (!spot.reviews) return true;
+    if (a.dateType === "first")  return spot.reviews >= 500;
+    if (a.dateType === "couple") return spot.reviews <= 1000;
+    return true;
+  };
+
+  // Happy hour — filter by date type
+  if (a.focus === "happyhour") {
+    let pool = [...(nb.happyHour || [])];
+    if (a.dateType === "first") {
+      const filtered = pool.filter(s => !s.reviews || s.reviews >= 300);
+      if (filtered.length >= 2) pool = filtered;
+    } else if (a.dateType === "couple") {
+      const filtered = pool.filter(s => !s.reviews || s.reviews <= 1000);
+      if (filtered.length >= 2) pool = filtered;
+      else {
+        // not enough hidden gems, take lowest review count spots
+        pool = pool.sort((a,b) => (a.reviews||9999)-(b.reviews||9999));
+      }
+    }
+    return pool.slice(0, 6);
+  }
 
   // ── OUR PICK: curated + featured first ──────────────────────────────────
   if (a.focus === "ourpick") {
@@ -529,27 +576,24 @@ const getSpots = (a) => {
       ...(nb.food.pasta||[]), ...(nb.food.japanese||[]), ...(nb.food.mediterranean||[]),
       ...(nb.food.american||[]),
     ];
-    // Featured (paid) spots always first, then highest rated
+    // Featured (paid) always first, then filter by gem score (hidden gems = low reviews, high quality)
     const featured = all.filter(s => s.featured);
-    const rest = all.filter(s => !s.featured).sort((a,b) => (b.stars||0)-(a.stars||0));
-    return [...featured, ...rest].slice(0, 6);
+    // Our Pick defaults to experienced dater logic (hidden gems, ≤1000 reviews) unless first date
+    const gemFilter = a.dateType === "first"
+      ? all.filter(s => !s.featured && (s.reviews||0) >= 500)
+      : all.filter(s => !s.featured && (s.reviews||0) <= 1000 && (s.reviews||0) >= 50);
+    const rest = gemFilter.sort((a,b) => (b.stars||0)-(a.stars||0));
+    const pool = [...featured, ...rest];
+    return pool.length >= 2 ? pool.slice(0, 6) : all.sort((a,b)=>(b.stars||0)-(a.stars||0)).slice(0,6);
   }
 
-  // Budget price filter -- unknown price ("?" or missing) excluded on budget selections
+  // Budget price filter -- unknown price excluded on budget selections
   const priceOk = (spot) => {
     if (!a.budget || a.budget === "splurge") return true;
     const p = (spot.price || "").replace(/\?/g, "").trim();
-    if (!p) return false; // no price data = exclude when budget matters
+    if (!p) return false;
     if (a.budget === "under50") return p === "$" || p === "$$";
     if (a.budget === "mid")     return p === "$" || p === "$$" || p === "$$$";
-    return true;
-  };
-
-  // Date type review filter
-  const dateOk = (spot) => {
-    if (!spot.reviews) return true;
-    if (a.dateType === "first")      return spot.reviews >= 500;      // established, well-reviewed
-    if (a.dateType === "couple")     return spot.reviews <= 1000;      // hidden gems only
     return true;
   };
 
@@ -936,7 +980,7 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
         </button>
       )}
 
-      <div style={{padding:"8px 12px",fontSize:"10px",color:T.sub+"55",fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
+      <div style={{padding:"8px 12px",fontSize:"10px",color:T.sub,fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
         🔍 Always verify on Google Maps — NYC spots close unexpectedly.
       </div>
     </div>
@@ -1044,7 +1088,7 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
         </button>
       )}
 
-      <div style={{padding:"8px 12px",fontSize:"10px",color:T.sub+"55",fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
+      <div style={{padding:"8px 12px",fontSize:"10px",color:T.sub,fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
         🔍 Always verify on Google Maps — NYC spots close unexpectedly.
       </div>
     </div>
@@ -1232,10 +1276,16 @@ export default function App() {
             <div style={{width:"36px",height:"1px",background:`linear-gradient(90deg,${T.accent},${T.accent2})`,margin:"14px auto"}}/>
             <p style={{color:T.sub,fontSize:"13px",lineHeight:1.7,fontFamily:"sans-serif",marginBottom:"32px",opacity:0.85}}>Curated dates across NYC.<br/>No tourists. No obvious picks.</p>
             <button onClick={()=>{setScreen("quiz");setCurrentQ(getQuestion({}));}}
-              style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"14px 42px",fontSize:"11px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s"}}
+              style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"14px 42px",fontSize:"11px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s",display:"block",margin:"0 auto"}}
               onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.04)";e.currentTarget.style.boxShadow=`0 10px 36px ${T.accent}44`;}}
               onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="none";}}>
               Plan Our Date
+            </button>
+            <button onClick={()=>{setAnswers({focus:"ourpick"});setCurrentQ(getQuestion({}));setScreen("quiz");}}
+              style={{background:"transparent",border:`1px solid ${T.accent}44`,color:T.accent,padding:"11px 28px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"600",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s",display:"block",margin:"12px auto 0"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}11`;}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=`${T.accent}44`;e.currentTarget.style.background="transparent";}}>
+              ⭐ Show Me Tonight's Pick
             </button>
           </div>
         )}
