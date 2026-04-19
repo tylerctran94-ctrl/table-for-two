@@ -27,8 +27,10 @@ const DRINK_OPTS = [
 ];
 const FOOD_OPTS = [
   { v:"brunch", l:"🥐 Brunch" }, { v:"japanese", l:"🍣 Japanese" },
+  { v:"korean", l:"🥩 Korean" }, { v:"chinese", l:"🥢 Chinese" },
   { v:"pasta", l:"🍝 Italian" }, { v:"pizza", l:"🍕 Pizza" },
-  { v:"mediterranean", l:"🥙 Mediterranean" }, { v:"american", l:"🍔 American" },
+  { v:"mediterranean", l:"🥙 Mediterranean" }, { v:"mexican", l:"🌮 Mexican" },
+  { v:"vegan", l:"🌿 Vegan" }, { v:"american", l:"🍔 American" },
 ];
 const FOOD_DRINK_OPTS = [
   { v:"dinner_cocktails", l:"🍸 Dinner + Cocktails" },
@@ -80,6 +82,19 @@ const DB = {
         { id:"naminoriwill", emoji:"🥢", place:"Nami Nori Williamsburg", type:"japanese", desc:"Sushi rolls & sake in a sophisticated outfit with wood furnishings and a modern, minimalist vibe.", booking:"http://naminori.nyc/", maps:"Nami+Nori+Williamsburg", reviews:729, price:"$$", reservable:true, stars:4.6 },
         { id:"samuraimama", emoji:"🥢", place:"Samurai Mama", type:"japanese", desc:"This rustic Japanese restaurant with a communal table serves udon, sushi, miso & beer.", booking:"http://samuraimama.com/", maps:"Samurai+Mama", reviews:1020, price:"$$", reservable:true, stars:4.5 },
         { id:"fushimi", emoji:"🥢", place:"Fushimi", type:"japanese", desc:"Buzzing eatery & lounge offering Japanese dishes with a French twist, plus cocktails & beer.", booking:"https://fushimiwilliamsburg.com/", maps:"Fushimi", reviews:1798, price:"$$", reservable:true, stars:4.4 },
+      
+        { id:"narachickenk", emoji:"🥩", place:"NaRa Chicken & Korean Cuisine", type:"korean", desc:"4.9★ · korean", booking:"https://eatnarachicken.com/", maps:"NaRa+Chicken++Korean+Cuisine+NYC", reviews:153, price:"$$", reservable:false, stars:4.9 },
+        { id:"gomikoreanwi", emoji:"🥩", place:"Gomi Korean wine Bar", type:"korean", desc:"Korean & Brazilian dishes with no added sugar are paired with wines in a relaxed, simple space.", booking:"http://gomikoreanwinebar.com/", maps:"Gomi+Korean+wine+Bar+NYC", reviews:299, price:"$$", reservable:false, stars:4.8 },
+        { id:"antidote", emoji:"🥢", place:"Antidote", type:"chinese", desc:"4.8★ · chinese", booking:"http://antidoteny.com/", maps:"Antidote+NYC", reviews:2087, price:"$$", reservable:true, stars:4.8 },
+        { id:"ren", emoji:"🥢", place:"Ren 稔", type:"chinese", desc:"4.8★ · chinese", booking:"https://www.renbrooklyn.com/", maps:"Ren++NYC", reviews:169, price:"$$", reservable:true, stars:4.8 },
+        { id:"breeze", emoji:"🥢", place:"Breeze", type:"chinese", desc:"4.8★ · chinese", booking:"https://breezebk.com/", maps:"Breeze+NYC", reviews:474, price:"$$", reservable:true, stars:4.8 },
+        { id:"meili", emoji:"🥢", place:"MEILI 沉香", type:"chinese", desc:"4.8★ · chinese", booking:"http://meiliwilliamsburg.com/", maps:"MEILI++NYC", reviews:540, price:"$$", reservable:true, stars:4.8 },
+        { id:"mokyo", emoji:"🥩", place:"Mokyo", type:"korean", desc:"Korean-inspired comfort food & small plates in a casual, rustic setting with exposed brick walls.", booking:"http://www.mokyony.com/", maps:"Mokyo+NYC", reviews:719, price:"$$", reservable:true, stars:4.7 },
+        { id:"chingoo", emoji:"🥩", place:"ChinGoo", type:"korean", desc:"4.7★ · korean", booking:null, maps:"ChinGoo+NYC", reviews:356, price:"$$", reservable:true, stars:4.7 },
+        { id:"haenyeo", emoji:"🥩", place:"Haenyeo", type:"korean", desc:"Playful takes on Korean classics & seafood in cozy, white-walled space.", booking:"https://haenyeobk.com/", maps:"Haenyeo+NYC", reviews:659, price:"$$", reservable:true, stars:4.5 },
+        { id:"kingscoimper", emoji:"🥢", place:"Kings Co Imperial", type:"chinese", desc:"Modern Chinese haunt serving dishes made with local ingredients, including some from its own garden.", booking:"https://www.kingscoimperial.com/location/kings-co-imperial-williamsburg/?utm_source=google_business_profile&utm_medium=gbp_view_website&utm_campaign=google_business_profile", maps:"Kings+Co+Imperial+NYC", reviews:941, price:"$$", reservable:true, stars:4.5 },
+        { id:"dokebibarand", emoji:"🥩", place:"Dokebi Bar and Grill", type:"korean", desc:"Busy Korean-style BBQ eatery with tableside grills & veggie options in a cozy ambiance.", booking:"http://www.dokebibrooklyn.com/", maps:"Dokebi+Bar+and+Grill+NYC", reviews:546, price:"$$", reservable:true, stars:4.3 },
+        { id:"atti", emoji:"🥩", place:"ATTI", type:"korean", desc:"4.3★ · korean", booking:"http://www.attinyc.com/", maps:"ATTI+NYC", reviews:293, price:"$$", reservable:true, stars:4.3 },
       ],
       pasta: [
         { id:"macoletta", emoji:"🍝", place:"Macoletta", type:"italian dinner", desc:"4.9★ · italian dinner", booking:"http://www.macoletta.com/", maps:"Macoletta", reviews:628, price:"$$", reservable:true, stars:4.9 },
@@ -97,6 +112,19 @@ const DB = {
         { id:"bisbaslebane", emoji:"🥙", place:"Bis Bas Lebanese-Mediterranean Grill", type:"mediterranean", desc:"4.7★ · mediterranean", booking:"http://bisbas.com/", maps:"Bis+Bas+LebaneseMediterranean+Grill", reviews:541, price:"$", reservable:false, stars:4.7 },
         { id:"cafemogador", emoji:"🥙", place:"Cafe Mogador", type:"mediterranean", desc:"Bustling eatery for traditional Moroccan tagines, couscous, and more in cozy yet charming quarters.", booking:"http://www.cafemogador.com/", maps:"Cafe+Mogador", reviews:3342, price:"$$", reservable:true, stars:4.6 },
         { id:"levantine", emoji:"🥙", place:"Levantine", type:"mediterranean", desc:"Contemporary Mediterranean eatery with a market-driven vegetarian menu & tranquil garden patio.", booking:"http://www.levantinenyc.com/", maps:"Levantine", reviews:891, price:"$$", reservable:true, stars:4.5 },
+      
+        { id:"theamthaiwil", emoji:"🌿", place:"the AM-THAI Williamsburg", type:"vegan", desc:"4.9★ · vegan", booking:"https://am-thainyc.com/?utm_source=google", maps:"the+AMTHAI+Williamsburg+NYC", reviews:798, price:"$$", reservable:true, stars:4.9 },
+        { id:"reverievegan", emoji:"🌿", place:"Reverie Vegan Restaurant and Cocktail Bar", type:"vegan", desc:"4.9★ · vegan", booking:"https://reveriebrooklyn.com/?utm_source=google&utm_medium=gmb&utm_campaign=reverie_profile", maps:"Reverie+Vegan+Restaurant+and+Cocktail+Bar+NYC", reviews:260, price:"$$", reservable:true, stars:4.9 },
+        { id:"gardencarver", emoji:"🌿", place:"Garden Carver", type:"vegan", desc:"4.7★ · vegan", booking:"http://gardencarver.com/", maps:"Garden+Carver+NYC", reviews:239, price:"$$", reservable:true, stars:4.7 },
+        { id:"nycveganbist", emoji:"🌿", place:"NYC VEGAN BISTRO", type:"vegan", desc:"4.7★ · vegan", booking:"https://nycveganbistro.com/", maps:"NYC+VEGAN+BISTRO+NYC", reviews:328, price:"$$", reservable:false, stars:4.7 },
+        { id:"haamcaribbea", emoji:"🌿", place:"HAAM Caribbean Plant Cuisine", type:"vegan", desc:"4.7★ · vegan", booking:"https://haamnyc.com/", maps:"HAAM+Caribbean+Plant+Cuisine+NYC", reviews:876, price:"$$", reservable:true, stars:4.7 },
+        { id:"xixa", emoji:"🌮", place:"Xixa", type:"mexican", desc:"Swanky space serving innovative, upscale takes on Mexican fare paired with a selection of mezcals.", booking:"http://xixany.com/", maps:"Xixa+NYC", reviews:774, price:"$$$", reservable:true, stars:4.6 },
+        { id:"newtown", emoji:"🌿", place:"Newtown", type:"vegan", desc:"Cozy neighborhood cafe specializing in vegetarian Mediterranean dishes with some vegan options.", booking:"http://www.newtownbk.com/", maps:"Newtown+NYC", reviews:335, price:"$", reservable:false, stars:4.6 },
+        { id:"jajajamexica", emoji:"🌿", place:"Jajaja Mexicana", type:"vegan", desc:"4.6★ · vegan", booking:"https://www.jajajamexicana.com/", maps:"Jajaja+Mexicana+NYC", reviews:726, price:"$$$", reservable:true, stars:4.6 },
+        { id:"oxomoco", emoji:"🌮", place:"Oxomoco", type:"mexican", desc:"Airy Mexican eatery offering wood-fired dishes plus ample tequila, mezcal cocktails, and a patio.", booking:"https://www.oxomoconyc.com/", maps:"Oxomoco+NYC", reviews:2403, price:"$$", reservable:true, stars:4.5 },
+        { id:"mesacoyoacan", emoji:"🌮", place:"Mesa Coyoacan", type:"mexican", desc:"Traditional Mexican dishes served on rustic communal tables, plus a huge selection of tequila.", booking:"http://mesacoyoacan.com/", maps:"Mesa+Coyoacan+NYC", reviews:946, price:"$$", reservable:true, stars:4.5 },
+        { id:"casapblica", emoji:"🌮", place:"Casa Pública", type:"mexican", desc:"Cool locale for tacos, ceviche & upscale Mexican dishes with micheladas & other cocktails.", booking:"http://www.casapublicabk.com/", maps:"Casa+Pblica+NYC", reviews:591, price:"$$", reservable:true, stars:4.4 },
+        { id:"republiclati", emoji:"🌮", place:"Republic Latin Asian Fusion", type:"mexican", desc:"4.4★ · mexican", booking:"http://www.republiclatinfusion.com/", maps:"Republic+Latin+Asian+Fusion+NYC", reviews:1550, price:"$$", reservable:true, stars:4.4 },
       ],
       american: [
         { id:"destefanosst", emoji:"🥩", place:"DeStefano's Steakhouse", type:"american dinner", desc:"Steakhouse standards & wines served in a space with an old-school Italian vibe.", booking:"http://www.deesteakhouse.com/", maps:"DeStefanos+Steakhouse", reviews:1000, price:"$$$", reservable:true, stars:4.7 },
@@ -166,6 +194,18 @@ const DB = {
         { id:"yakinikugene", emoji:"🥢", place:"Yakiniku Gen East Village", type:"japanese", desc:"4.9★ · japanese", booking:"https://yakinikugen.com/", maps:"Yakiniku+Gen+East+Village", reviews:1330, price:"$$", reservable:true, stars:4.9 },
         { id:"rosella", emoji:"🥢", place:"Rosella", type:"japanese", desc:"Trendy restaurant offering Japanese cuisine including sushi, rice bowls & soup, plus sake & wine.", booking:"http://www.rosellanyc.com/", maps:"Rosella", reviews:398, price:"$$", reservable:true, stars:4.7 },
         { id:"taishokennyc", emoji:"🥢", place:"Taishoken NYC", type:"japanese", desc:"4.6★ · japanese", booking:"http://www.nyc-taishoken.com/", maps:"Taishoken+NYC", reviews:186, price:"$$", reservable:true, stars:4.6 },
+      
+        { id:"yakinikugene", emoji:"🥩", place:"Yakiniku Gen East Village", type:"korean", desc:"4.9★ · korean", booking:"https://yakinikugen.com/", maps:"Yakiniku+Gen+East+Village+NYC", reviews:1356, price:"$$", reservable:true, stars:4.9 },
+        { id:"casincharlie", emoji:"🥩", place:"C as in Charlie", type:"korean", desc:"4.8★ · korean", booking:"http://c-asincharlie.com/", maps:"C+as+in+Charlie+NYC", reviews:878, price:"$$", reservable:true, stars:4.8 },
+        { id:"tipsyshangha", emoji:"🥢", place:"TIPSY SHANGHAI 蘇杭餐厅", type:"chinese", desc:"4.8★ · chinese", booking:"https://www.tipsy-shanghai.com/", maps:"TIPSY+SHANGHAI++NYC", reviews:1044, price:"$$", reservable:true, stars:4.8 },
+        { id:"twilightloun", emoji:"🥢", place:"Twilight Lounge 朝暮", type:"chinese", desc:"4.8★ · chinese", booking:"https://twilightloungenyc.com/", maps:"Twilight+Lounge++NYC", reviews:140, price:"$$", reservable:true, stars:4.8 },
+        { id:"jiangnannyc", emoji:"🥢", place:"Jiang Nan NYC", type:"chinese", desc:"Contemporary takes on Chinese classics artfully presented in a chic, streamlined space.", booking:"https://jiangnanny.com/", maps:"Jiang+Nan+NYC+NYC", reviews:1897, price:"$$$$", reservable:true, stars:4.8 },
+        { id:"nanxiangsoup", emoji:"🥢", place:"Nan Xiang Soup Dumplings - East Village", type:"chinese", desc:"4.8★ · chinese", booking:"https://nanxiangxiaolongbao.com/?utm_source=gbp&utm_medium=organic&utm_campaign=eastvillage", maps:"Nan+Xiang+Soup+Dumplings++East+Village+NYC", reviews:1196, price:"$$", reservable:true, stars:4.8 },
+        { id:"atomix", emoji:"🥩", place:"ATOMIX", type:"korean", desc:"Upscale Korean restaurant offering a chef's tasting menu with beverage pairings in chic environs.", booking:"http://www.atomixnyc.com/", maps:"ATOMIX+NYC", reviews:507, price:"$$$$", reservable:true, stars:4.7 },
+        { id:"oijimi", emoji:"🥩", place:"Oiji Mi", type:"korean", desc:"Stylish restaurant with retro decor, offering upscale Korean cuisine with a modern twist.", booking:"http://www.oijimi.com/", maps:"Oiji+Mi+NYC", reviews:1236, price:"$$", reservable:true, stars:4.6 },
+        { id:"soogil", emoji:"🥩", place:"Soogil", type:"korean", desc:"Contemporary Korean dishes prepared with French techniques in an earthy setting with cocktails.", booking:"http://soogil.com/", maps:"Soogil+NYC", reviews:309, price:"$$", reservable:true, stars:4.6 },
+        { id:"genesishouse", emoji:"🥩", place:"Genesis House", type:"korean", desc:"Elevated Korean delicacies are served in this contemporary restaurant with a spacious terrace.", booking:"https://www.genesishouse.com/us/en/nyc/index.html", maps:"Genesis+House+NYC", reviews:635, price:"$$", reservable:true, stars:4.5 },
+        { id:"mlproject", emoji:"🥢", place:"MáLà Project", type:"chinese", desc:"Cozy, hip spot featuring Chinese dry pot with a choice of spice level, plus appetizers and dim sum.", booking:"http://malaproject.com/", maps:"ML+Project+NYC", reviews:1419, price:"$$", reservable:true, stars:4.4 },
       ],
       pasta: [
         { id:"pastarullo", emoji:"🍝", place:"Pasta Rullo", type:"italian dinner", desc:"4.9★ · italian dinner", booking:"https://pastarullo.com/", maps:"Pasta+Rullo", reviews:805, price:"$$", reservable:false, stars:4.9 },
@@ -184,6 +224,17 @@ const DB = {
         { id:"joseluismedi", emoji:"🥙", place:"Jose Luis Mediterranean Cuisine", type:"mediterranean", desc:"Tapas, paellas & pasta are served in this relaxed restaurant that has snug surroundings & a patio.", booking:"http://joseluisnewyork.com/", maps:"Jose+Luis+Mediterranean+Cuisine", reviews:703, price:"$$", reservable:true, stars:4.8 },
         { id:"barbounia", emoji:"🥙", place:"Barbounia", type:"mediterranean", desc:"4.7★ · mediterranean", booking:"https://barbounia.com/", maps:"Barbounia", reviews:4864, price:"$$$", reservable:true, stars:4.7 },
         { id:"baladeauthen", emoji:"🥙", place:"Balade | Authentic Lebanese Restaurant | East Village, NYC", type:"mediterranean", desc:"Lebanese bistro offering classic & creative dishes, such as kebabs & pita pizzas, plus beer & wine.", booking:"https://baladerestaurants.com/?utm_source=google", maps:"Balade++Authentic+Lebanese+Restaurant++East+Village+NYC", reviews:1562, price:"$$", reservable:true, stars:4.5 },
+      
+        { id:"cuerno", emoji:"🌮", place:"Cuerno", type:"mexican", desc:"4.8★ · mexican", booking:"https://cuernony.com/", maps:"Cuerno+NYC", reviews:1088, price:"$$", reservable:true, stars:4.8 },
+        { id:"hags", emoji:"🌿", place:"HAGS", type:"vegan", desc:"4.7★ · vegan", booking:"https://hagsnyc.com/", maps:"HAGS+NYC", reviews:136, price:"$$", reservable:true, stars:4.7 },
+        { id:"lacontenta", emoji:"🌮", place:"La Contenta", type:"mexican", desc:"Neighborhood joint for Mexican food by a native chef-owner, plus mezcals & other agave spirits.", booking:"http://lacontentales.com/", maps:"La+Contenta+NYC", reviews:1051, price:"$$", reservable:true, stars:4.6 },
+        { id:"ladybird", emoji:"🌿", place:"Ladybird", type:"vegan", desc:"Creative vegetarian small plates & cocktails in an embellished setting with plush banquettes.", booking:"https://ladybirdny.com/?utm_source=google", maps:"Ladybird+NYC", reviews:945, price:"$$", reservable:true, stars:4.6 },
+        { id:"avantgarden", emoji:"🌿", place:"Avant Garden", type:"vegan", desc:"Refined vegan dishes & global wines served in a snug, brick-walled eatery with a branch chandelier.", booking:"https://www.avantgardennyc.com/", maps:"Avant+Garden+NYC", reviews:897, price:"$$$", reservable:true, stars:4.6 },
+        { id:"sodaclub", emoji:"🌿", place:"Soda Club", type:"vegan", desc:"4.6★ · vegan", booking:"https://www.overthrowhospitality.com/", maps:"Soda+Club+NYC", reviews:498, price:"$$", reservable:true, stars:4.6 },
+        { id:"barverde", emoji:"🌮", place:"Bar Verde", type:"mexican", desc:"Casual, modern vegan spot for tacos and other Mexican plates, plus cocktails and brunch.", booking:"https://barverdenyc.com/?utm_source=gmb&utm_medium=profile&utm_campaign=gmb_profile_visit", maps:"Bar+Verde+NYC", reviews:769, price:"$$", reservable:true, stars:4.5 },
+        { id:"caravanofdre", emoji:"🌿", place:"Caravan Of Dreams", type:"vegan", desc:"Bohemian outfit offering inventive vegan dishes that are kosher & organic, plus live music.", booking:"https://www.caravanofdreams.net/", maps:"Caravan+Of+Dreams+NYC", reviews:717, price:"$$", reservable:true, stars:4.5 },
+        { id:"mayamezcal", emoji:"🌮", place:"Mayamezcal", type:"mexican", desc:"Mexican small plates & top-shelf tequila cocktails are served in intimate, vintage surroundings.", booking:"http://mayamezcal.com/", maps:"Mayamezcal+NYC", reviews:458, price:"$$$", reservable:true, stars:4.4 },
+        { id:"cosme", emoji:"🌮", place:"Cosme", type:"mexican", desc:"Sleek Mexican spot with a big bar for locally sourced share plates, plus tequila and mezcal cocktails.", booking:"http://www.cosmenyc.com/", maps:"Cosme+NYC", reviews:3102, price:"$$$$", reservable:true, stars:4.3 },
       ],
       american: [
           { place:"Plado Tasting Bar", type:"Bar", desc:"Plado Tasting Bar", booking:"https://pladohospitality.com/", maps:"Plado+Tasting+Bar+East+Village+Manhattan", reviews:431, price:"$$", reservable:true, stars:4.7 },
@@ -258,6 +309,14 @@ const DB = {
         { id:"fukuomakase", emoji:"🥢", place:"Fuku Omakase", type:"japanese", desc:"4.8★ · japanese", booking:"http://fukuomakase.com/", maps:"Fuku+Omakase", reviews:331, price:"$$", reservable:true, stars:4.8 },
         { id:"sushimakotoo", emoji:"🥢", place:"Sushi Makoto - Omakase", type:"japanese", desc:"4.8★ · japanese", booking:"http://sushimakoto.com/", maps:"Sushi+Makoto++Omakase", reviews:359, price:"$$", reservable:true, stars:4.8 },
         { id:"naminoriwest", emoji:"🥢", place:"Nami Nori West Village", type:"japanese", desc:"Temaki hand rolls and other Japanese bites served in a minimalist setting with neutral tones.", booking:"http://naminori.nyc/", maps:"Nami+Nori+West+Village", reviews:1796, price:"$$", reservable:true, stars:4.4 },
+      
+        { id:"lindaughters", emoji:"🥢", place:"Lin & Daughters - West Village", type:"chinese", desc:"4.7★ · chinese", booking:"https://www.linanddaughters.com/", maps:"Lin++Daughters++West+Village+NYC", reviews:360, price:"$$", reservable:false, stars:4.7 },
+        { id:"yumchachines", emoji:"🥢", place:"Yum Cha Chinese Kitchen & Bar 姑苏里", type:"chinese", desc:"4.7★ · chinese", booking:"http://yumchanyc.com/", maps:"Yum+Cha+Chinese+Kitchen++Bar++NYC", reviews:991, price:"$$", reservable:true, stars:4.7 },
+        { id:"steam", emoji:"🥢", place:"Steam", type:"chinese", desc:"4.6★ · chinese", booking:"https://steam-nyc.com/", maps:"Steam+NYC", reviews:507, price:"$$", reservable:true, stars:4.6 },
+        { id:"naro", emoji:"🥩", place:"NARO", type:"korean", desc:"4.5★ · korean", booking:"https://www.naronyc.com/", maps:"NARO+NYC", reviews:613, price:"$$", reservable:true, stars:4.5 },
+        { id:"kyunyc", emoji:"🥩", place:"KYU NYC", type:"korean", desc:"4.5★ · korean", booking:"https://www.kyurestaurants.com/location/kyu-nyc/?utm_source=gmb", maps:"KYU+NYC+NYC", reviews:828, price:"$$", reservable:true, stars:4.5 },
+        { id:"decoy", emoji:"🥢", place:"Decoy", type:"chinese", desc:"Tiny restaurant under RedFarm for peking duck prix fixe meals plus a bar with drinks & Asian bites.", booking:"http://decoynyc.com/", maps:"Decoy+NYC", reviews:462, price:"$$$", reservable:true, stars:4.5 },
+        { id:"redfarm", emoji:"🥢", place:"RedFarm", type:"chinese", desc:"Creative dim sum & other modern, seasonal Chinese food in a cozy & rustic farmhouse-style setting.", booking:"https://www.redfarmnyc.com/location/west-village/", maps:"RedFarm+NYC", reviews:697, price:"$$$", reservable:true, stars:4.5 },
       ],
       pasta: [
           { place:"Canto West Village", type:"Bar", desc:"Canto West Village", booking:"https://www.cantonyc.com/", maps:"Canto+West+Village+West+Village+Manhattan", reviews:1549, price:"$$", reservable:true, stars:4.6 },
@@ -274,7 +333,17 @@ const DB = {
       pizza: [
         { id:"fermentopizz", emoji:"🍕", place:"Fermento Pizza NYC", type:"pizza", desc:"5.0★ · pizza", booking:"https://www.fermentonyc.com/", maps:"Fermento+Pizza+NYC", reviews:77, price:"$$", reservable:false, stars:5.0 },
       ],
-      mediterranean: [],
+      mediterranean: [
+        { id:"sentirveganm", emoji:"🌮", place:"Sentir Vegan Mexican Restaurant", type:"mexican", desc:"4.8★ · mexican", booking:"https://sentirnyc.com/", maps:"Sentir+Vegan+Mexican+Restaurant+NYC", reviews:455, price:"$$", reservable:true, stars:4.8 },
+        { id:"shsh", emoji:"🌿", place:"SHŌSH", type:"vegan", desc:"4.8★ · vegan", booking:"https://www.shosh.nyc/", maps:"SHSH+NYC", reviews:267, price:"$$", reservable:true, stars:4.8 },
+        { id:"aniximediter", emoji:"🌿", place:"Anixi Mediterranean Vegan Restaurant", type:"vegan", desc:"4.8★ · vegan", booking:"https://www.anixinyc.com/", maps:"Anixi+Mediterranean+Vegan+Restaurant+NYC", reviews:2119, price:"$$", reservable:true, stars:4.8 },
+        { id:"chloes", emoji:"🌿", place:"CHLOE'S", type:"vegan", desc:"4.7★ · vegan", booking:"https://www.chloeonbleecker.com/", maps:"CHLOES+NYC", reviews:583, price:"$$", reservable:false, stars:4.7 },
+        { id:"jajajamexica", emoji:"🌿", place:"Jajaja Mexicana", type:"vegan", desc:"Contemporary Mexican spot with a colorful, all-vegan menu, plus tequila and mezcal cocktails.", booking:"https://www.jajajamexicana.com/", maps:"Jajaja+Mexicana+NYC", reviews:1758, price:"$$", reservable:true, stars:4.6 },
+        { id:"cantowestvil", emoji:"🌿", place:"Canto West Village", type:"vegan", desc:"Vibrant outfit with exposed bricks & a wood ceiling serving Italian classics & cocktails.", booking:"https://www.cantonyc.com/", maps:"Canto+West+Village+NYC", reviews:1558, price:"$$", reservable:true, stars:4.6 },
+        { id:"palma", emoji:"🌿", place:"Palma", type:"vegan", desc:"Italian classics are crafted from organic ingredients in a sunwashed stucco space with a garden.", booking:"https://www.palmanyc.com/", maps:"Palma+NYC", reviews:1164, price:"$$$", reservable:true, stars:4.6 },
+        { id:"delicesarras", emoji:"🌿", place:"Delice & Sarrasin", type:"vegan", desc:"Cozy, quaint cafe offering traditional French dishes made vegan, along with sweet & savory crêpes.", booking:"http://delicesarrasin.com/", maps:"Delice++Sarrasin+NYC", reviews:1326, price:"$$", reservable:true, stars:4.5 },
+        { id:"littlerubysw", emoji:"🌮", place:"Little Ruby's West Village", type:"mexican", desc:"4.4★ · mexican", booking:"https://www.rubyscafe.com/", maps:"Little+Rubys+West+Village+NYC", reviews:757, price:"$$", reservable:true, stars:4.4 },
+      ],
       american: [
           { place:"Canto West Village", type:"Bar", desc:"Canto West Village", booking:"https://www.cantonyc.com/", maps:"Canto+West+Village+West+Village+Manhattan", reviews:1549, price:"$$", reservable:true, stars:4.6 },
           { place:"Boucherie West Village", type:"Bar", desc:"Boucherie West Village", booking:"https://www.boucherieus.com/west-village-menus/", maps:"Boucherie+West+Village+West+Village+Manhattan", reviews:9271, price:"$$$", reservable:true, stars:4.8 },
@@ -357,6 +426,22 @@ const DB = {
         { id:"sakagura", emoji:"🥢", place:"Sakagura", type:"japanese", desc:"Japanese small plates & a deep sake list in a blond-wood izakaya hidden beneath an office building.", booking:"http://www.sakagura.com/", maps:"Sakagura", reviews:1443, price:"$$$", reservable:true, stars:4.5 },
         { id:"nobufiftysev", emoji:"🥢", place:"Nobu Fifty Seven", type:"japanese", desc:"Sleek Japanese-Peruvian spot from Nobu Matsuhisa frequented by business types & celebs.", booking:"https://www.noburestaurants.com/fifty-seven/home/?utm_source=google&utm_medium=Yext", maps:"Nobu+Fifty+Seven", reviews:2692, price:"$$$$", reservable:true, stars:4.4 },
         { id:"zumanewyork", emoji:"🥢", place:"Zuma New York", type:"japanese", desc:"Trendy, high-end Japanese place with an izakaya-inspired menu including sushi & robata grilled fare.", booking:"https://www.zumarestaurant.com/en/new-york?utm_source=InfoButtonClick&utm_medium=Home&utm_campaign=GoogleBusinessProfile", maps:"Zuma+New+York", reviews:2033, price:"$$$$", reservable:true, stars:4.3 },
+      
+        { id:"kpotkoreanbb", emoji:"🥩", place:"KPOT Korean BBQ & Hot Pot", type:"korean", desc:"4.9★ · korean", booking:"https://thekpot.com/location/midtown-w-38th-st/", maps:"KPOT+Korean+BBQ++Hot+Pot+NYC", reviews:4092, price:"$$", reservable:true, stars:4.9 },
+        { id:"thebestsichu", emoji:"🥢", place:"The Best Sichuan 一品成都21", type:"chinese", desc:"4.9★ · chinese", booking:"http://www.malahouse21.com/", maps:"The+Best+Sichuan+21+NYC", reviews:2434, price:"$$", reservable:true, stars:4.9 },
+        { id:"ahgassikorea", emoji:"🥩", place:"Ahgassi Korean Barbecue", type:"korean", desc:"4.8★ · korean", booking:"https://ahgassigopchangnyc.com/", maps:"Ahgassi+Korean+Barbecue+NYC", reviews:2807, price:"$$", reservable:true, stars:4.8 },
+        { id:"thebestsichu", emoji:"🥢", place:"The Best Sichuan", type:"chinese", desc:"4.8★ · chinese", booking:"https://www.mala747.com/", maps:"The+Best+Sichuan+NYC", reviews:2923, price:"$$", reservable:true, stars:4.8 },
+        { id:"misskoreabbq", emoji:"🥩", place:"miss KOREA BBQ", type:"korean", desc:"Chic, zen-like Koreatown restaurant for barbecue, bulgogi and hot pots.", booking:"https://www.misskoreabbq.com/", maps:"miss+KOREA+BBQ+NYC", reviews:18929, price:"$$$", reservable:true, stars:4.7 },
+        { id:"thebestsichu", emoji:"🥢", place:"The Best Sichuan 一品成都39", type:"chinese", desc:"Bi-level bar & eatery with classic decor for a vast menu of Chinese dishes from various regions.", booking:"http://www.bestsichuan.com/", maps:"The+Best+Sichuan+39+NYC", reviews:3357, price:"$$", reservable:true, stars:4.7 },
+        { id:"chirestauran", emoji:"🥢", place:"Chi Restaurant & Bar", type:"chinese", desc:"4.7★ · chinese", booking:"https://chirestaurantnyc.com/", maps:"Chi+Restaurant++Bar+NYC", reviews:2568, price:"$$", reservable:true, stars:4.7 },
+        { id:"skypavilion", emoji:"🥢", place:"Sky Pavilion 川雲涧", type:"chinese", desc:"4.7★ · chinese", booking:"https://www.skypavilionnyc.com/", maps:"Sky+Pavilion++NYC", reviews:541, price:"$$", reservable:true, stars:4.7 },
+        { id:"loulou", emoji:"🥢", place:"LOULOU", type:"chinese", desc:"Two-level restaurant serving casual French fare paired with craft cocktails, beer, and champagne.", booking:"https://www.loulounyc.com/", maps:"LOULOU+NYC", reviews:4282, price:"$$", reservable:true, stars:4.7 },
+        { id:"hojokbannyc", emoji:"🥩", place:"HOJOKBAN NYC", type:"korean", desc:"4.6★ · korean", booking:"https://hojokban.com/", maps:"HOJOKBAN+NYC+NYC", reviews:622, price:"$$", reservable:true, stars:4.6 },
+        { id:"jongrobbq", emoji:"🥩", place:"Jongro BBQ", type:"korean", desc:"Serves Korean BBQ and other traditional dishes in a casual, open-timbered space with in-table grills.", booking:"https://www.jongrobbqny.com/", maps:"Jongro+BBQ+NYC", reviews:5485, price:"$$", reservable:true, stars:4.5 },
+        { id:"tuome", emoji:"🥢", place:"Tuome", type:"chinese", desc:"Contemporary American cooking with Asian influences in a casual space featuring reclaimed materials.", booking:"http://www.tuomenyc.com/", maps:"Tuome+NYC", reviews:774, price:"$$", reservable:true, stars:4.5 },
+        { id:"moono", emoji:"🥩", place:"Moono", type:"korean", desc:"4.4★ · korean", booking:"http://www.moononyc.com/", maps:"Moono+NYC", reviews:480, price:"$$", reservable:true, stars:4.4 },
+        { id:"buddakan", emoji:"🥢", place:"Buddakan", type:"chinese", desc:"Huge, lavishly decorated restaurant offering a menu of Asian dishes & cocktails.", booking:"https://www.buddakannyc.com/?utm_source=GoogleBusinessProfile&utm_medium=Website&utm_campaign=MapLabs", maps:"Buddakan+NYC", reviews:5770, price:"$$$", reservable:true, stars:4.4 },
+        { id:"53", emoji:"🥢", place:"53", type:"chinese", desc:"4.3★ · chinese", booking:"https://53-nyc.com/?utm_source=GoogleBusinessProfile&utm_medium=organic_search&utm_campaign=MapLabs", maps:"53+NYC", reviews:684, price:"$$$", reservable:true, stars:4.3 },
       ],
       pasta: [
           { place:"La Grande Boucherie", type:"Bar", desc:"La Grande Boucherie", booking:"https://www.boucherieus.com/", maps:"La+Grande+Boucherie+Midtown+Manhattan", reviews:9985, price:"$$", reservable:true, stars:4.6 },
@@ -367,7 +452,13 @@ const DB = {
         { id:"cisiamo", emoji:"🍝", place:"Ci Siamo", type:"italian dinner", desc:"Stylish restaurant offering high-end Mediterranean standards, plus wine and cocktails.", booking:"https://www.cisiamo.com/?utm_source=google&utm_medium=gmb", maps:"Ci+Siamo", reviews:2092, price:"$$$", reservable:true, stars:4.6 },
       ],
       pizza: [],
-      mediterranean: [],
+      mediterranean: [
+        { id:"lebotaniste", emoji:"🌿", place:"Le Botaniste", type:"vegan", desc:"4.6★ · vegan", booking:"http://www.lebotaniste.us/", maps:"Le+Botaniste+NYC", reviews:468, price:"$", reservable:false, stars:4.6 },
+        { id:"franchiavega", emoji:"🌿", place:"Franchia Vegan Café", type:"vegan", desc:"Creative, vegan Asian fusion dishes presented in a serene, tea-house-inspired setting.", booking:"http://www.franchia.com/", maps:"Franchia+Vegan+Caf+NYC", reviews:1918, price:"$$", reservable:true, stars:4.6 },
+        { id:"plantanewyor", emoji:"🌿", place:"PLANTA New York", type:"vegan", desc:"4.5★ · vegan", booking:"https://www.plantarestaurants.com/location/planta-queen-new-york-city/", maps:"PLANTA+New+York+NYC", reviews:3062, price:"$$$", reservable:true, stars:4.5 },
+        { id:"sinigual", emoji:"🌮", place:"Sinigual", type:"mexican", desc:"Large, bustling contemporary Mexican restaurant & bar with cocktails & popular happy-hour specials.", booking:"https://www.sinigualrestaurants.com/", maps:"Sinigual+NYC", reviews:3012, price:"$$", reservable:true, stars:4.4 },
+        { id:"tnbychefrich", emoji:"🌮", place:"tán by Chef Richard Sandoval", type:"mexican", desc:"4.3★ · mexican", booking:"https://www.tannewyork.com/", maps:"tn+by+Chef+Richard+Sandoval+NYC", reviews:644, price:"$$", reservable:true, stars:4.3 },
+      ],
       american: [
           { place:"La Pecora Bianca Bryant Park", type:"Bar", desc:"La Pecora Bianca Bryant Park", booking:"https://www.lapecorabianca.com/", maps:"La+Pecora+Bianca+Bryant+Park+Midtown+Manhattan", reviews:7011, price:"$$$", reservable:true, stars:4.8 },
           { place:"Monkey Bar", type:"Bar", desc:"Monkey Bar", booking:"https://nycmonkeybar.com/", maps:"Monkey+Bar+Midtown+Manhattan", reviews:1745, price:"$$$", reservable:true, stars:4.5 },
@@ -450,6 +541,10 @@ const DB = {
         { id:"izakayanonam", emoji:"🥢", place:"Izakaya Noname", type:"japanese", desc:"4.6★ · japanese", booking:"http://www.nonameus.com/", maps:"Izakaya+Noname", reviews:363, price:"$$", reservable:true, stars:4.6 },
         { id:"daihachisush", emoji:"🥢", place:"Dai Hachi Sushi in Long Island City", type:"japanese", desc:"Laid-back Japanese restaurant with exposed-brick walls offering sushi, ramen, noodles & sake.", booking:"https://daihachinyc.com/", maps:"Dai+Hachi+Sushi+in+Long+Island+City", reviews:536, price:"$$", reservable:true, stars:4.6 },
         { id:"hibinolic", emoji:"🥢", place:"Hibino LIC", type:"japanese", desc:"Unusual restaurant offering sushi, small plates & other Japanese fare in a minimalist setting.", booking:"https://hibino-lic.com/", maps:"Hibino+LIC", reviews:588, price:"$$", reservable:true, stars:4.5 },
+      
+        { id:"zenastoria", emoji:"🥢", place:"Zen Astoria", type:"chinese", desc:"4.6★ · chinese", booking:"https://glockenspiel-begonia-beep.squarespace.com/config/pages", maps:"Zen+Astoria+NYC", reviews:558, price:"$$", reservable:true, stars:4.6 },
+        { id:"beijaflor", emoji:"🥢", place:"Beija Flor", type:"chinese", desc:"Brazilian eatery with an upbeat vibe, frequent live music & happy hour, plus delivery.", booking:"https://www.beijaflor.nyc/", maps:"Beija+Flor+NYC", reviews:1102, price:"$$", reservable:true, stars:4.5 },
+        { id:"shi", emoji:"🥢", place:"SHI", type:"chinese", desc:"Upscale Pan-Asian eatery in a high-rise restaurant with Manhattan skyline views and modern look.", booking:"http://shilic.com/", maps:"SHI+NYC", reviews:1478, price:"$$", reservable:true, stars:4.3 },
       ],
       pasta: [
         { id:"manettasrist", emoji:"🍝", place:"Manetta's Ristorante", type:"italian dinner", desc:"A fireplace adds a homey touch to this longtime Italian joint with a basic menu & brick-oven pizzas.", booking:"http://www.manettaslic.com/", maps:"Manettas+Ristorante", reviews:931, price:"$$", reservable:true, stars:4.6 },
@@ -463,7 +558,10 @@ const DB = {
         { id:"sohopizza", emoji:"🍕", place:"Soho Pizza", type:"pizza", desc:"4.8★ · pizza", booking:"http://sohopizzany.com/", maps:"Soho+Pizza", reviews:52, price:"$$", reservable:false, stars:4.8 },
         { id:"sottolestell", emoji:"🍕", place:"Sotto Le Stelle", type:"pizza", desc:"Neighborhood Italian spot for wood-fired pies by a pizzaiolo from Naples, plus panini & antipasti.", booking:"https://www.sottolestelleny.com/", maps:"Sotto+Le+Stelle", reviews:1027, price:"$$", reservable:true, stars:4.7 },
       ],
-      mediterranean: [],
+      mediterranean: [
+        { id:"blendlic", emoji:"🌮", place:"Blend LIC", type:"mexican", desc:"Casual cafe & lounge serving dishes from various Latin cuisines along with cocktails.", booking:"https://www.blendlic.com/", maps:"Blend+LIC+NYC", reviews:1844, price:"$$", reservable:true, stars:4.5 },
+        { id:"jora", emoji:"🌮", place:"Jora", type:"mexican", desc:"Eatery and cocktail spot with elegant decor specializing in Peruvian dishes and pisco cocktails.", booking:"http://www.jorany.com/", maps:"Jora+NYC", reviews:2083, price:"$$", reservable:true, stars:4.5 },
+      ],
       american: [
           { place:"Lighthouse Rooftop", type:"Bar", desc:"Lighthouse Rooftop", booking:"http://lighthouserooftop.com/", maps:"Lighthouse+Rooftop+Long+Island+City+Queens", reviews:912, price:"$$", reservable:true, stars:4.1 },
           { place:"Maiella", type:"Bar", desc:"Maiella", booking:"https://www.maiellalic.com/", maps:"Maiella+Long+Island+City+Queens", reviews:1978, price:"$$$", reservable:true, stars:4.4 },
@@ -609,9 +707,18 @@ const getSpots = (a) => {
     let key;
     if (a.foodType === "brunch" || a.timeOfDay === "day") key = "brunch";
     else if (a.timeOfDay === "late") key = "latenight";
+    else if (a.foodType === "korean" || a.foodType === "chinese") key = "japanese"; // Asian bucket
+    else if (a.foodType === "mexican" || a.foodType === "vegan") key = "mediterranean"; // vibey bucket
     else key = a.foodType || "american";
     pool = [...(nb.food[key] || nb.food.american || [])];
-    // If evening, exclude spots that are brunch-only
+
+    // Filter to matching cuisine type within the bucket
+    if (["korean","chinese","mexican","vegan"].includes(a.foodType)) {
+      const typed = pool.filter(s => String(s.type||"").toLowerCase().includes(a.foodType));
+      if (typed.length >= 2) pool = typed;
+    }
+
+    // If evening, exclude brunch-only spots
     if (a.timeOfDay === "evening" && key !== "brunch") {
       const filtered = pool.filter(s => !String(s.type||"").toLowerCase().includes("brunch"));
       if (filtered.length >= 2) pool = filtered;
@@ -833,7 +940,7 @@ const Skyline = () => (
 );
 
 const MODE_EMOJI = {
-  food: { brunch:"🥐", japanese:"🍣", pasta:"🍝", pizza:"🍕", mediterranean:"🥙", american:"🥩", latenight:"🌙", default:"🍽️" },
+  food: { brunch:"🥐", japanese:"🍣", korean:"🥩", chinese:"🥢", pasta:"🍝", pizza:"🍕", mediterranean:"🥙", mexican:"🌮", vegan:"🌿", american:"🥩", latenight:"🌙", default:"🍽️" },
   drinks: { cocktails:"🍸", beer:"🍺", wine:"🍷", experimental:"🧪", speakeasy:"🕯️", default:"🥂" },
   fooddrinks: { dinner_cocktails:"🍸", wine_plates:"🍷", brunch_drinks:"🥂", late_bites:"🌙", default:"🥂" },
   activity: { free:"🌿", paid:"🎯", default:"✨" },
