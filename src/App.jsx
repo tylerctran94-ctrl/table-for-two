@@ -95,6 +95,14 @@ const DB = {
         { id:"kingscoimper", emoji:"🥢", place:"Kings Co Imperial", type:"chinese", desc:"Modern Chinese haunt serving dishes made with local ingredients, including some from its own garden.", booking:"https://www.kingscoimperial.com/location/kings-co-imperial-williamsburg/?utm_source=google_business_profile&utm_medium=gbp_view_website&utm_campaign=google_business_profile", maps:"Kings+Co+Imperial+NYC", reviews:941, price:"$$", reservable:true, stars:4.5 },
         { id:"dokebibarand", emoji:"🥩", place:"Dokebi Bar and Grill", type:"korean", desc:"Busy Korean-style BBQ eatery with tableside grills & veggie options in a cozy ambiance.", booking:"http://www.dokebibrooklyn.com/", maps:"Dokebi+Bar+and+Grill+NYC", reviews:546, price:"$$", reservable:true, stars:4.3 },
         { id:"atti", emoji:"🥩", place:"ATTI", type:"korean", desc:"4.3★ · korean", booking:"http://www.attinyc.com/", maps:"ATTI+NYC", reviews:293, price:"$$", reservable:true, stars:4.3 },
+      
+        { id:"narachickenk", emoji:"🥩", place:"NaRa Chicken & Korean Cuisine", type:"korean", desc:"4.9★ · korean", booking:"https://eatnarachicken.com/", maps:"NaRa+Chicken++Korean+Cuisine+NYC", reviews:153, price:"$$", reservable:false, stars:4.9 },
+        { id:"gomikoreanwi", emoji:"🥩", place:"Gomi Korean wine Bar", type:"korean", desc:"Korean & Brazilian dishes with no added sugar are paired with wines in a relaxed, simple space.", booking:"http://gomikoreanwinebar.com/", maps:"Gomi+Korean+wine+Bar+NYC", reviews:299, price:"$$", reservable:false, stars:4.8 },
+        { id:"namdobrookly", emoji:"🥩", place:"Namdo Brooklyn", type:"korean", desc:"4.7★ · korean", booking:"https://www.instagram.com/namdo.bk", maps:"Namdo+Brooklyn+NYC", reviews:332, price:"$$", reservable:true, stars:4.7 },
+        { id:"chingoo", emoji:"🥩", place:"ChinGoo", type:"korean", desc:"4.7★ · korean", booking:null, maps:"ChinGoo+NYC", reviews:356, price:"$$", reservable:true, stars:4.7 },
+        { id:"haenyeo", emoji:"🥩", place:"Haenyeo", type:"korean", desc:"Playful takes on Korean classics & seafood in cozy, white-walled space.", booking:"https://haenyeobk.com/", maps:"Haenyeo+NYC", reviews:659, price:"$$", reservable:true, stars:4.5 },
+        { id:"littledokebi", emoji:"🥩", place:"Little Dokebi", type:"korean", desc:"Korean bibimbop restaurant, plus a full bar built from salvaged materials.", booking:"https://littledokebi.com/", maps:"Little+Dokebi+NYC", reviews:438, price:"$$", reservable:true, stars:4.4 },
+        { id:"dokebibarand", emoji:"🥩", place:"Dokebi Bar and Grill", type:"korean", desc:"Busy Korean-style BBQ eatery with tableside grills & veggie options in a cozy ambiance.", booking:"http://www.dokebibrooklyn.com/", maps:"Dokebi+Bar+and+Grill+NYC", reviews:546, price:"$$", reservable:true, stars:4.3 },
       ],
       pasta: [
         { id:"macoletta", emoji:"🍝", place:"Macoletta", type:"italian dinner", desc:"4.9★ · italian dinner", booking:"http://www.macoletta.com/", maps:"Macoletta", reviews:628, price:"$$", reservable:true, stars:4.9 },
@@ -212,6 +220,13 @@ const DB = {
         { id:"soogil", emoji:"🥩", place:"Soogil", type:"korean", desc:"Contemporary Korean dishes prepared with French techniques in an earthy setting with cocktails.", booking:"http://soogil.com/", maps:"Soogil+NYC", reviews:309, price:"$$", reservable:true, stars:4.6 },
         { id:"genesishouse", emoji:"🥩", place:"Genesis House", type:"korean", desc:"Elevated Korean delicacies are served in this contemporary restaurant with a spacious terrace.", booking:"https://www.genesishouse.com/us/en/nyc/index.html", maps:"Genesis+House+NYC", reviews:635, price:"$$", reservable:true, stars:4.5 },
         { id:"mlproject", emoji:"🥢", place:"MáLà Project", type:"chinese", desc:"Cozy, hip spot featuring Chinese dry pot with a choice of spice level, plus appetizers and dim sum.", booking:"http://malaproject.com/", maps:"ML+Project+NYC", reviews:1419, price:"$$", reservable:true, stars:4.4 },
+      
+        { id:"yakinikugene", emoji:"🥩", place:"Yakiniku Gen East Village", type:"korean", desc:"4.9★ · korean", booking:"https://yakinikugen.com/", maps:"Yakiniku+Gen+East+Village+NYC", reviews:1355, price:"$$", reservable:true, stars:4.9 },
+        { id:"mokyo", emoji:"🥩", place:"Mokyo", type:"korean", desc:"Korean-inspired comfort food & small plates in a casual, rustic setting with exposed brick walls.", booking:"http://www.mokyony.com/", maps:"Mokyo+NYC", reviews:719, price:"$$", reservable:true, stars:4.7 },
+        { id:"soogil", emoji:"🥩", place:"Soogil", type:"korean", desc:"Contemporary Korean dishes prepared with French techniques in an earthy setting with cocktails.", booking:"http://soogil.com/", maps:"Soogil+NYC", reviews:309, price:"$$", reservable:true, stars:4.6 },
+        { id:"oijimi", emoji:"🥩", place:"Oiji Mi", type:"korean", desc:"Stylish restaurant with retro decor, offering upscale Korean cuisine with a modern twist.", booking:"http://www.oijimi.com/", maps:"Oiji+Mi+NYC", reviews:1236, price:"$$", reservable:true, stars:4.6 },
+        { id:"ariari", emoji:"🥩", place:"ARIARI", type:"korean", desc:"4.6★ · korean", booking:"https://ariarinyc.com/", maps:"ARIARI+NYC", reviews:543, price:"$$", reservable:true, stars:4.6 },
+        { id:"nowoneastvil", emoji:"🥩", place:"Nowon East Village", type:"korean", desc:"Korean-American plates are served in an intimate setting with hip hop influences.", booking:"https://www.nowonusa.com/", maps:"Nowon+East+Village+NYC", reviews:782, price:"$$", reservable:true, stars:4.5 },
       ],
       pasta: [
         { id:"pastarullo", emoji:"🍝", place:"Pasta Rullo", type:"italian dinner", desc:"4.9★ · italian dinner", booking:"https://pastarullo.com/", maps:"Pasta+Rullo", reviews:805, price:"$$", reservable:false, stars:4.9 },
@@ -277,7 +292,7 @@ const DB = {
           { id:"topsecretcc", emoji:"😂", place:"Top Secret Comedy Club", type:"comedy", desc:"Intimate comedy show in the East Village.", booking:"https://www.topsecretcomedy.com/", maps:"Top+Secret+Comedy+Club+East+Village", reviews:252, price:"$$", reservable:true, stars:4.9 },
         ] },
     happyHour: [
-          { place:"Lovers of Today", type:"Speakeasy Bar", desc:"50% off cocktails early evening. Most romantic happy hour in the neighborhood.", deal:"50% off cocktails", hours:"Daily 5–8pm", booking:null, maps:"Lovers+of+Today+East+Village+NYC", reviews:640, price:"$$", reservable:false, stars:4.6 },
+          { place:"Lovers of Today", type:"Speakeasy Bar", desc:"50% off cocktails early evening. Snug, dark, craft cocktails.", deal:"50% off cocktails", hours:"Daily 5-8pm", booking:null, maps:"Lovers+of+Today+East+Village+NYC", reviews:235, price:"$$", reservable:false, stars:3.7 },
           { place:"Alison St. Marks", type:"Oyster Bar", desc:"The best value happy hour in the East Village. Don't miss the oysters.", deal:"$1.50 oysters + $9 wine", hours:"Tue–Fri noon–7pm", booking:null, maps:"Alison+St+Marks+East+Village+NYC", reviews:520, price:"$$", reservable:false, stars:4.5 },
           { place:"Death & Co", type:"Cocktail Bar", desc:"Early hour discounts at one of NYC's most acclaimed bars.", deal:"$12 cocktails", hours:"Mon–Fri 5–7pm", booking:"deathandcompany.com", maps:"Death+and+Co+East+Village+NYC", reviews:2077, price:"$$$", reservable:true, stars:4.5 },
           { place:"The Wayland", type:"Neighborhood Bar", desc:"Laid-back happy hour with great cocktails and a relaxed crowd.", deal:"$8 wines + $6 beers", hours:"Daily 4–7pm", booking:null, maps:"The+Wayland+East+Village+NYC", reviews:885, price:"$$", reservable:true, stars:4.6 },
@@ -328,6 +343,13 @@ const DB = {
         { id:"kyunyc", emoji:"🥩", place:"KYU NYC", type:"korean", desc:"4.5★ · korean", booking:"https://www.kyurestaurants.com/location/kyu-nyc/?utm_source=gmb", maps:"KYU+NYC+NYC", reviews:828, price:"$$", reservable:true, stars:4.5 },
         { id:"decoy", emoji:"🥢", place:"Decoy", type:"chinese", desc:"Tiny restaurant under RedFarm for peking duck prix fixe meals plus a bar with drinks & Asian bites.", booking:"http://decoynyc.com/", maps:"Decoy+NYC", reviews:462, price:"$$$", reservable:true, stars:4.5 },
         { id:"redfarm", emoji:"🥢", place:"RedFarm", type:"chinese", desc:"Creative dim sum & other modern, seasonal Chinese food in a cozy & rustic farmhouse-style setting.", booking:"https://www.redfarmnyc.com/location/west-village/", maps:"RedFarm+NYC", reviews:697, price:"$$$", reservable:true, stars:4.5 },
+      
+        { id:"tbdgimbap", emoji:"🥩", place:"TBD Gimbap", type:"korean", desc:"5.0★ · korean", booking:null, maps:"TBD+Gimbap+NYC", reviews:82, price:"$$", reservable:false, stars:5.0 },
+        { id:"jejunoodleba", emoji:"🥩", place:"Jeju Noodle Bar", type:"korean", desc:"Korean restaurant focused on ramyun and starters in a warmly lit, contemporary space.", booking:"http://jejunoodlebar.com/", maps:"Jeju+Noodle+Bar+NYC", reviews:3265, price:"$$", reservable:true, stars:4.6 },
+        { id:"kimbaplab", emoji:"🥩", place:"Kimbap Lab", type:"korean", desc:"4.6★ · korean", booking:"http://www.kimbaplab.com/", maps:"Kimbap+Lab+NYC", reviews:118, price:"$", reservable:false, stars:4.6 },
+        { id:"genesishouse", emoji:"🥩", place:"Genesis House", type:"korean", desc:"Elevated Korean delicacies are served in this contemporary restaurant with a spacious terrace.", booking:"https://www.genesishouse.com/us/en/nyc/index.html", maps:"Genesis+House+NYC", reviews:635, price:"$$", reservable:true, stars:4.5 },
+        { id:"kyunyc", emoji:"🥩", place:"KYU NYC", type:"korean", desc:"4.5★ · korean", booking:"https://www.kyurestaurants.com/location/kyu-nyc/?utm_source=gmb", maps:"KYU+NYC+NYC", reviews:828, price:"$$", reservable:true, stars:4.5 },
+        { id:"samwoojung", emoji:"🥩", place:"Samwoojung", type:"korean", desc:"4.5★ · korean", booking:"https://www.samwoojung1963.com/", maps:"Samwoojung+NYC", reviews:457, price:"$$$", reservable:true, stars:4.5 },
       ],
       pasta: [
           { place:"Canto West Village", type:"Bar", desc:"Canto West Village", booking:"https://www.cantonyc.com/", maps:"Canto+West+Village+West+Village+Manhattan", reviews:1549, price:"$$", reservable:true, stars:4.6 },
@@ -458,6 +480,13 @@ const DB = {
         { id:"moono", emoji:"🥩", place:"Moono", type:"korean", desc:"4.4★ · korean", booking:"http://www.moononyc.com/", maps:"Moono+NYC", reviews:480, price:"$$", reservable:true, stars:4.4 },
         { id:"buddakan", emoji:"🥢", place:"Buddakan", type:"chinese", desc:"Huge, lavishly decorated restaurant offering a menu of Asian dishes & cocktails.", booking:"https://www.buddakannyc.com/?utm_source=GoogleBusinessProfile&utm_medium=Website&utm_campaign=MapLabs", maps:"Buddakan+NYC", reviews:5770, price:"$$$", reservable:true, stars:4.4 },
         { id:"53", emoji:"🥢", place:"53", type:"chinese", desc:"4.3★ · chinese", booking:"https://53-nyc.com/?utm_source=GoogleBusinessProfile&utm_medium=organic_search&utm_campaign=MapLabs", maps:"53+NYC", reviews:684, price:"$$$", reservable:true, stars:4.3 },
+      
+        { id:"hojokbannyc", emoji:"🥩", place:"HOJOKBAN NYC", type:"korean", desc:"4.6★ · korean", booking:"https://hojokban.com/", maps:"HOJOKBAN+NYC+NYC", reviews:622, price:"$$", reservable:true, stars:4.6 },
+        { id:"jeongyukjeom", emoji:"🥩", place:"Jeong Yuk Jeom Korean BBQ NYC", type:"korean", desc:"4.6★ · korean", booking:"https://www.jeongyukjeomnyc.com/home", maps:"Jeong+Yuk+Jeom+Korean+BBQ+NYC+NYC", reviews:309, price:"$$", reservable:true, stars:4.6 },
+        { id:"marikoreanha", emoji:"🥩", place:"Mari - Korean Handroll", type:"korean", desc:"Urbane restaurant with an open kitchen specializing in gourmet Korean hand rolls.", booking:"https://marinyc.com/", maps:"Mari++Korean+Handroll+NYC", reviews:475, price:"$$$$", reservable:true, stars:4.5 },
+        { id:"jongrobbqmar", emoji:"🥩", place:"Jongro BBQ Market | Best All You Can Eat Korean BBQ, Koreatown", type:"korean", desc:"4.5★ · korean", booking:"https://jongrobbqmarket.com/", maps:"Jongro+BBQ+Market++Best+All+You+Can+Eat+Korean+BBQ+Koreatown+NYC", reviews:428, price:"$$", reservable:true, stars:4.5 },
+        { id:"gaonnuri", emoji:"🥩", place:"Gaonnuri", type:"korean", desc:"Upscale, stylish Korean eatery on skyscraper's 39th floor offers panoramic views & tabletop BBQ.", booking:"http://www.gaonnurinyc.com/", maps:"Gaonnuri+NYC", reviews:1779, price:"$$$", reservable:true, stars:4.4 },
+        { id:"lovekoreanbb", emoji:"🥩", place:"LOVE Korean BBQ", type:"korean", desc:"Bustling, informal eatery serving generous plates of homestyle Korean barbecue.", booking:"https://www.lovekoreanbbq.com/", maps:"LOVE+Korean+BBQ+NYC", reviews:1392, price:"$$", reservable:true, stars:4.4 },
       ],
       pasta: [
           { place:"La Grande Boucherie", type:"Bar", desc:"La Grande Boucherie", booking:"https://www.boucherieus.com/", maps:"La+Grande+Boucherie+Midtown+Manhattan", reviews:9985, price:"$$", reservable:true, stars:4.6 },
@@ -527,7 +556,7 @@ const DB = {
   lic: {
     bars: {
       cocktails: [
-          { place:"Bar Enzo", type:"Bar", desc:"Bar Enzo", booking:"http://barenzonyc.com/", maps:"Bar+Enzo+Long+Island+City+Queens", reviews:266, price:"$$", reservable:true, stars:5.0 },
+          
           { place:"Drinkology NYC", type:"Bar", desc:"Drinkology NYC", booking:"https://www.drinkologynyc.com/", maps:"Drinkology+NYC+Long+Island+City+Queens", reviews:429, price:"$$", reservable:true, stars:4.8 },
           { place:"The Beast Next Door", type:"Bar", desc:"The Beast Next Door", booking:"http://thebeastnextdoor.com/", maps:"The+Beast+Next+Door+Long+Island+City+Queens", reviews:787, price:"$$", reservable:true, stars:4.6 },
           { place:"The Infamous", type:"Bar", desc:"The Infamous", booking:"https://infamousbar.com/", maps:"The+Infamous+Long+Island+City+Queens", reviews:279, price:"$$", reservable:true, stars:4.7 },
@@ -565,6 +594,14 @@ const DB = {
       
         { id:"zenastoria", emoji:"🥢", place:"Zen Astoria", type:"chinese", desc:"4.6★ · chinese", booking:"https://glockenspiel-begonia-beep.squarespace.com/config/pages", maps:"Zen+Astoria+NYC", reviews:558, price:"$$", reservable:true, stars:4.6 },
         { id:"shi", emoji:"🥢", place:"SHI", type:"chinese", desc:"Upscale Pan-Asian eatery in a high-rise restaurant with Manhattan skyline views and modern look.", booking:"http://shilic.com/", maps:"SHI+NYC", reviews:1478, price:"$$", reservable:true, stars:4.3 },
+      
+        { id:"primeno7", emoji:"🥩", place:"Prime No 7", type:"korean", desc:"4.9★ · korean", booking:"https://primeno7nyc.com/", maps:"Prime+No+7+NYC", reviews:1777, price:"$$", reservable:true, stars:4.9 },
+        { id:"ktown", emoji:"🥩", place:"K-Town", type:"korean", desc:"4.8★ · korean", booking:null, maps:"KTown+NYC", reviews:105, price:"$$", reservable:false, stars:4.8 },
+        { id:"bonchonlongi", emoji:"🥩", place:"Bonchon Long Island City - Jackson Ave", type:"korean", desc:"Casual chain serving cooked-to-order Korean fried chicken, plus other traditional eats.", booking:"https://restaurants.bonchon.com/locations/ny/long-island-city/2501-jackson-ave-one-court-square", maps:"Bonchon+Long+Island+City++Jackson+Ave+NYC", reviews:325, price:"$$", reservable:false, stars:4.7 },
+        { id:"naro", emoji:"🥩", place:"NARO", type:"korean", desc:"4.5★ · korean", booking:"https://www.naronyc.com/", maps:"NARO+NYC", reviews:613, price:"$$", reservable:true, stars:4.5 },
+        { id:"kukukoreancu", emoji:"🥩", place:"Kuku Korean Cuisine LIC", type:"korean", desc:"Fried chicken tenders, wings & burgers, plus Korean classics served in a stylish setting.", booking:"https://eatkuku.com/", maps:"Kuku+Korean+Cuisine+LIC+NYC", reviews:339, price:"$$", reservable:true, stars:4.5 },
+        { id:"littlebancha", emoji:"🥩", place:"Little Banchan Shop", type:"korean", desc:"4.5★ · korean", booking:"http://littlebanchanshop.com/", maps:"Little+Banchan+Shop+NYC", reviews:173, price:"$$", reservable:false, stars:4.5 },
+        { id:"moono", emoji:"🥩", place:"Moono", type:"korean", desc:"4.4★ · korean", booking:"http://www.moononyc.com/", maps:"Moono+NYC", reviews:481, price:"$$", reservable:true, stars:4.4 },
       ],
       pasta: [
         { id:"manettasrist", emoji:"🍝", place:"Manetta's Ristorante", type:"italian dinner", desc:"A fireplace adds a homey touch to this longtime Italian joint with a basic menu & brick-oven pizzas.", booking:"http://www.manettaslic.com/", maps:"Manettas+Ristorante", reviews:931, price:"$$", reservable:true, stars:4.6 },
@@ -653,12 +690,8 @@ const getQuestion = (a) => {
   if (a.focus === "activity"   && !a.activityType)   return { id:"activityType",  emoji:"🌟", q:"Activity type?", opts:[
     {l:"Free ($0)",v:"free",i:"🌿"},{l:"Paid",v:"paid",i:"🎟️"}
   ]};
-  if ((a.focus === "drinks" || a.focus === "fooddrinks" || (a.focus === "food" && a.foodType !== "brunch")) && !a.vibe) return {
-    id:"vibe", emoji:"🌡️", q:"What's the energy?", opts:[
-      {l:"Lively & buzzing",v:"lively",i:"⚡"},{l:"Quiet & intimate",v:"quiet",i:"🕯️"}
-    ]
-  };
-  if (a.focus !== "happyhour" && !a.timeOfDay) return { id:"timeOfDay", emoji:"🕐", q:"When are you going?", opts:[
+
+  if (a.focus !== "happyhour" && !["korean","chinese","mexican","vegan"].includes(a.foodType) && !a.timeOfDay) return { id:"timeOfDay", emoji:"🕐", q:"When are you going?", opts:[
     {l:"Daytime",v:"day",i:"☀️"},{l:"Evening",v:"evening",i:"🌆"},{l:"Late Night",v:"late",i:"🌙"}
   ]};
   return null;
@@ -678,9 +711,9 @@ const getSpots = (a) => {
 
   // Happy hour — filter by date type
   if (a.focus === "happyhour") {
-    let pool = [...(nb.happyHour || [])];
+    let pool = [...(nb.happyHour || [])].filter(s => !s.stars || s.stars >= 4.0);
     if (a.dateType === "first") {
-      const filtered = pool.filter(s => !s.reviews || s.reviews >= 300);
+      const filtered = pool.filter(s => (!s.reviews || s.reviews >= 800) && (!s.stars || s.stars >= 4.3));
       if (filtered.length >= 2) pool = filtered;
     } else if (a.dateType === "couple") {
       const filtered = pool.filter(s => !s.reviews || s.reviews <= 1000);
@@ -690,7 +723,7 @@ const getSpots = (a) => {
         pool = pool.sort((a,b) => (a.reviews||9999)-(b.reviews||9999));
       }
     }
-    return pool.slice(0, 6);
+    const _seen = new Set(); pool = pool.filter(s => { if (_seen.has(s.place)) return false; _seen.add(s.place); return true; }); return pool.slice(0, 6);
   }
 
   // ── OUR PICK: curated + featured first ──────────────────────────────────
@@ -731,24 +764,31 @@ const getSpots = (a) => {
 
   if (a.focus === "food") {
     let key;
-    if (a.foodType === "brunch" || a.timeOfDay === "day") key = "brunch";
-    else if (a.timeOfDay === "late") key = "latenight";
-    else if (a.foodType === "korean" || a.foodType === "chinese") key = "japanese"; // Asian bucket
-    else if (a.foodType === "mexican" || a.foodType === "vegan") key = "mediterranean"; // vibey bucket
-    else key = a.foodType || "american";
+    const specificCuisine = ["korean","chinese","mexican","vegan"].includes(a.foodType);
+    if (specificCuisine) {
+      // Specific cuisine always goes to its bucket regardless of time
+      if (a.foodType === "korean" || a.foodType === "chinese") key = "japanese";
+      else key = "mediterranean";
+    } else if (a.foodType === "brunch" || a.timeOfDay === "day") {
+      key = "brunch";
+    } else if (a.timeOfDay === "late") {
+      key = "latenight";
+    } else {
+      key = a.foodType || "american";
+    }
     pool = [...(nb.food[key] || nb.food.american || [])];
 
     // Filter to matching cuisine type within the bucket
     if (["korean","chinese","mexican","vegan"].includes(a.foodType)) {
-      // Strict match: type field must contain the cuisine word
       const typed = pool.filter(s => {
         const t = String(s.type||"").toLowerCase();
         const n = String(s.place||"").toLowerCase();
-        // Exclude clear mismatches by cuisine keywords
-        if (a.foodType === "chinese" && (t.includes("brazilian") || t.includes("italian") || t.includes("french") || t.includes("mexican") || t.includes("korean"))) return false;
-        if (a.foodType === "korean" && (t.includes("brazilian") || t.includes("italian") || t.includes("chinese") || t.includes("japanese") || t.includes("french"))) return false;
-        if (a.foodType === "mexican" && (t.includes("brazilian") || t.includes("italian") || t.includes("chinese") || t.includes("korean") || t.includes("japanese"))) return false;
-        return t.includes(a.foodType) || t.includes(a.foodType === "chinese" ? "sichuan" : "") || t.includes(a.foodType === "chinese" ? "dim sum" : "") || t.includes(a.foodType === "korean" ? "bbq" : "");
+        const combined = t + " " + n;
+        if (a.foodType === "korean")  return combined.includes("korean") || combined.includes("kbbq");
+        if (a.foodType === "chinese") return combined.includes("chinese") || combined.includes("sichuan") || combined.includes("dim sum") || combined.includes("cantonese") || combined.includes("szechuan");
+        if (a.foodType === "mexican") return combined.includes("mexican") || combined.includes("taqueria") || combined.includes("mezcal") || combined.includes("taco") || combined.includes("latin");
+        if (a.foodType === "vegan")   return combined.includes("vegan") || combined.includes("plant") || combined.includes("vegetarian");
+        return true;
       });
       if (typed.length >= 2) pool = typed;
     }
@@ -794,7 +834,7 @@ const getSpots = (a) => {
     if (withBooking.length >= 1) pool = [...withBooking, ...without];
   }
 
-  return pool.slice(0, 6);
+  const _seen = new Set(); pool = pool.filter(s => { if (_seen.has(s.place)) return false; _seen.add(s.place); return true; }); return pool.slice(0, 6);
 };
 
 const NB_SILHOUETTES = {
@@ -1507,14 +1547,16 @@ export default function App() {
             )}
 
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"24px"}}>
+              {questionHistory.length > 0 && (
               <button onClick={goBack}
-                style={{background:"transparent",border:"none",color:T.sub,fontSize:"11px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",transition:"color 0.15s",padding:"0"}}
-                onMouseEnter={e=>e.currentTarget.style.color=T.accent}
-                onMouseLeave={e=>e.currentTarget.style.color=T.sub}>
+                style={{background:"transparent",border:"none",color:T.accent,fontSize:"11px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",transition:"opacity 0.15s",padding:"0",opacity:0.85}}
+                onMouseEnter={e=>e.currentTarget.style.opacity="1"}
+                onMouseLeave={e=>e.currentTarget.style.opacity="0.85"}>
                 ← back
               </button>
+              )}
               <button onClick={reset}
-                style={{background:"transparent",border:"none",color:T.sub+"88",fontSize:"10px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",transition:"color 0.15s",padding:"0"}}
+                style={{background:"transparent",border:"none",color:T.accent,fontSize:"10px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",transition:"opacity 0.15s",padding:"0",opacity:0.85}}
                 onMouseEnter={e=>e.currentTarget.style.color=T.sub}
                 onMouseLeave={e=>e.currentTarget.style.color=T.sub+"88"}>
                 start over
@@ -1552,8 +1594,17 @@ export default function App() {
               </button>
               <button
                 style={{flex:2,background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"12px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",fontWeight:"800",borderRadius:"4px"}}
-                onClick={()=>navigator.share&&navigator.share({title:"Table for Two",text:`Check out tonight's picks in ${nbLabel}`})}>
-                📲 Share These Spots
+                onClick={()=>{
+                  const url = "https://table-for-two-lyart.vercel.app";
+                  const text = `Tonight's pick in ${nbLabel}: ${results[0]?.place || "a great spot"} 🍽️`;
+                  if (navigator.share) {
+                    navigator.share({title:"Table 4 Two", text, url}).catch(()=>{});
+                  } else {
+                    try { navigator.clipboard.writeText(url); alert("Link copied! Paste into your Instagram story."); }
+                    catch(e) { alert("Share link: " + url); }
+                  }
+                }}>
+                📲 Share
               </button>
             </div>
           </div>
