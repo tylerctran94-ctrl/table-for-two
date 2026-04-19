@@ -667,31 +667,52 @@ const DB = {
 
 const getQuestion = (a) => {
   if (!a.neighborhood) return { id:"neighborhood", special:"neighborhood" };
-  if (a.focus === "ourpick") return null; // skip all questions after neighborhood
-  if (!a.budget) return { id:"budget", emoji:"💰", q:"What's the budget?", opts:[
+  if (a.focus === "ourpick") return null;
+
+  // Time of day comes right after neighborhood
+  if (!a.timeOfDay) return { id:"timeOfDay", emoji:"🕐", q:"When are you going?", opts:[
+    {l:"Daytime",v:"day",i:"☀️"},{l:"Evening",v:"evening",i:"🌆"},{l:"Late Night",v:"late",i:"🌙"}
+  ]};
+
+  if (!a.budget) return { id:"budget", emoji:"💰", q:"What\'s the budget?", opts:[
     {l:"Free ($0)",v:"free",i:"🌿"},{l:"Under $50",v:"under50",i:"🪙"},
     {l:"$50-$150",v:"mid",i:"💵"},{l:"$150+",v:"splurge",i:"💎"}
   ]};
   if (!a.dateType) return { id:"dateType", emoji:"💬", q:"First date or you two?", opts:[
-    {l:"First date",v:"first",i:"🦋"},{l:"We're together",v:"couple",i:"🔥"}
+    {l:"First date",v:"first",i:"🦋"},{l:"We\'re together",v:"couple",i:"🔥"}
   ]};
-  if (a.budget === "free") return null; // free = skip to activities results
-  if (!a.focus) return { id:"focus", emoji:"✨", q:"What's the plan?", opts:[
-    {l:"Food",v:"food",i:"🍽️"},{l:"Drinks",v:"drinks",i:"🍸"},
-    {l:"Food & Drinks",v:"fooddrinks",i:"🥂"},
-    {l:"Activity",v:"activity",i:"🎯"},{l:"Happy Hour",v:"happyhour",i:"🎉"},
-    {l:"Our Pick",v:"ourpick",i:"⭐"}
-  ]};
-  if (a.focus === "ourpick") return null; // go straight to results
+  if (a.budget === "free") return null;
+
+  // Focus options filtered by time of day — no dead ends
+  if (!a.focus) {
+    const isDay  = a.timeOfDay === "day";
+    const isLate = a.timeOfDay === "late";
+    const opts = isDay ? [
+      {l:"Brunch",v:"brunch",i:"🥐"},
+      {l:"Activity",v:"activity",i:"🎯"},
+      {l:"Our Pick",v:"ourpick",i:"⭐"},
+    ] : isLate ? [
+      {l:"Food",v:"food",i:"🍽️"},
+      {l:"Drinks",v:"drinks",i:"🍸"},
+      {l:"Our Pick",v:"ourpick",i:"⭐"},
+    ] : [
+      {l:"Food",v:"food",i:"🍽️"},
+      {l:"Drinks",v:"drinks",i:"🍸"},
+      {l:"Food & Drinks",v:"fooddrinks",i:"🥂"},
+      {l:"Activity",v:"activity",i:"🎯"},
+      {l:"Happy Hour",v:"happyhour",i:"🎉"},
+      {l:"Our Pick",v:"ourpick",i:"⭐"},
+    ];
+    return { id:"focus", emoji:"✨", q:"What\'s the plan?", opts };
+  }
+
+  if (a.focus === "brunch")     return null; // daytime brunch = go straight to results
+  if (a.focus === "ourpick")    return null;
   if (a.focus === "drinks"     && !a.drinkType)     return { id:"drinkType",     emoji:"🍹", q:"What are you drinking?",  opts:DRINK_OPTS };
   if (a.focus === "food"       && !a.foodType)       return { id:"foodType",      emoji:"🍽️", q:"What are you feeling?",   opts:FOOD_OPTS };
   if (a.focus === "fooddrinks" && !a.foodDrinkType)  return { id:"foodDrinkType", emoji:"🥂", q:"What kind of combo?",      opts:FOOD_DRINK_OPTS };
   if (a.focus === "activity"   && !a.activityType)   return { id:"activityType",  emoji:"🌟", q:"Activity type?", opts:[
     {l:"Free ($0)",v:"free",i:"🌿"},{l:"Paid",v:"paid",i:"🎟️"}
-  ]};
-
-  if (a.focus !== "happyhour" && !["korean","chinese","mexican","vegan"].includes(a.foodType) && !a.timeOfDay) return { id:"timeOfDay", emoji:"🕐", q:"When are you going?", opts:[
-    {l:"Daytime",v:"day",i:"☀️"},{l:"Evening",v:"evening",i:"🌆"},{l:"Late Night",v:"late",i:"🌙"}
   ]};
   return null;
 };
@@ -725,7 +746,15 @@ const getSpots = (a) => {
     const _seen = new Set(); pool = pool.filter(s => { if (_seen.has(s.place)) return false; _seen.add(s.place); return true; }); return pool.slice(0, 6);
   }
 
-  // ── OUR PICK: curated + featured first ──────────────────────────────────
+  // ── BRUNCH SHORTCUT (daytime pick) ─────────────────────────────────────────
+  if (a.focus === "brunch") {
+    let pool = [...(nb.food.brunch || nb.food.american || [])];
+    const filtered = pool.filter(s => priceOk(s) && dateOk(s));
+    if (filtered.length >= 2) pool = filtered;
+    const _seen = new Set(); pool = pool.filter(s => { if (_seen.has(s.place)) return false; _seen.add(s.place); return true; }); return pool.slice(0, 6);
+  }
+
+  // ── OUR PICK: curated + featured first ──────────────────────────────────────
   if (a.focus === "ourpick") {
     const all = [
       ...(nb.bars.cocktails||[]), ...(nb.bars.wine||[]), ...(nb.bars.speakeasy||[]),
@@ -1462,7 +1491,7 @@ export default function App() {
               onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="none";}}>
               Plan Our Date
             </button>
-            <button onClick={()=>{setAnswers({focus:"ourpick"});setCurrentQ(getQuestion({}));setScreen("quiz");}}
+            <button onClick={()=>{setAnswers({focus:"ourpick",timeOfDay:"evening"});setCurrentQ({id:"neighborhood",special:"neighborhood"});setScreen("quiz");}}
               style={{background:"transparent",border:`1px solid ${T.accent}44`,color:T.accent,padding:"11px 28px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"600",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s",display:"block",margin:"12px auto 0"}}
               onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}11`;}}
               onMouseLeave={e=>{e.currentTarget.style.borderColor=`${T.accent}44`;e.currentTarget.style.background="transparent";}}>
