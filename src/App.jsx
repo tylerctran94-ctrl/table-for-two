@@ -144,7 +144,13 @@ const DB = {
         { id:"nanxiangexpr", emoji:"🌙", place:"Nan Xiang Express - Williamsburg, NY", type:"late night", desc:"4.8★ · late night", booking:"https://nanxiangexpress.com/", maps:"Nan+Xiang+Express++Williamsburg+NY", reviews:873, price:"$$", reservable:false, stars:4.8 },
       ],
     },
-    activities: { free: [], paid: [
+    activities: { free: [
+        { id:"dominopark", emoji:"🌊", place:"Domino Park", type:"Waterfront Park", desc:"Walk the waterfront with stunning Manhattan skyline views. Best people-watching in Brooklyn.", booking:null, maps:"Domino+Park+Williamsburg+Brooklyn", reviews:6496, price:"Free", reservable:false, stars:4.8 },
+        { id:"marshajohnson", emoji:"🌿", place:"Marsha P. Johnson State Park", type:"Waterfront Park", desc:"Quiet waterfront park on the North Brooklyn shoreline. Beautiful sunset views.", booking:null, maps:"Marsha+P+Johnson+State+Park+Williamsburg+Brooklyn", reviews:3648, price:"Free", reservable:false, stars:4.6 },
+        { id:"mccarrenpark", emoji:"🌳", place:"McCarren Park", type:"Park", desc:"The beating heart of Williamsburg. Great for a walk, picnic, or just hanging out.", booking:null, maps:"McCarren+Park+Williamsburg+Brooklyn", reviews:6179, price:"Free", reservable:false, stars:4.6 },
+        { id:"wbridgewalk", emoji:"🌉", place:"Williamsburg Bridge Walk", type:"Bridge Walk", desc:"Walk the bridge at night for epic Manhattan views. One of NYC's best free experiences.", booking:null, maps:"Williamsburg+Bridge+Pedestrian+Path+Brooklyn", reviews:0, price:"Free", reservable:false, stars:4.8 },
+        { id:"kentavewaterfront", emoji:"🌅", place:"Kent Ave Waterfront", type:"Waterfront Walk", desc:"Walk Kent Ave along the river at golden hour. Quiet, beautiful, completely free.", booking:null, maps:"Kent+Avenue+Waterfront+Williamsburg+Brooklyn", reviews:32, price:"Free", reservable:false, stars:4.8 },
+        ], paid: [
           { place:"Bathhouse Williamsburg", type:"activity", desc:"activity", booking:"https://www.abathhouse.com/williamsburg?utm_source=google&utm_medium=organic&utm_campaign=gbp-website-williamsburg", maps:"Bathhouse+Williamsburg+Williamsburg+Brooklyn", reviews:3752, price:"$$", reservable:false, stars:4.3 },
         
           { id:"deadletterno9", emoji:"🎯", place:"Dead Letter No. 9", type:"cocktail + games", desc:"Cocktail bar with darts and games. Great casual date spot.", booking:null, maps:"Dead+Letter+No9+Williamsburg", reviews:382, price:"$$", reservable:false, stars:4.6 },
@@ -260,7 +266,12 @@ const DB = {
         { id:"bungalow", emoji:"🌙", place:"Bungalow", type:"late night", desc:"4.4★ · late night", booking:"https://www.bungalowny.com/", maps:"Bungalow", reviews:2344, price:"$$", reservable:true, stars:4.4 },
       ],
     },
-    activities: { free: [], paid: [
+    activities: { free: [
+        { id:"tompkinssqpark", emoji:"🌳", place:"Tompkins Square Park", type:"Park", desc:"The beating heart of the East Village. Sit on a bench and watch the neighborhood unfold.", booking:null, maps:"Tompkins+Square+Park+East+Village+NYC", reviews:5929, price:"Free", reservable:false, stars:4.4 },
+        { id:"johnlindsaypark", emoji:"🌊", place:"East River Park", type:"Waterfront Park", desc:"Walk the FDR esplanade along the East River with sweeping bridge views.", booking:null, maps:"John+V+Lindsay+East+River+Park+East+Village+NYC", reviews:4303, price:"Free", reservable:false, stars:4.5 },
+        { id:"6bcgarden", emoji:"🌺", place:"6BC Botanical Garden", type:"Community Garden", desc:"Hidden botanical garden on 6th St. One of the East Village's best kept secrets.", booking:null, maps:"6BC+Botanical+Garden+East+Village+NYC", reviews:274, price:"Free", reservable:false, stars:4.6 },
+        { id:"evcommgardens", emoji:"🌿", place:"East Village Community Gardens", type:"Garden Walk", desc:"Wander between 6th Street gardens on Aves B and C. Flowers, quiet, no tourists.", booking:null, maps:"East+Village+Community+Gardens+NYC", reviews:96, price:"Free", reservable:false, stars:4.7 },
+        ], paid: [
           { id:"nycomedyclubev", emoji:"😂", place:"New York Comedy Club", type:"comedy", desc:"One of NYC's most respected comedy clubs. Intimate room, strong lineups.", booking:"https://newyorkcomedyclub.com/", maps:"New+York+Comedy+Club+East+Village", reviews:956, price:"$$", reservable:true, stars:4.3 },
           { id:"stmarkscc", emoji:"😂", place:"St. Marks Comedy Club", type:"comedy", desc:"Comedy club on St. Marks Place. Great for a first date.", booking:null, maps:"St+Marks+Comedy+Club+East+Village", reviews:829, price:"$$", reservable:false, stars:4.3 },
           { id:"topsecretcc", emoji:"😂", place:"Top Secret Comedy Club", type:"comedy", desc:"Intimate comedy show in the East Village.", booking:"https://www.topsecretcomedy.com/", maps:"Top+Secret+Comedy+Club+East+Village", reviews:252, price:"$$", reservable:true, stars:4.9 },
@@ -368,7 +379,12 @@ const DB = {
         { id:"west10west", emoji:"🌙", place:"WEST10WEST", type:"late night", desc:"4.8★ · late night", booking:"http://www.west10west.com/", maps:"WEST10WEST", reviews:320, price:"$$", reservable:true, stars:4.8 },
       ],
     },
-    activities: { free: [], paid: [
+    activities: { free: [
+        { id:"pier45", emoji:"🌅", place:"Pier 45 at Hudson River Park", type:"Waterfront Pier", desc:"Sit on the grass with the river and sunset views. The best free view in the Village.", booking:null, maps:"Pier+45+Hudson+River+Park+West+Village+NYC", reviews:686, price:"Free", reservable:false, stars:4.7 },
+        { id:"littleisland", emoji:"🌺", place:"Little Island", type:"Public Park", desc:"An elevated park built on the Hudson River. Flowers, gardens, and stunning city views.", booking:null, maps:"Little+Island+Pier+55+Hudson+River+Park+NYC", reviews:17225, price:"Free", reservable:false, stars:4.7 },
+        { id:"christopherpierwv", emoji:"🌊", place:"Christopher Street Pier", type:"Waterfront Pier", desc:"The historic pier at the end of Christopher St. Beautiful Hudson River sunsets.", booking:null, maps:"Christopher+Street+Pier+West+Village+NYC", reviews:211, price:"Free", reservable:false, stars:4.8 },
+        { id:"hudsonriverpark", emoji:"🌿", place:"Hudson River Park", type:"Waterfront Walk", desc:"Miles of waterfront greenway along the Hudson. Walk south toward Tribeca or north toward Chelsea.", booking:null, maps:"Hudson+River+Park+West+Village+NYC", reviews:6647, price:"Free", reservable:false, stars:4.7 },
+        ], paid: [
           { place:"Pier 57", type:"Bar", desc:"Pier 57", booking:"https://www.pier57nyc.com/", maps:"Pier+57+West+Village+Manhattan", reviews:1870, price:"$$", reservable:false, stars:4.7 },
         
           { id:"moonflowerwv", emoji:"🌸", place:"Moonflower", type:"floral cocktail bar", desc:"Tiny floral cocktail bar. Intimate and absolutely unique.", booking:null, maps:"Moonflower+West+Village+NYC", reviews:114, price:"$$", reservable:false, stars:4.5 },
@@ -488,7 +504,13 @@ const DB = {
           { place:"Grand Brasserie", type:"Bar", desc:"Grand Brasserie", booking:"https://www.grandbrasserie.com/", maps:"Grand+Brasserie+Midtown+Manhattan", reviews:582, price:"$$", reservable:true, stars:4.1 }
         ],
     },
-    activities: { free: [], paid: [
+    activities: { free: [
+        { id:"bryantpark", emoji:"🌳", place:"Bryant Park", type:"Park", desc:"Free movies in summer, ice skating in winter, chess tables year-round. NYC's best free park.", booking:null, maps:"Bryant+Park+Midtown+NYC", reviews:106285, price:"Free", reservable:false, stars:4.7 },
+        { id:"thehighline", emoji:"🌿", place:"The High Line", type:"Elevated Park Walk", desc:"Walk the elevated railway garden from the Meatpacking District to Hudson Yards. Always stunning.", booking:null, maps:"The+High+Line+NYC", reviews:66937, price:"Free", reservable:false, stars:4.7 },
+        { id:"rooseveltislandtram", emoji:"🚡", place:"Roosevelt Island Tramway", type:"Scenic Tram Ride", desc:"$2.90 each way on the MetroCard. Best views of Midtown Manhattan from the air.", booking:null, maps:"Roosevelt+Island+Tramway+NYC", reviews:8451, price:"Free", reservable:false, stars:4.7 },
+        { id:"greenacrepark", emoji:"🌊", place:"Greenacre Park", type:"Waterfall Park", desc:"A hidden pocket park with a 25-foot waterfall on 51st St. Almost nobody knows it exists.", booking:null, maps:"Greenacre+Park+Midtown+NYC", reviews:1598, price:"Free", reservable:false, stars:4.8 },
+        { id:"hudsonyardsplaza", emoji:"🏙️", place:"Hudson Yards Public Square", type:"Outdoor Plaza", desc:"The Vessel, The Shed, great skyline views. Completely free to walk and explore.", booking:null, maps:"Hudson+Yards+Public+Square+NYC", reviews:184, price:"Free", reservable:false, stars:4.8 },
+        ], paid: [
           { place:"SUMMIT One Vanderbilt", type:"Bar", desc:"SUMMIT One Vanderbilt", booking:"https://summitov.com/", maps:"SUMMIT+One+Vanderbilt+Midtown+Manhattan", reviews:33385, price:"$$", reservable:false, stars:4.7 },
         
           { id:"swingersnomd", emoji:"⛳", place:"Swingers NoMad", type:"crazy golf + bar", desc:"Immersive crazy golf with cocktails. One of the best date activities in Midtown.", booking:"https://www.swingersusa.com/", maps:"Swingers+NoMad+Midtown+NYC", reviews:1257, price:"$$", reservable:true, stars:4.4 },
@@ -515,7 +537,6 @@ const DB = {
           { place:"Blend on the Water", type:"Bar", desc:"Blend on the Water", booking:"http://www.blendonthewater.com/", maps:"Blend+on+the+Water+Long+Island+City+Queens", reviews:5904, price:"$$", reservable:true, stars:4.2 },
           { place:"Café Henri", type:"Bar", desc:"Café Henri", booking:"https://cafehenrilic.com/", maps:"Café+Henri+Long+Island+City+Queens", reviews:1114, price:"$$", reservable:true, stars:4.4 },
           { place:"Casa Enrique", type:"Bar", desc:"Casa Enrique", booking:"https://casaenriquelic.com/", maps:"Casa+Enrique+Long+Island+City+Queens", reviews:3017, price:"$$", reservable:true, stars:4.5 },
-          { place:"Beija Flor", type:"Bar", desc:"Beija Flor", booking:"https://www.beijaflor.nyc/", maps:"Beija+Flor+Long+Island+City+Queens", reviews:1100, price:"$$", reservable:true, stars:4.5 }
         ],
       beer: [],
       wine: [
@@ -543,7 +564,6 @@ const DB = {
         { id:"hibinolic", emoji:"🥢", place:"Hibino LIC", type:"japanese", desc:"Unusual restaurant offering sushi, small plates & other Japanese fare in a minimalist setting.", booking:"https://hibino-lic.com/", maps:"Hibino+LIC", reviews:588, price:"$$", reservable:true, stars:4.5 },
       
         { id:"zenastoria", emoji:"🥢", place:"Zen Astoria", type:"chinese", desc:"4.6★ · chinese", booking:"https://glockenspiel-begonia-beep.squarespace.com/config/pages", maps:"Zen+Astoria+NYC", reviews:558, price:"$$", reservable:true, stars:4.6 },
-        { id:"beijaflor", emoji:"🥢", place:"Beija Flor", type:"chinese", desc:"Brazilian eatery with an upbeat vibe, frequent live music & happy hour, plus delivery.", booking:"https://www.beijaflor.nyc/", maps:"Beija+Flor+NYC", reviews:1102, price:"$$", reservable:true, stars:4.5 },
         { id:"shi", emoji:"🥢", place:"SHI", type:"chinese", desc:"Upscale Pan-Asian eatery in a high-rise restaurant with Manhattan skyline views and modern look.", booking:"http://shilic.com/", maps:"SHI+NYC", reviews:1478, price:"$$", reservable:true, stars:4.3 },
       ],
       pasta: [
@@ -590,7 +610,12 @@ const DB = {
         { id:"redsorghum", emoji:"🌙", place:"Red Sorghum 夜宴", type:"late night", desc:"4.5★ · late night", booking:"https://redsorghumlic.com/", maps:"Red+Sorghum+", reviews:1131, price:"$$", reservable:true, stars:4.5 },
       ],
     },
-    activities: { free: [], paid: [
+    activities: { free: [
+        { id:"gantryplaza", emoji:"🌅", place:"Gantry Plaza State Park", type:"Waterfront Park", desc:"The best sunset spot in NYC. Midtown skyline straight ahead, Pepsi sign to the north.", booking:null, maps:"Gantry+Plaza+State+Park+Long+Island+City+Queens", reviews:9995, price:"Free", reservable:false, stars:4.8 },
+        { id:"hunterssouthpark", emoji:"🌿", place:"Hunter's Point South Park", type:"Waterfront Park", desc:"Long waterfront lawn with unobstructed Midtown views. Best kept secret in Queens.", booking:null, maps:"Hunters+Point+South+Park+Long+Island+City+Queens", reviews:5451, price:"Free", reservable:false, stars:4.8 },
+        { id:"queensbridgepark", emoji:"🌉", place:"Queensbridge Park", type:"Park", desc:"Under the Queensboro Bridge with the Roosevelt Island Tram overhead. Epic and underrated.", booking:null, maps:"Queensbridge+Park+Long+Island+City+Queens", reviews:1835, price:"Free", reservable:false, stars:4.5 },
+        { id:"courtsquarepark", emoji:"🌳", place:"Court Square Park", type:"Neighborhood Park", desc:"Quiet neighborhood park in the heart of LIC. Great spot to decompress.", booking:null, maps:"Court+Square+Park+Long+Island+City+Queens", reviews:91, price:"Free", reservable:false, stars:4.3 },
+        ], paid: [
           { id:"gamingcity", emoji:"🎮", place:"Gaming City", type:"arcade + bar", desc:"Huge arcade bar -- games, drinks, great date energy.", booking:null, maps:"Gaming+City+Long+Island+City", reviews:2766, price:"$$", reservable:false, stars:4.9 },
           { id:"drinkologyact", emoji:"🍸", place:"Drinkology NYC", type:"cocktail experience", desc:"Interactive cocktail experience and bar.", booking:"https://www.drinkologynyc.com/", maps:"Drinkology+NYC+Long+Island+City", reviews:429, price:"$$", reservable:true, stars:4.8 },
         ] },
@@ -614,6 +639,7 @@ const getQuestion = (a) => {
   if (!a.dateType) return { id:"dateType", emoji:"💬", q:"First date or you two?", opts:[
     {l:"First date",v:"first",i:"🦋"},{l:"We're together",v:"couple",i:"🔥"}
   ]};
+  if (a.budget === "free") return null; // free = skip to activities results
   if (!a.focus) return { id:"focus", emoji:"✨", q:"What's the plan?", opts:[
     {l:"Food",v:"food",i:"🍽️"},{l:"Drinks",v:"drinks",i:"🍸"},
     {l:"Food & Drinks",v:"fooddrinks",i:"🥂"},
@@ -714,7 +740,16 @@ const getSpots = (a) => {
 
     // Filter to matching cuisine type within the bucket
     if (["korean","chinese","mexican","vegan"].includes(a.foodType)) {
-      const typed = pool.filter(s => String(s.type||"").toLowerCase().includes(a.foodType));
+      // Strict match: type field must contain the cuisine word
+      const typed = pool.filter(s => {
+        const t = String(s.type||"").toLowerCase();
+        const n = String(s.place||"").toLowerCase();
+        // Exclude clear mismatches by cuisine keywords
+        if (a.foodType === "chinese" && (t.includes("brazilian") || t.includes("italian") || t.includes("french") || t.includes("mexican") || t.includes("korean"))) return false;
+        if (a.foodType === "korean" && (t.includes("brazilian") || t.includes("italian") || t.includes("chinese") || t.includes("japanese") || t.includes("french"))) return false;
+        if (a.foodType === "mexican" && (t.includes("brazilian") || t.includes("italian") || t.includes("chinese") || t.includes("korean") || t.includes("japanese"))) return false;
+        return t.includes(a.foodType) || t.includes(a.foodType === "chinese" ? "sichuan" : "") || t.includes(a.foodType === "chinese" ? "dim sum" : "") || t.includes(a.foodType === "korean" ? "bbq" : "");
+      });
       if (typed.length >= 2) pool = typed;
     }
 
@@ -1348,7 +1383,7 @@ export default function App() {
   };
 
   const resultTitle = () => {
-    if (answers.budget === "free") return "Free Tonight";
+    if (answers.budget === "free") return answers.dateType === "first" ? "Free First Date Ideas" : "Free Date Ideas";
     const timeLabel = answers.timeOfDay === "day" ? "Daytime" : answers.timeOfDay === "late" ? "Late Night" : "Tonight's";
     const focusMap = {
       drinks:     `${timeLabel} Bar`,
@@ -1381,7 +1416,7 @@ export default function App() {
               <span style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Two</span>
             </h1>
             <div style={{width:"36px",height:"1px",background:`linear-gradient(90deg,${T.accent},${T.accent2})`,margin:"14px auto"}}/>
-            <p style={{color:T.sub,fontSize:"13px",lineHeight:1.7,fontFamily:"sans-serif",marginBottom:"32px",opacity:0.85}}>Curated dates across NYC.<br/>No tourists. No obvious picks.</p>
+            <p style={{color:T.sub,fontSize:"13px",lineHeight:1.7,fontFamily:"sans-serif",marginBottom:"32px",opacity:0.85}}>Curated dates across NYC.<br/>The right place for tonight.</p>
             <button onClick={()=>{setScreen("quiz");setCurrentQ(getQuestion({}));}}
               style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"14px 42px",fontSize:"11px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s",display:"block",margin:"0 auto"}}
               onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.04)";e.currentTarget.style.boxShadow=`0 10px 36px ${T.accent}44`;}}
