@@ -1,9 +1,8 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 const T = { bg:"#07070f", accent:"#c9a96e", accent2:"#9b6b9b", text:"#f0ece3", sub:"#6a5f52", border:"rgba(255,255,255,0.07)", card:"rgba(255,255,255,0.025)" };
 const accentAt = (i) => [T.accent, T.accent2, "#6b9b8b", "#ff8c42", "#ff6b6b"][i % 5];
 
-// Hidden gem score: <100 reviews = 10, <500 = 8, <2000 = 6, <5000 = 4, 5000+ = 2
 const gemScore = (reviews) => {
   if (!reviews) return 5;
   if (reviews < 100) return 10;
@@ -31,534 +30,487 @@ const FOOD_OPTS = [
   { v:"pasta", l:"🍝 Italian" }, { v:"pizza", l:"🍕 Pizza" },
   { v:"mediterranean", l:"🥙 Mediterranean" }, { v:"american", l:"🍔 American" },
 ];
-
-// ─── SPOT DATABASE ────────────────────────────────────────────────────────────
-// reviews = approximate Google Maps review count (used for gem score)
-// booking = reservation URL (if exists) — maps link always shown too
-// closed spots removed: Pegu Club, Spotted Pig, Slowly Shirley, Extra Fancy,
-//   Spritzenhaus, Fatty Cue, Back Forty, Pouring Ribbons, Mayahuel, DBGB,
-//   Resto, Hearth, Sik Gaek, Radegast Hall, Whiskey Brooklyn
+const FOOD_DRINK_OPTS = [
+  { v:"dinner_cocktails", l:"🍸 Dinner + Cocktails" },
+  { v:"wine_plates",      l:"🍷 Wine + Small Plates" },
+  { v:"brunch_drinks",    l:"🥂 Brunch + Drinks" },
+  { v:"late_bites",       l:"🌙 Late Night Food + Drinks" },
+];
 
 const DB = {
   williamsburg: {
     bars: {
       cocktails: [
-        { id:"wc1", emoji:"🍸", place:"Maison Premiere", type:"New Orleans Cocktail Bar", desc:"Candlelit, oysters, absinthe. The best date bar in Brooklyn, full stop.", booking:"maisonpremiere.com", maps:"Maison+Premiere+Williamsburg+Brooklyn", reviews:4800 },
-        { id:"wc2", emoji:"🔪", place:"Fresh Kills Bar", type:"No-Menu Cocktail Bar", desc:"Bartender builds something bespoke after asking a few questions. No menu, all vibes.", booking:null, maps:"Fresh+Kills+Bar+Williamsburg+Brooklyn", reviews:620 },
-        { id:"wc3", emoji:"🐈", place:"Deux Chats", type:"French Cocktail Bar", desc:"Oysters, martinis, dark wood, emerald tiles. Quiet and sophisticated.", booking:null, maps:"Deux+Chats+Williamsburg+Brooklyn", reviews:380 },
-        { id:"wc4", emoji:"🌊", place:"The Hidden Pearl", type:"Japanese Speakeasy", desc:"Hidden behind a ramen shop. Navy blue, brass fixtures, yuzu cocktails, 20 guests max.", booking:null, maps:"The+Hidden+Pearl+Williamsburg+Brooklyn", reviews:210 },
-      ],
+          { place:"Hole In The Wall", type:"brunch", desc:"brunch", booking:"https://holeinthewallnyc.com/williamsburg-1", maps:"Hole+In+The+Wall+Williamsburg+Brooklyn", reviews:3969, price:"$$", reservable:true, stars:4.8 },
+          { place:"Hide & Seek", type:"bar", desc:"bar", booking:"http://www.hideandseek.nyc/", maps:"Hide+&+Seek+Williamsburg+Brooklyn", reviews:217, price:"$", reservable:true, stars:4.6 },
+          { place:"Wandering Barman", type:"happy hour", desc:"happy hour", booking:"https://www.wanderingbarman.com/", maps:"Wandering+Barman+Williamsburg+Brooklyn", reviews:148, price:"$", reservable:false, stars:4.8 },
+          { place:"Bee's Knees & Honey Lounge", type:"happy hour", desc:"happy hour", booking:"http://www.beeskneesbk.com/", maps:"Bees+Knees+&+Honey+Lounge+Williamsburg+Brooklyn", reviews:397, price:"$$", reservable:true, stars:4.7 },
+          { place:"Koi Bā", type:"cocktail bar, japanese", desc:"cocktail bar, japanese", booking:"http://www.instagram.com/koibabrooklyn", maps:"Koi+Bā+Williamsburg+Brooklyn", reviews:50, price:"$$", reservable:true, stars:4.9 },
+          { place:"Sleepwalk", type:"cocktail bar", desc:"cocktail bar", booking:"http://www.sleepwalk.nyc/", maps:"Sleepwalk+Williamsburg+Brooklyn", reviews:205, price:"$$", reservable:true, stars:4.7 },
+          { place:"Recette", type:"french", desc:"french", booking:"https://www.recettebrooklyn.com/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=main_button", maps:"Recette+Williamsburg+Brooklyn", reviews:1076, price:"$$$", reservable:true, stars:4.8 },
+          { place:"Fandi Mata", type:"evening restaurant", desc:"evening restaurant", booking:"https://www.fandimata.com/", maps:"Fandi+Mata+Williamsburg+Brooklyn", reviews:4385, price:"$$", reservable:true, stars:4.7 },
+          { place:"Isla & Co. - Williamsburg", type:"brunch", desc:"brunch", booking:"https://www.isla-co.com/williamsburg", maps:"Isla+&+Co.+-+Williamsburg+Williamsburg+Brooklyn", reviews:1633, price:"$$", reservable:true, stars:4.9 },
+          { place:"Aurora Brooklyn", type:"italian restaurant", desc:"italian restaurant", booking:"https://aurorabk.com/", maps:"Aurora+Brooklyn+Williamsburg+Brooklyn", reviews:1580, price:"$$", reservable:true, stars:4.5 },
+          { place:"Blend Williamsburg", type:"brunch, happy hour, evening dinner", desc:"brunch, happy hour, evening dinner", booking:"https://www.blendwilliamsburg.com/", maps:"Blend+Williamsburg+Williamsburg+Brooklyn", reviews:1381, price:"$$", reservable:true, stars:4.3 }
+        ],
       beer: [
-        { id:"wb1", emoji:"🍺", place:"Turkey's Nest", type:"Dive Bar", desc:"Margaritas in Styrofoam cups, cash only, fiercely local. A true Williamsburg relic.", booking:null, maps:"Turkeys+Nest+Williamsburg+Brooklyn", reviews:1800 },
-        { id:"wb2", emoji:"🎸", place:"Skinny Dennis", type:"Honky-Tonk Bar", desc:"Country music, frozen coffee in Greek cups, happy hour noon to 7pm daily.", booking:null, maps:"Skinny+Dennis+Williamsburg+Brooklyn", reviews:1400 },
-        { id:"wb3", emoji:"🎱", place:"The Commodore", type:"Dive Bar", desc:"Frozen pina coladas, pinball, fried chicken sandwich. The Brooklyn dive experience.", booking:null, maps:"The+Commodore+Williamsburg+Brooklyn", reviews:2200 },
-        { id:"wb4", emoji:"🎤", place:"Pete's Candy Store", type:"Dive + Live Music", desc:"Classic dive with a back room for comedy and live music. Cash, cheap, classic.", booking:null, maps:"Petes+Candy+Store+Williamsburg+Brooklyn", reviews:1600 },
-      ],
+          { place:"Hide & Seek", type:"bar", desc:"bar", booking:"http://www.hideandseek.nyc/", maps:"Hide+&+Seek+Williamsburg+Brooklyn", reviews:217, price:"$", reservable:true, stars:4.6 },
+          { place:"Wandering Barman", type:"happy hour", desc:"happy hour", booking:"https://www.wanderingbarman.com/", maps:"Wandering+Barman+Williamsburg+Brooklyn", reviews:148, price:"$", reservable:false, stars:4.8 },
+          { place:"Bee's Knees & Honey Lounge", type:"happy hour", desc:"happy hour", booking:"http://www.beeskneesbk.com/", maps:"Bees+Knees+&+Honey+Lounge+Williamsburg+Brooklyn", reviews:397, price:"$$", reservable:true, stars:4.7 },
+          { place:"Blend Williamsburg", type:"brunch, happy hour, evening dinner", desc:"brunch, happy hour, evening dinner", booking:"https://www.blendwilliamsburg.com/", maps:"Blend+Williamsburg+Williamsburg+Brooklyn", reviews:1381, price:"$$", reservable:true, stars:4.3 }
+        ],
       wine: [
-        { id:"ww1", emoji:"🍷", place:"Four Horsemen", type:"Natural Wine Bar", desc:"James Murphy's place. Incredible list, sounds like a good record collection.", booking:"fourhorsemenbk.com", maps:"Four+Horsemen+Williamsburg+Brooklyn", reviews:1900 },
-        { id:"ww2", emoji:"🫙", place:"Sauced", type:"No-Menu Wine Bar", desc:"Tell them what you like, they bring something delicious. No menu, all trust.", booking:null, maps:"Sauced+Wine+Bar+Williamsburg+Brooklyn", reviews:290 },
-        { id:"ww3", emoji:"🌿", place:"Bar Blondeau", type:"French Wine Bar", desc:"Sixth floor of the Wythe Hotel. Natural wine, Manhattan views, green velvet banquettes.", booking:"barblondeau.com", maps:"Bar+Blondeau+Wythe+Hotel+Williamsburg+Brooklyn", reviews:1100 },
-        { id:"ww4", emoji:"🎵", place:"Nightmoves", type:"Wine + Dance Bar", desc:"From the Four Horsemen team. Great wine, actual dancefloor. Instant hit.", booking:null, maps:"Nightmoves+Bar+Williamsburg+Brooklyn", reviews:480 },
-      ],
-      experimental: [
-        { id:"we1", emoji:"🌴", place:"Layla", type:"Tropical Cocktail Bar", desc:"Every table is a date. Order the Layla's Juice. Backyard is the move.", booking:null, maps:"Layla+Bar+Williamsburg+Brooklyn", reviews:680 },
-        { id:"we2", emoji:"🌿", place:"Brooklyn Greens", type:"Golf Simulator + Bar", desc:"Part golf sim, part coffee, part pub. Plant-filled oasis with immaculate vibes.", booking:"brooklyngreens.com", maps:"Brooklyn+Greens+Williamsburg+Brooklyn", reviews:340 },
-        { id:"we3", emoji:"🌮", place:"320 Club", type:"Hidden Speakeasy", desc:"Hidden behind Super Burrito. 70s-inspired, Mexican cocktails, order a Paloma with your quesadilla.", booking:null, maps:"320+Club+Williamsburg+Brooklyn", reviews:180 },
-        { id:"we4", emoji:"🍹", place:"Milagro", type:"Agave Cocktail Bar", desc:"New and already packed. Mezcal negronis, tequila old fashioneds, great margaritas.", booking:null, maps:"Milagro+Bar+Williamsburg+Brooklyn", reviews:220 },
-      ],
+          { place:"The Four Horsemen", type:"wine bar", desc:"wine bar", booking:"http://fourhorsemenbk.com/", maps:"The+Four+Horsemen+Williamsburg+Brooklyn", reviews:1106, price:"$$", reservable:true, stars:4.6 },
+          { place:"Bouquet", type:"wine bar", desc:"wine bar", booking:"http://www.bouquetbk.com/", maps:"Bouquet+Williamsburg+Brooklyn", reviews:123, price:"$$", reservable:false, stars:4.9 },
+          { place:"DOC Wine Bar", type:"wine bar, italian food", desc:"wine bar, italian food", booking:"http://www.docwinebar.com/", maps:"DOC+Wine+Bar+Williamsburg+Brooklyn", reviews:471, price:"$$", reservable:true, stars:4.4 },
+          { place:"Maison Premiere", type:"wine bar", desc:"wine bar", booking:"http://maisonpremiere.com/", maps:"Maison+Premiere+Williamsburg+Brooklyn", reviews:2037, price:"$$$", reservable:true, stars:4.6 }
+        ],
+      experimental: [],
       speakeasy: [
-        { id:"ws1", emoji:"🕯️", place:"The Hidden Pearl", type:"Japanese Hidden Bar", desc:"No sign. Enter through the back of a ramen restaurant. The real deal.", booking:null, maps:"The+Hidden+Pearl+Williamsburg+Brooklyn", reviews:210 },
-        { id:"ws2", emoji:"🌮", place:"320 Club", type:"Speakeasy Behind a Burrito Shop", desc:"The secret bar behind Super Burrito on Bedford. Order fast food with your cocktail.", booking:null, maps:"320+Club+Williamsburg+Brooklyn", reviews:180 },
-        { id:"ws3", emoji:"🎷", place:"Lucey's Lounge", type:"Hidden Jazz Bar", desc:"Blink and miss the entrance. Late-night jazz, zero tourists.", booking:null, maps:"Luceys+Lounge+Williamsburg+Brooklyn", reviews:88 },
-        { id:"ws4", emoji:"🍸", place:"Fresh Kills Bar", type:"No-Menu Secret Bar", desc:"On a quiet stretch of Grand St. No sign, no menu, bespoke drinks only.", booking:null, maps:"Fresh+Kills+Bar+Williamsburg+Brooklyn", reviews:620 },
-      ],
+          { place:"The Hidden Pearl", type:"speakeasy", desc:"speakeasy", booking:"https://www.hiddenpearlbk.com/", maps:"The+Hidden+Pearl+Williamsburg+Brooklyn", reviews:166, price:"$$", reservable:true, stars:4.8 }
+        ],
     },
     food: {
       japanese: [
-        { id:"wj1", emoji:"🍣", place:"Zizi Limona", type:"Japanese-Israeli Fusion", desc:"Hummus meets yakitori. One of Williamsburg's best kept secrets.", booking:null, maps:"Zizi+Limona+Williamsburg+Brooklyn", reviews:290 },
-        { id:"wj2", emoji:"🍜", place:"Kru", type:"Modern Thai", desc:"Century-old Thai recipes reinterpreted. The beef tongue curry is a revelation.", booking:"krubk.com", maps:"Kru+Restaurant+Williamsburg+Brooklyn", reviews:680 },
-        { id:"wj3", emoji:"🥢", place:"Okonomi", type:"Japanese Counter", desc:"12-seat counter, donburi and seasonal Japanese. Quiet and perfect.", booking:null, maps:"Okonomi+Williamsburg+Brooklyn", reviews:620 },
-        { id:"wj4", emoji:"🌿", place:"Ren", type:"Modern Sichuan", desc:"Cozy minimalist spot, well-priced dim sum and chili-slicked dishes.", booking:null, maps:"Ren+Restaurant+Williamsburg+Brooklyn", reviews:340 },
+        { id:"midoomakaser", emoji:"🥢", place:"Mido - Omakase Room", type:"japanese", desc:"5.0★ · japanese", booking:"http://www.midojapanesegroup.com/", maps:"Mido++Omakase+Room", reviews:860, price:"$$", reservable:true, stars:5.0 },
+        { id:"sushihayashi", emoji:"🥢", place:"Sushi Hayashi Williamsburg", type:"japanese", desc:"5.0★ · japanese", booking:"http://hayashinyc.com/", maps:"Sushi+Hayashi+Williamsburg", reviews:33, price:"$$", reservable:true, stars:5.0 },
+        { id:"katabaru", emoji:"🥢", place:"Katabaru", type:"japanese", desc:"4.8★ · japanese", booking:"https://www.katabaru.nyc/", maps:"Katabaru", reviews:158, price:"$$", reservable:true, stars:4.8 },
+        { id:"iwaksushikit", emoji:"🥢", place:"IWAK Sushi + Kitchen", type:"japanese", desc:"4.8★ · japanese", booking:"http://www.iwaksushi.com/", maps:"IWAK+Sushi++Kitchen", reviews:573, price:"$$", reservable:false, stars:4.8 },
+        { id:"sushishiroba", emoji:"🥢", place:"Sushi Shiro Bar and Grill", type:"japanese", desc:"4.7★ · japanese", booking:"http://sushishironyc.com/", maps:"Sushi+Shiro+Bar+and+Grill", reviews:214, price:"$$", reservable:true, stars:4.7 },
+        { id:"naminoriwill", emoji:"🥢", place:"Nami Nori Williamsburg", type:"japanese", desc:"Sushi rolls & sake in a sophisticated outfit with wood furnishings and a modern, minimalist vibe.", booking:"http://naminori.nyc/", maps:"Nami+Nori+Williamsburg", reviews:729, price:"$$", reservable:true, stars:4.6 },
+        { id:"samuraimama", emoji:"🥢", place:"Samurai Mama", type:"japanese", desc:"This rustic Japanese restaurant with a communal table serves udon, sushi, miso & beer.", booking:"http://samuraimama.com/", maps:"Samurai+Mama", reviews:1020, price:"$$", reservable:true, stars:4.5 },
+        { id:"fushimi", emoji:"🥢", place:"Fushimi", type:"japanese", desc:"Buzzing eatery & lounge offering Japanese dishes with a French twist, plus cocktails & beer.", booking:"https://fushimiwilliamsburg.com/", maps:"Fushimi", reviews:1798, price:"$$", reservable:true, stars:4.4 },
       ],
       pasta: [
-        { id:"wp1", emoji:"🍝", place:"Lilia", type:"Italian", desc:"Missy Robbins' masterpiece. The malfadine with pink peppercorns.", booking:"lilianewyork.com", maps:"Lilia+Williamsburg+Brooklyn", reviews:6200 },
-        { id:"wp2", emoji:"🦆", place:"I Cavallini", type:"Italian", desc:"Nearly impossible to get into. Duck-focused, Michelin-starred. Worth the wait.", booking:"icavallini.com", maps:"I+Cavallini+Williamsburg+Brooklyn", reviews:820 },
-        { id:"wp3", emoji:"🌿", place:"Allegretto", type:"Neapolitan", desc:"New from the Francie team. Wood-fired oven, fried bucatini, Southern Italian snacks.", booking:null, maps:"Allegretto+Williamsburg+Brooklyn", reviews:180 },
-        { id:"wp4", emoji:"🥂", place:"Le Crocodile", type:"French Bistro", desc:"In the Wythe Hotel. Steak frites and martinis in a beautiful room.", booking:"lecrocodilenyc.com", maps:"Le+Crocodile+Wythe+Hotel+Williamsburg+Brooklyn", reviews:2800 },
+        { id:"macoletta", emoji:"🍝", place:"Macoletta", type:"italian dinner", desc:"4.9★ · italian dinner", booking:"http://www.macoletta.com/", maps:"Macoletta", reviews:628, price:"$$", reservable:true, stars:4.9 },
+        { id:"pecorarolatt", emoji:"🍝", place:"Pecoraro Latteria", type:"italian dinner", desc:"4.7★ · italian dinner", booking:"https://pecoraronyc.com/?utm_source=google", maps:"Pecoraro+Latteria", reviews:401, price:"$$", reservable:true, stars:4.7 },
+        { id:"aurorabrookl", emoji:"🍝", place:"Aurora Brooklyn", type:"italian dinner", desc:"A Tuscan-styled dining room & a large, leafy garden set the stage for rustic Italian cooking.", booking:"https://aurorabk.com/", maps:"Aurora+Brooklyn", reviews:1580, price:"$$", reservable:true, stars:4.5 },
+        { id:"bamontes", emoji:"🍝", place:"Bamonte's", type:"italian dinner", desc:"Circa-1900 neighborhood Italian restaurant plating red-sauce standards in a retro setting.", booking:"https://bamontes.shop/", maps:"Bamontes", reviews:1309, price:"$$", reservable:true, stars:4.5 },
+        { id:"lanonnaristo", emoji:"🍝", place:"La Nonna Ristorante & Bar - Williamsburg, Brooklyn", type:"italian dinner", desc:"Upscale-casual Italian restaurant & wine bar offering traditional fare & outdoor seating.", booking:"http://www.lanonnabk.com/", maps:"La+Nonna+Ristorante++Bar++Williamsburg+Brooklyn", reviews:1034, price:"$$", reservable:true, stars:4.5 },
       ],
       pizza: [
-        { id:"wpz1", emoji:"🍕", place:"L'Industrie", type:"Roman Slice", desc:"Incredibly thin crust, Italian-imported toppings, long-fermented dough. New standard.", booking:null, maps:"LIndustrie+Pizzeria+Williamsburg+Brooklyn", reviews:3200 },
-        { id:"wpz2", emoji:"🔥", place:"Roberta's", type:"Wood-Fired Pizza", desc:"Legendary converted warehouse pizza. Always fun, always good.", booking:"robertaspizza.com", maps:"Robertas+Pizza+Williamsburg+Brooklyn", reviews:9400 },
-        { id:"wpz3", emoji:"🫙", place:"Paulie Gee's", type:"Wood-Fired Pizza", desc:"The Hellboy with honey and hot sausage is the only order.", booking:"pauliegee.com", maps:"Paulie+Gees+Williamsburg+Brooklyn", reviews:3800 },
-        { id:"wpz4", emoji:"🌿", place:"Emmy Squared", type:"Detroit-Style Pizza", desc:"The Detroit-style flagship. Long lines for a reason.", booking:"emmysquaredpizza.com", maps:"Emmy+Squared+Williamsburg+Brooklyn", reviews:4100 },
+        { id:"acespizza", emoji:"🍕", place:"Ace's Pizza", type:"pizza", desc:"Down-to-earth restaurant offering deep dish & thin crust pizza, plus garlic bread.", booking:"https://www.acespizzaspot.com/", maps:"Aces+Pizza", reviews:1231, price:"$", reservable:true, stars:4.8 },
       ],
       mediterranean: [
-        { id:"wme1", emoji:"🐟", place:"Psaraki", type:"Greek Seafood", desc:"Seaside taverna vibes with Williamsburg Bridge views. Little fish, big flavors.", booking:"psarakinyc.com", maps:"Psaraki+Williamsburg+Brooklyn", reviews:480 },
-        { id:"wme2", emoji:"🌺", place:"Llama Inn", type:"Peruvian", desc:"Plant-filled room, creative Peruvian, great cocktails. The ceviche is outstanding.", booking:"llamainnnyc.com", maps:"Llama+Inn+Williamsburg+Brooklyn", reviews:2400 },
-        { id:"wme3", emoji:"🌿", place:"Fandi Mata", type:"Mediterranean-Mezcaleria", desc:"Global Mediterranean cuisine meets artisanal mezcal. Warm and escapist.", booking:"fandimata.com", maps:"Fandi+Mata+Williamsburg+Brooklyn", reviews:620 },
-        { id:"wme4", emoji:"🥬", place:"The Butcher's Daughter", type:"Vegetarian", desc:"Plant-forward all-day cafe near Domino Park. Fresh, seasonal, great natural wine.", booking:null, maps:"The+Butchers+Daughter+Williamsburg+Brooklyn", reviews:3800 },
+        { id:"fandimata", emoji:"🥙", place:"Fandi Mata", type:"mediterranean", desc:"Lively restaurant serving global cuisine & cocktails amid plant-filled, industrial-chic decor.", booking:"https://www.fandimata.com/", maps:"Fandi+Mata", reviews:4384, price:"$$", reservable:true, stars:4.7 },
+        { id:"merakigreekb", emoji:"🥙", place:"Meraki Greek Bistro Williamsburg", type:"mediterranean", desc:"4.7★ · mediterranean", booking:"https://merakibrooklyn.com/", maps:"Meraki+Greek+Bistro+Williamsburg", reviews:806, price:"$$", reservable:true, stars:4.7 },
+        { id:"bisbaslebane", emoji:"🥙", place:"Bis Bas Lebanese-Mediterranean Grill", type:"mediterranean", desc:"4.7★ · mediterranean", booking:"http://bisbas.com/", maps:"Bis+Bas+LebaneseMediterranean+Grill", reviews:541, price:"$", reservable:false, stars:4.7 },
+        { id:"cafemogador", emoji:"🥙", place:"Cafe Mogador", type:"mediterranean", desc:"Bustling eatery for traditional Moroccan tagines, couscous, and more in cozy yet charming quarters.", booking:"http://www.cafemogador.com/", maps:"Cafe+Mogador", reviews:3342, price:"$$", reservable:true, stars:4.6 },
+        { id:"levantine", emoji:"🥙", place:"Levantine", type:"mediterranean", desc:"Contemporary Mediterranean eatery with a market-driven vegetarian menu & tranquil garden patio.", booking:"http://www.levantinenyc.com/", maps:"Levantine", reviews:891, price:"$$", reservable:true, stars:4.5 },
       ],
       american: [
-        { id:"wa1", emoji:"🥩", place:"St. Anselm", type:"Steakhouse", desc:"Hanger steak in a wood-paneled room. Best steak-for-price in Brooklyn.", booking:"stanselmbk.com", maps:"St+Anselm+Williamsburg+Brooklyn", reviews:3800 },
-        { id:"wa2", emoji:"🍖", place:"Fette Sau", type:"BBQ", desc:"Central Texas meets NYC. Peppery brisket, half-sour pickles, picnic tables.", booking:null, maps:"Fette+Sau+BBQ+Williamsburg+Brooklyn", reviews:4200 },
-        { id:"wa3", emoji:"🌊", place:"The Sparrow", type:"Throwback Brasserie", desc:"Historic building near the bridge. Dress up, get the shrimp cocktail and steak frites.", booking:"thesparrowbk.com", maps:"The+Sparrow+Williamsburg+Brooklyn", reviews:580 },
-        { id:"wa4", emoji:"🥜", place:"Marlow and Sons", type:"Seasonal American", desc:"Oyster bar up front, great pasta back. One of Brooklyn's finest rooms.", booking:"marlowandsons.com", maps:"Marlow+and+Sons+Williamsburg+Brooklyn", reviews:1600 },
+        { id:"destefanosst", emoji:"🥩", place:"DeStefano's Steakhouse", type:"american dinner", desc:"Steakhouse standards & wines served in a space with an old-school Italian vibe.", booking:"http://www.deesteakhouse.com/", maps:"DeStefanos+Steakhouse", reviews:1000, price:"$$$", reservable:true, stars:4.7 },
+        { id:"stanselm", emoji:"🥩", place:"St. Anselm", type:"american dinner", desc:"Steaks and grilled seafood are the specialty of this brick-walled spot.", booking:"http://www.stanselm.net/", maps:"St+Anselm", reviews:1608, price:"$$$", reservable:true, stars:4.6 },
+        { id:"ambersteakho", emoji:"🥩", place:"Amber Steak House", type:"american dinner", desc:"High-end steakhouse boasting gourmet seafood & fine wines in an old-fashioned, elegant venue.", booking:"http://ambersteak.house/", maps:"Amber+Steak+House", reviews:1130, price:"$$$", reservable:true, stars:4.6 },
+        { id:"peterlugerst", emoji:"🥩", place:"Peter Luger Steak House", type:"american dinner", desc:"Cash-only steak icon where old-school waiters serve aged beef in a German beer hall setting.", booking:"https://peterluger.com/", maps:"Peter+Luger+Steak+House", reviews:15739, price:"$$$$", reservable:true, stars:4.4 },
       ],
       brunch: [
-        { id:"wbr1", emoji:"🥞", place:"Sunday in Brooklyn", type:"Brunch", desc:"Three-story stunner. The malted pancakes are everything they say they are.", booking:"sundayinbrooklyn.com", maps:"Sunday+in+Brooklyn+Williamsburg", reviews:2600 },
-        { id:"wbr2", emoji:"🥚", place:"Egg", type:"Southern Brunch", desc:"The Williamsburg brunch institution. Farm-to-table, always a line, always worth it.", booking:null, maps:"Egg+Restaurant+Williamsburg+Brooklyn", reviews:3200 },
-        { id:"wbr3", emoji:"🌺", place:"Isla and Co", type:"All-Day Australian Brunch", desc:"New all-day brunch on Grand St. Kimchi scramble, pulled pork hash, great coffee.", booking:"islaandco.com", maps:"Isla+and+Co+Williamsburg+Brooklyn", reviews:280 },
-        { id:"wbr4", emoji:"🥐", place:"Reynard", type:"Hotel Brunch", desc:"Weekend brunch at the Wythe. Beautiful room, unhurried, no reason to leave.", booking:"reynardnyc.com", maps:"Reynard+Restaurant+Wythe+Hotel+Brooklyn", reviews:2100 },
+        { id:"islacowillia", emoji:"🥐", place:"Isla & Co. - Williamsburg", type:"brunch", desc:"4.9★ · brunch", booking:"https://www.isla-co.com/williamsburg", maps:"Isla++Co++Williamsburg", reviews:1633, price:"$$", reservable:true, stars:4.9 },
+        { id:"holeinthewal", emoji:"🥐", place:"Hole In The Wall", type:"brunch", desc:"4.8★ · brunch", booking:"https://holeinthewallnyc.com/williamsburg-1", maps:"Hole+In+The+Wall", reviews:3975, price:"$$", reservable:true, stars:4.8 },
+        { id:"sungold", emoji:"🥐", place:"Sungold", type:"brunch", desc:"4.8★ · brunch", booking:"https://www.sungoldbk.com/", maps:"Sungold", reviews:1251, price:"$$", reservable:true, stars:4.8 },
+        { id:"sundayinbroo", emoji:"🥐", place:"Sunday In Brooklyn", type:"brunch", desc:"Atera alum's American restaurant with a marketplace, barroom & upstairs dining room & garden.", booking:"http://sundayinbrooklyn.com/", maps:"Sunday+In+Brooklyn", reviews:3907, price:"$$", reservable:true, stars:4.4 },
+        { id:"cafecolette", emoji:"🥐", place:"Cafe Colette", type:"brunch", desc:"American eatery popular for brunch, with tin ceiling & zinc bar adding a vintage vibe.", booking:"https://www.cafe-colette.com/", maps:"Cafe+Colette", reviews:1164, price:"$$", reservable:true, stars:4.4 },
       ],
       latenight: [
-        { id:"wln1", emoji:"🥟", place:"Veselka Williamsburg", type:"24hr Ukrainian Diner", desc:"The EV institution now in Williamsburg. Pierogies and borscht at 3am.", booking:null, maps:"Veselka+Williamsburg+Brooklyn", reviews:680 },
-        { id:"wln2", emoji:"🍕", place:"L'Industrie Late", type:"Late Night Slice", desc:"Open late. Best slice in the neighborhood, period.", booking:null, maps:"LIndustrie+Pizzeria+Williamsburg+Brooklyn", reviews:3200 },
-        { id:"wln3", emoji:"🫕", place:"St. Anselm Late", type:"Late Night Steak", desc:"Late seatings on weekends. Hanger steak at midnight hits different.", booking:"stanselmbk.com", maps:"St+Anselm+Williamsburg+Brooklyn", reviews:3800 },
-        { id:"wln4", emoji:"🌮", place:"Birria-Landia", type:"Late Night Tacos", desc:"The birria taco truck. Bring cash, join the line, zero regrets.", booking:null, maps:"Birria+Landia+Williamsburg+Brooklyn", reviews:2800 },
+        { id:"santafebk", emoji:"🌙", place:"Santa Fe BK", type:"late night", desc:"Relaxed spot dishing up Southwestern eats, including breakfast burritos & green chile cheeseburgers.", booking:"http://santafebk.com/", maps:"Santa+Fe+BK", reviews:631, price:"$$", reservable:true, stars:4.8 },
+        { id:"nanxiangexpr", emoji:"🌙", place:"Nan Xiang Express - Williamsburg, NY", type:"late night", desc:"4.8★ · late night", booking:"https://nanxiangexpress.com/", maps:"Nan+Xiang+Express++Williamsburg+NY", reviews:873, price:"$$", reservable:false, stars:4.8 },
       ],
     },
-    activities: {
-      free: [
-        { id:"waf1", emoji:"🌊", place:"East River State Park", type:"Waterfront", desc:"Sit on the rocks with Manhattan glowing across the water. Completely free.", maps:"East+River+State+Park+Williamsburg+Brooklyn", reviews:3800 },
-        { id:"waf2", emoji:"🌅", place:"Domino Park", type:"Waterfront Walk", desc:"Walk the waterfront with incredible skyline views. Best people watching in Brooklyn.", maps:"Domino+Park+Williamsburg+Brooklyn", reviews:6800 },
-        { id:"waf3", emoji:"🎨", place:"Williamsburg Mural Walk", type:"Street Art", desc:"Some of NYC's best murals. Walk and discover together.", maps:"Williamsburg+Brooklyn+Murals", reviews:null },
-        { id:"waf4", emoji:"🌉", place:"Williamsburg Bridge Walk", type:"Night Walk", desc:"Walk the bridge at night for epic Manhattan views. Go slow.", maps:"Williamsburg+Bridge+Brooklyn", reviews:5200 },
-      ],
-      paid: [
-        { id:"wap1", emoji:"🎳", place:"Brooklyn Bowl", type:"Bowling + Live Music", desc:"Lanes, food, drinks, live music all in one. The easiest yes for any date.", booking:"brooklynbowl.com", maps:"Brooklyn+Bowl+Williamsburg", reviews:5200 },
-        { id:"wap2", emoji:"📽️", place:"Nitehawk Cinema", type:"Dine-in Movie", desc:"Order cocktails and food to your seat. Takes all first-date pressure off.", booking:"nitehawkcinema.com", maps:"Nitehawk+Cinema+Williamsburg+Brooklyn", reviews:3600 },
-        { id:"wap3", emoji:"⛳", place:"Brooklyn Greens", type:"Golf Simulator", desc:"Golf sim, cocktails, plant-filled space. Surprisingly great date activity.", booking:"brooklyngreens.com", maps:"Brooklyn+Greens+Williamsburg+Brooklyn", reviews:340 },
-        { id:"wap4", emoji:"🎪", place:"House of Yes", type:"Themed Experience", desc:"Circus performers, themed nights. Nothing else like it in NYC.", booking:"houseofyes.org", maps:"House+of+Yes+Williamsburg+Brooklyn", reviews:4100 },
-      ],
-    },
+    activities: { free: [], paid: [
+          { place:"Bathhouse Williamsburg", type:"activity", desc:"activity", booking:"https://www.abathhouse.com/williamsburg?utm_source=google&utm_medium=organic&utm_campaign=gbp-website-williamsburg", maps:"Bathhouse+Williamsburg+Williamsburg+Brooklyn", reviews:3752, price:"$$", reservable:false, stars:4.3 },
+        
+          { id:"deadletterno9", emoji:"🎯", place:"Dead Letter No. 9", type:"cocktail + games", desc:"Cocktail bar with darts and games. Great casual date spot.", booking:null, maps:"Dead+Letter+No9+Williamsburg", reviews:382, price:"$$", reservable:false, stars:4.6 },
+          { id:"recessgrove", emoji:"🌿", place:"recess grove", type:"outdoor bar", desc:"Chill outdoor bar. Low-key and fun.", booking:null, maps:"recess+grove+Williamsburg", reviews:76, price:"$$", reservable:true, stars:5.0 },
+          { id:"sleepwalkact", emoji:"🕯️", place:"Sleepwalk", type:"cocktail bar", desc:"Moody cocktail bar on Bushwick Ave. Great late night energy.", booking:"http://www.sleepwalk.nyc/", maps:"Sleepwalk+Williamsburg", reviews:205, price:"$$", reservable:true, stars:4.7 },
+        ] },
     happyHour: [
-      { id:"whh1", emoji:"🍺", place:"Skinny Dennis", type:"Honky-Tonk Bar", desc:"Happy hour noon to 7pm daily. $6 beers, frozen drinks in Greek cups.", deal:"$6 beers + frozen drinks", hours:"Daily noon-7pm", booking:null, maps:"Skinny+Dennis+Williamsburg+Brooklyn", reviews:1400 },
-      { id:"whh2", emoji:"🍷", place:"Marlow and Sons", type:"Wine Bar", desc:"$1 oysters and $8 wines. Go early, seats fill fast.", deal:"$1 oysters + $8 wine", hours:"Mon-Fri 5-6pm", booking:null, maps:"Marlow+and+Sons+Williamsburg+Brooklyn", reviews:1600 },
-      { id:"whh3", emoji:"🍸", place:"Hotel Delmano", type:"Cocktail Bar", desc:"$10 cocktails and $6 beers in Williamsburg's most atmospheric bar.", deal:"$10 cocktails + $6 beer", hours:"Tue-Fri 5-7pm", booking:null, maps:"Hotel+Delmano+Williamsburg+Brooklyn", reviews:1100 },
-      { id:"whh4", emoji:"🌿", place:"Four Horsemen", type:"Natural Wine Bar", desc:"$10 wines by the glass during early hours. Get there before it fills up.", deal:"$10 wine by glass", hours:"Tue-Thu 5-6pm", booking:"fourhorsemenbk.com", maps:"Four+Horsemen+Williamsburg+Brooklyn", reviews:1900 },
-    ],
-  },
-  west_village: {
-    bars: {
-      cocktails: [
-        { id:"wvc1", emoji:"🍸", place:"Little Branch", type:"Speakeasy", desc:"Unmarked door on 7th Ave South. Underground jazz, pitch-black, perfect cocktails. First come, first served.", booking:null, maps:"Little+Branch+West+Village+NYC", reviews:1800 },
-        { id:"wvc2", emoji:"🌿", place:"Katana Kitten", type:"Japanese Cocktail Bar", desc:"World-ranked Japanese bar. Salted plum, pandan, matcha cocktails. Shiso-lined gin and tonic is the move.", booking:"katanakittennyc.com", maps:"Katana+Kitten+West+Village+NYC", reviews:2400 },
-        { id:"wvc3", emoji:"🌶️", place:"Mace", type:"Spice-Forward Bar", desc:"World's 50 Best Bars for 6 years running. Every drink built around a specific herb or spice. Bohemian and brilliant.", booking:"macenewyork.com", maps:"Mace+Bar+West+Village+NYC", reviews:680 },
-        { id:"wvc4", emoji:"🌺", place:"Donna", type:"Latin Cocktail Bar", desc:"Worker-owned, tropical, White brick walls, pink banquettes. Best frozen piña colada in the neighborhood.", booking:null, maps:"Donna+Bar+West+Village+NYC", reviews:420 },
-      ],
-      beer: [
-        { id:"wvb1", emoji:"🍺", place:"Corner Bistro", type:"Dive Bar", desc:"Open since the '60s. $5 beers, the most debated burger in NYC. Cash only, always packed.", booking:null, maps:"Corner+Bistro+West+Village+NYC", reviews:4200 },
-        { id:"wvb2", emoji:"🐎", place:"White Horse Tavern", type:"Historic Pub", desc:"Second-oldest pub in NYC. Dylan Thomas, Kerouac, Baldwin all drank here. Still a neighborhood bar.", booking:null, maps:"White+Horse+Tavern+West+Village+NYC", reviews:3800 },
-        { id:"wvb3", emoji:"🌿", place:"Blind Tiger", type:"Craft Beer Bar", desc:"Bleecker St craft beer institution. Rotating taps, mostly NY and New England breweries.", booking:null, maps:"Blind+Tiger+West+Village+NYC", reviews:2200 },
-        { id:"wvb4", emoji:"📚", place:"Hudson Bar and Books", type:"Cigar & Whiskey Bar", desc:"Dark bookshelves, copper bar, 1930s vibe. Whiskey, cigars, zero pretension. Civilized drinking.", booking:null, maps:"Hudson+Bar+and+Books+West+Village+NYC", reviews:680 },
-      ],
-      wine: [
-        { id:"wvw1", emoji:"🍷", place:"Amelie Wine Bar", type:"French Wine Bar", desc:"Parisian candlelit cellar. Extensive list, rustic decor, perfect for lingering over a bottle.", booking:"amelienyc.com", maps:"Amelie+Wine+Bar+West+Village+NYC", reviews:1400 },
-        { id:"wvw2", emoji:"🌿", place:"St. Jardim", type:"Natural Wine Bar", desc:"Your living room — magazine rack, record player, walls of low-intervention wine. No attitude.", booking:null, maps:"St+Jardim+West+Village+NYC", reviews:380 },
-        { id:"wvw3", emoji:"🫙", place:"Binx", type:"Natural Wine Bar", desc:"Newest and cutest. Pastel murals, fuzzy bar stools, disco ball. French, Italian, and wild-card pours.", booking:null, maps:"Binx+Wine+Bar+West+Village+NYC", reviews:290 },
-        { id:"wvw4", emoji:"🇵🇹", place:"Leitao", type:"Portuguese Wine Bar", desc:"Cervejaria-style with a concise, well-chosen wine list. Tiger shrimp, bacalhau, pastel de nata.", booking:"leitaonyc.com", maps:"Leitao+West+Village+NYC", reviews:520 },
-      ],
-      experimental: [
-        { id:"wve1", emoji:"🎬", place:"The Garret West", type:"Hidden Bar Above Five Guys", desc:"Walk through Five Guys, climb the stairs. Fireplace, skylights, booths. One of NYC's best hidden bars.", booking:null, maps:"The+Garret+West+Village+NYC", reviews:1100 },
-        { id:"wve2", emoji:"🍣", place:"Sip & Guzzle", type:"Bi-Level Japanese Cocktail Bar", desc:"Upstairs lounge (Sip) + casual bar (Guzzle). Shochu-yogurt drinks, cheese mochi fries, wagyu sando.", booking:"sipandguzzle.com", maps:"Sip+and+Guzzle+West+Village+NYC", reviews:580 },
-        { id:"wve3", emoji:"🚂", place:"Orient Express Bar", type:"Vintage Train Cocktail Bar", desc:"Beech wood panels, faux train windows, brass luggage racks. Bartenders in vests. Deeply romantic.", booking:"orientexpressbar.com", maps:"Orient+Express+Bar+West+Village+NYC", reviews:640 },
-        { id:"wve4", emoji:"🌿", place:"Angel's Share", type:"Japanese Speakeasy", desc:"Grove Street descendant of the EV original. Ornate wallpaper, whisky with coconut water and curry powder.", booking:null, maps:"Angels+Share+West+Village+NYC", reviews:480 },
-      ],
-      speakeasy: [
-        { id:"wvs1", emoji:"🕯️", place:"Little Branch", type:"Underground Speakeasy", desc:"Unmarked door, stairs down, jazz, darkness, perfect drinks. The real deal. First come, first served.", booking:null, maps:"Little+Branch+West+Village+NYC", reviews:1800 },
-        { id:"wvs2", emoji:"🚂", place:"Orient Express Bar", type:"Hidden Train Bar", desc:"No obvious sign. Enter through a door on a quiet block and step onto the Orient Express.", booking:"orientexpressbar.com", maps:"Orient+Express+Bar+West+Village+NYC", reviews:640 },
-        { id:"wvs3", emoji:"🍔", place:"The Garret West", type:"Hidden Bar Above Burger Joint", desc:"Access through Five Guys. Fireplace, cozy booths, skylights. A secret hiding in plain sight.", booking:null, maps:"The+Garret+West+Village+NYC", reviews:1100 },
-        { id:"wvs4", emoji:"🌿", place:"Angel's Share", type:"Japanese Hidden Bar", desc:"Quiet Grove St entrance. No bar-only seating — you must be seated. Elegant and worth the rules.", booking:null, maps:"Angels+Share+West+Village+NYC", reviews:480 },
-      ],
-    },
-    food: {
-      japanese: [
-        { id:"wvj1", emoji:"🍣", place:"Sushi Nakazawa", type:"Omakase", desc:"Four-star NYT review. 20-piece nigiri omakase. One of the best sushi experiences in the city.", booking:"sushinakazawa.com", maps:"Sushi+Nakazawa+West+Village+NYC", reviews:2800 },
-        { id:"wvj2", emoji:"🍜", place:"Sép", type:"Isan Thai", desc:"Electric Isan Thai on 14th St. Duck laarb, wing zaab, fiery skewers. Neon lights and mirrored ceiling.", booking:"sepnyc.com", maps:"Sep+Restaurant+West+Village+NYC", reviews:480 },
-        { id:"wvj3", emoji:"🍺", place:"Moody Tongue Sushi", type:"Beer-Paired Sushi", desc:"High-end craft beers paired with excellent sushi. Large bar, usually seats available. Genuinely unique.", booking:"moodytongue.com", maps:"Moody+Tongue+Sushi+West+Village+NYC", reviews:340 },
-        { id:"wvj4", emoji:"🌊", place:"Fish Cheeks", type:"Thai Seafood", desc:"Modern Thai seafood. Coconut crab curry and Bangkok wings are the moves. Always packed.", booking:"fishcheeksnyc.com", maps:"Fish+Cheeks+West+Village+NYC", reviews:3200 },
-      ],
-      pasta: [
-        { id:"wvp1", emoji:"🍝", place:"I Sodi", type:"Tuscan Italian", desc:"Impossible to get into for good reason. Pappardelle al limone in a faux-farmhouse room. Bar walk-ins available.", booking:"isodinyc.com", maps:"I+Sodi+West+Village+NYC", reviews:1800 },
-        { id:"wvp2", emoji:"🥩", place:"Don Angie", type:"Italian-American", desc:"Rolled lasagna for two, provolone gnocchi, garlic flatbread. One of NYC's top Italian restaurants.", booking:"donangie.com", maps:"Don+Angie+West+Village+NYC", reviews:3400 },
-        { id:"wvp3", emoji:"🌿", place:"Malaparte", type:"Italian", desc:"Dark brick, 100-year-old floors, walk-in friendly. Rigatoni, prosciutto pizza, grilled branzino.", booking:null, maps:"Malaparte+West+Village+NYC", reviews:820 },
-        { id:"wvp4", emoji:"🕯️", place:"Palma", type:"Organic Italian", desc:"Hidden garden and 200-year-old carriage house. Family recipes, housemade pasta, ivy-covered walls.", booking:"palmanyc.com", maps:"Palma+Restaurant+West+Village+NYC", reviews:1100 },
-      ],
-      pizza: [
-        { id:"wvpz1", emoji:"🍕", place:"Joe's Pizza", type:"NY Slice", desc:"The most famous slice in the Village. $3, perfect fold, non-negotiable.", booking:null, maps:"Joes+Pizza+West+Village+NYC", reviews:8400 },
-        { id:"wvpz2", emoji:"🌿", place:"Malaparte", type:"Wood-Fired Pizza", desc:"Prosciutto pizza in a dark, romantic room on Washington St. Reservations for two accepted.", booking:null, maps:"Malaparte+West+Village+NYC", reviews:820 },
-        { id:"wvpz3", emoji:"🫙", place:"Moustache Pitza", type:"Middle Eastern Pitza", desc:"Cult status since the '80s. Fresh pita topped with spiced lamb, ten dips, warm plant-filled room.", booking:null, maps:"Moustache+Pitza+West+Village+NYC", reviews:2600 },
-        { id:"wvpz4", emoji:"🔥", place:"Kesté", type:"Neapolitan Pizza", desc:"Authentic Neapolitan, wood oven, great buffalo mozzarella. One of the best pies in Manhattan.", booking:"kestepizzeria.com", maps:"Keste+Pizza+West+Village+NYC", reviews:3800 },
-      ],
-      mediterranean: [
-        { id:"wvme1", emoji:"🌊", place:"Jeffrey's Grocery", type:"Seafood", desc:"Oysters always, lobster roll or lobster spaghetti. Buzzy corner spot on Waverly Place.", booking:"jeffreysgrocery.com", maps:"Jeffreys+Grocery+West+Village+NYC", reviews:2200 },
-        { id:"wvme2", emoji:"🫒", place:"Via Carota", type:"Italian Trattoria", desc:"The West Village rite of passage. Insalata verde and cacio e pepe. Line out the door for a reason.", booking:null, maps:"Via+Carota+West+Village+NYC", reviews:6800 },
-        { id:"wvme3", emoji:"🇬🇪", place:"Cafe Ubani", type:"Georgian Restaurant", desc:"New to the neighborhood. Khachapuri and khinkali in a cozy cafe-to-dinner setting. Under the radar.", booking:null, maps:"Cafe+Ubani+West+Village+NYC", reviews:180 },
-        { id:"wvme4", emoji:"🐟", place:"San Sabino", type:"Italian Seafood", desc:"From the Don Angie team. Seafood-focused, deeply romantic room. Already one of the WV's best.", booking:"sansabinonyc.com", maps:"San+Sabino+West+Village+NYC", reviews:680 },
-      ],
-      american: [
-        { id:"wva1", emoji:"🕯️", place:"Waverly Inn", type:"American Classic", desc:"Candlelit townhouse, celebrity clientele, no-photos policy. Complimentary biscuits, red leather banquettes.", booking:"waverlyinnnyc.com", maps:"Waverly+Inn+West+Village+NYC", reviews:1400 },
-        { id:"wva2", emoji:"🦞", place:"Jeffrey's Grocery", type:"Seafood American", desc:"Oysters, lobster roll, strong cocktails. Buzzy without being loud. A WV anchor.", booking:"jeffreysgrocery.com", maps:"Jeffreys+Grocery+West+Village+NYC", reviews:2200 },
-        { id:"wva3", emoji:"🥬", place:"Fairfax", type:"All-Day Cafe + Bar", desc:"By day a cozy cafe, by night a quirky restaurant. The burger with smoked cheddar is cult-level.", booking:null, maps:"Fairfax+West+Village+NYC", reviews:620 },
-        { id:"wva4", emoji:"🦉", place:"Little Owl", type:"Mediterranean American", desc:"In the Friends building. Gravy meatball sliders and pork chop are the signatures. Book 14 days ahead.", booking:"thelittleowlnyc.com", maps:"Little+Owl+West+Village+NYC", reviews:2800 },
-      ],
-      brunch: [
-        { id:"wvbr1", emoji:"🥐", place:"Café Cluny", type:"French-American Brunch", desc:"The West Village's most beloved brunch. Corn-and-crab fritters, perfect burger. Celebrity regulars.", booking:"cafecluny.com", maps:"Cafe+Cluny+West+Village+NYC", reviews:2600 },
-        { id:"wvbr2", emoji:"🥚", place:"Buvette", type:"French Bistro Brunch", desc:"Tiny, packed, Parisian. Croque madame, coq au vin, fluffy scrambled eggs. Come early or wait.", booking:"ilovebuvette.com", maps:"Buvette+West+Village+NYC", reviews:4200 },
-        { id:"wvbr3", emoji:"🌿", place:"Café Ubani", type:"Georgian Brunch", desc:"New and unhyped. Khachapuri egg boat is extraordinary. Under 200 reviews — get there now.", booking:null, maps:"Cafe+Ubani+West+Village+NYC", reviews:180 },
-        { id:"wvbr4", emoji:"🦞", place:"Jeffrey's Grocery", type:"Seafood Brunch", desc:"Oysters and Bloody Marys on Waverly Place. The ideal West Village Sunday.", booking:"jeffreysgrocery.com", maps:"Jeffreys+Grocery+West+Village+NYC", reviews:2200 },
-      ],
-      latenight: [
-        { id:"wvln1", emoji:"🍕", place:"Joe's Pizza", type:"Late Night Slice", desc:"Open till 5am on weekends. The only slice worth getting at 3am in the Village.", booking:null, maps:"Joes+Pizza+West+Village+NYC", reviews:8400 },
-        { id:"wvln2", emoji:"🍔", place:"Corner Bistro", type:"Late Night Burger", desc:"Open till 3:30am. $12 bacon cheeseburger, $5 beer. The best late-night deal in Manhattan.", booking:null, maps:"Corner+Bistro+West+Village+NYC", reviews:4200 },
-        { id:"wvln3", emoji:"🌿", place:"Fairfax", type:"Late Night Bar + Food", desc:"Open till midnight. Burgers, Old Bay tots, and good cocktails when everything else is closed.", booking:null, maps:"Fairfax+West+Village+NYC", reviews:620 },
-        { id:"wvln4", emoji:"🫒", place:"Via Carota", type:"Late Night Italian", desc:"Takes walk-ins late. Cacio e pepe and insalata verde at 11pm is the West Village dream.", booking:null, maps:"Via+Carota+West+Village+NYC", reviews:6800 },
-      ],
-    },
-    activities: {
-      free: [
-        { id:"wvaf1", emoji:"🌸", place:"Perry Street Walk", type:"Architecture Walk", desc:"The most beautiful residential block in NYC. Brownstones, cobblestones, total romance.", maps:"Perry+Street+West+Village+NYC", reviews:null },
-        { id:"wvaf2", emoji:"🌊", place:"Hudson River Park Pier 45", type:"Waterfront", desc:"Sit on the grass with the river and sunset. The best free view in the Village.", maps:"Pier+45+Hudson+River+Park+West+Village+NYC", reviews:4800 },
-        { id:"wvaf3", emoji:"🎵", place:"Bleecker Street Record Shops", type:"Music Culture", desc:"Wander the remaining record shops on Bleecker. A disappearing piece of NYC history.", maps:"Bleecker+Street+West+Village+NYC", reviews:null },
-        { id:"wvaf4", emoji:"🌳", place:"Christopher Street Stroll", type:"Neighborhood Walk", desc:"From the river to 7th Ave. The heartbeat of the Village — bookshops, cafes, history on every corner.", maps:"Christopher+Street+West+Village+NYC", reviews:null },
-      ],
-      paid: [
-        { id:"wvap1", emoji:"🎭", place:"Cherry Lane Theatre", type:"Off-Broadway", desc:"The oldest continuously operating Off-Broadway theater in NYC. Intimate, historic, unforgettable.", booking:"cherrylanetheatre.org", maps:"Cherry+Lane+Theatre+West+Village+NYC", reviews:680 },
-        { id:"wvap2", emoji:"🎵", place:"The Jazz Gallery", type:"Jazz Club", desc:"Serious jazz, serious musicians, intimate room. One of NYC's best jazz venues, no tourists.", booking:"jazzgallery.org", maps:"The+Jazz+Gallery+West+Village+NYC", reviews:480 },
-        { id:"wvap3", emoji:"🎨", place:"IFC Center", type:"Arthouse Cinema", desc:"The West Village's indie cinema. Perfect first date — great films, great neighborhood to walk after.", booking:"ifccenter.com", maps:"IFC+Center+West+Village+NYC", reviews:2800 },
-        { id:"wvap4", emoji:"🌊", place:"Hudson River Kayaking", type:"Outdoor Activity", desc:"Free kayaking from Pier 26 in summer. Paddle with the Manhattan skyline behind you.", booking:"downtownboathouse.org", maps:"Downtown+Boathouse+Hudson+River+NYC", reviews:1400 },
-      ],
-    },
-    happyHour: [
-      { id:"wvhh1", emoji:"🍸", place:"Donna", type:"Latin Cocktail Bar", desc:"Early evening cocktails in the worker-owned West Village gem. Great deals before 7pm.", deal:"HH cocktail specials", hours:"Daily 5-7pm", booking:null, maps:"Donna+Bar+West+Village+NYC", reviews:420 },
-      { id:"wvhh2", emoji:"🥂", place:"Jeffrey's Grocery", type:"Oyster Bar", desc:"$1 oysters during happy hour. Get there early — this fills up fast.", deal:"$1 oysters", hours:"Mon-Fri 5-6:30pm", booking:null, maps:"Jeffreys+Grocery+West+Village+NYC", reviews:2200 },
-      { id:"wvhh3", emoji:"🍺", place:"Blind Tiger", type:"Craft Beer Bar", desc:"Rotating tap specials and discounted pints. The neighborhood's best beer happy hour.", deal:"Discounted pints", hours:"Mon-Fri 4-7pm", booking:null, maps:"Blind+Tiger+West+Village+NYC", reviews:2200 },
-      { id:"wvhh4", emoji:"🍷", place:"Amelie Wine Bar", type:"French Wine Bar", desc:"Half-price bottles on select wines during early hours. Candlelit cellar, best vibe in the Village.", deal:"50% off select bottles", hours:"Tue-Fri 5-7pm", booking:"amelienyc.com", maps:"Amelie+Wine+Bar+West+Village+NYC", reviews:1400 },
-    ],
+          { place:"Wandering Barman", type:"happy hour", desc:"happy hour", booking:"https://www.wanderingbarman.com/", maps:"Wandering+Barman+Williamsburg+Brooklyn", reviews:148, price:"$", reservable:false, stars:4.8 },
+          { place:"Bee's Knees & Honey Lounge", type:"happy hour", desc:"happy hour", booking:"http://www.beeskneesbk.com/", maps:"Bees+Knees+&+Honey+Lounge+Williamsburg+Brooklyn", reviews:397, price:"$$", reservable:true, stars:4.7 },
+          { place:"Blend Williamsburg", type:"brunch, happy hour, evening dinner", desc:"brunch, happy hour, evening dinner", booking:"https://www.blendwilliamsburg.com/", maps:"Blend+Williamsburg+Williamsburg+Brooklyn", reviews:1381, price:"$$", reservable:true, stars:4.3 }
+        ],
   },
   east_village: {
     bars: {
       cocktails: [
-        { id:"evc1", emoji:"🍸", place:"Bar Snack", type:"Cocktail Bar", desc:"Time Out's #1 bar in NYC right now. Matcha frozens, salad negronis, incredible snacks. One year old and already legendary.", booking:null, maps:"Bar+Snack+East+Village+NYC", reviews:680 },
-        { id:"evc2", emoji:"🕯️", place:"Madeline's Martini", type:"Martini Bar", desc:"14 martini variations in a candlelit room that feels like Bemelmans below 14th. Ideal first date bar.", booking:null, maps:"Madelines+Martini+East+Village+NYC", reviews:420 },
-        { id:"evc3", emoji:"💀", place:"Death & Co", type:"Cocktail Bar", desc:"The bar that started the cocktail renaissance. Over 100 drinks, bartenders with total creative freedom.", booking:"deathandcompany.com", maps:"Death+and+Co+East+Village+NYC", reviews:4800 },
-        { id:"evc4", emoji:"🌮", place:"Superbueno", type:"Mexican Cocktail Bar", desc:"Tiny joyful corner bar. Roasted corn sour, mushroom margarita, mole negroni. Industry darling.", booking:null, maps:"Superbueno+East+Village+NYC", reviews:580 },
-      ],
-      beer: [
-        { id:"evb1", emoji:"🍺", place:"Holiday Cocktail Lounge", type:"Dive Bar", desc:"Dark, sticky-floored, open since 1950. St. Marks institution that doesn't get overrun with tourists.", booking:null, maps:"Holiday+Cocktail+Lounge+East+Village+NYC", reviews:1200 },
-        { id:"evb2", emoji:"🎸", place:"Niagara Bar", type:"Rock Dive Bar", desc:"Jukebox, pool table, cheap drinks, dark wood. The platonic ideal of an East Village dive.", booking:null, maps:"Niagara+Bar+East+Village+NYC", reviews:980 },
-        { id:"evb3", emoji:"🗽", place:"International Bar", type:"Dive Bar", desc:"Twelve stools, cash only, the cheapest beer on the block. Pure old New York.", booking:null, maps:"International+Bar+East+Village+NYC", reviews:760 },
-        { id:"evb4", emoji:"📚", place:"KGB Bar", type:"Literary Dive Bar", desc:"Former Soviet social club, now a reading series and cheap drinks. Propaganda posters, brooding regulars.", booking:null, maps:"KGB+Bar+East+Village+NYC", reviews:820 },
-      ],
-      wine: [
-        { id:"evw1", emoji:"🍷", place:"Lovers of Today", type:"Speakeasy Wine Bar", desc:"Hidden behind a gate marked 132½. Cozy booths, neon heart, open till 4am. Happy hour 5-7pm.", booking:null, maps:"Lovers+of+Today+East+Village+NYC", reviews:640 },
-        { id:"evw2", emoji:"🌿", place:"Mister Paradise", type:"Natural Wine Bar", desc:"Ambitious cocktails, low-key vibe, unusual ingredients. Order the rosé with ice if you want.", booking:null, maps:"Mister+Paradise+East+Village+NYC", reviews:1100 },
-        { id:"evw3", emoji:"🫙", place:"Accidental Bar", type:"Sake Bar", desc:"Changing sake selection with descriptions like 'holy water for the god of sake.' Feels like a party.", booking:null, maps:"Accidental+Bar+East+Village+NYC", reviews:380 },
-        { id:"evw4", emoji:"🎭", place:"Joyface", type:"Cocktail Lounge", desc:"No standing room, plaid carpets, fringed lamps, mirrored ceiling. A speakeasy that isn't hidden.", booking:null, maps:"Joyface+East+Village+NYC", reviews:720 },
-      ],
-      experimental: [
-        { id:"eve1", emoji:"🎬", place:"Monsieur", type:"Cinematic Cocktail Bar", desc:"Baz Luhrmann's bar. Gothic grandeur, pink stained glass, stuffed birds, suit of armor. Opens Jan 2025.", booking:"monsieurnyc.com", maps:"Monsieur+Bar+East+Village+NYC", reviews:290 },
-        { id:"eve2", emoji:"🐅", place:"Hidden Tiger", type:"Craft Cocktail Lounge", desc:"A genuine hidden gem. Creative cocktails including excellent non-alcoholic options. Undiscovered.", booking:null, maps:"Hidden+Tiger+East+Village+NYC", reviews:140 },
-        { id:"eve3", emoji:"🌶️", place:"Ding-A-Ling", type:"Dive + Craft Cocktail", desc:"$7 mixed drinks daily 4-7pm happy hour. Unpretentious craft cocktails in a dive setting.", booking:null, maps:"Ding+A+Ling+Bar+East+Village+NYC", reviews:480 },
-        { id:"eve4", emoji:"🍸", place:"Bar Snack", type:"Modern Cocktail Bar", desc:"The city's best new bar. Snack bag cocktail, fresh-from-the-bag chips, bathroom worth the visit alone.", booking:null, maps:"Bar+Snack+East+Village+NYC", reviews:680 },
-      ],
+          { place:"Two Perrys", type:"cocktail bar", desc:"cocktail bar", booking:null, maps:"Two+Perrys+East+Village+Manhattan", reviews:106, price:"$$", reservable:true, stars:4.9 },
+          { place:"Sweet Linda", type:"Bar", desc:"Sweet Linda", booking:"https://sweetlindanyc.com/?utm_source=gbp&utm_medium=organic", maps:"Sweet+Linda+East+Village+Manhattan", reviews:230, price:"$$", reservable:true, stars:4.7 },
+          { place:"Death & Co East Village", type:"Bar", desc:"Death & Co East Village", booking:"http://www.deathandcompany.com/", maps:"Death+&+Co+East+Village+East+Village+Manhattan", reviews:2077, price:"$$$", reservable:true, stars:4.5 },
+          { place:"AURA Tapas & Cocktail Bar", type:"Bar", desc:"AURA Tapas & Cocktail Bar", booking:"http://www.aurabarandkitchen.com/", maps:"AURA+Tapas+&+Cocktail+Bar+East+Village+Manhattan", reviews:356, price:"$$", reservable:true, stars:4.9 },
+          { place:"Ruffian", type:"Bar", desc:"Ruffian", booking:"http://www.ruffiannyc.com/", maps:"Ruffian+East+Village+Manhattan", reviews:423, price:"$$", reservable:true, stars:4.7 },
+          { place:"Sorso'", type:"Bar", desc:"Sorso'", booking:"http://www.sorsonyc.com/", maps:"Sorso+East+Village+Manhattan", reviews:736, price:"$$", reservable:true, stars:4.9 },
+          { place:"Stickett Inn", type:"Bar", desc:"Stickett Inn", booking:null, maps:"Stickett+Inn+East+Village+Manhattan", reviews:121, price:"$$", reservable:false, stars:4.6 },
+          { place:"The Headless Widow", type:"Bar", desc:"The Headless Widow", booking:"https://www.theheadlesswidow.com/", maps:"The+Headless+Widow+East+Village+Manhattan", reviews:455, price:"$$", reservable:true, stars:4.6 },
+          { place:"Maretta", type:"Bar", desc:"Maretta", booking:"https://www.marettanewyork.com/", maps:"Maretta+East+Village+Manhattan", reviews:217, price:"$$", reservable:true, stars:4.8 },
+          { place:"Poppy", type:"Bar", desc:"Poppy", booking:"https://www.poppyeastvillage.com/", maps:"Poppy+East+Village+Manhattan", reviews:130, price:"$$", reservable:true, stars:4.9 },
+          { place:"Café Maud", type:"Bar", desc:"Café Maud", booking:"https://www.cafemaud.com/eastvillage", maps:"Café+Maud+East+Village+Manhattan", reviews:529, price:"$$", reservable:true, stars:4.5 },
+          { place:"Pardon My French", type:"Bar", desc:"Pardon My French", booking:"https://www.pmfnyc.com/", maps:"Pardon+My+French+East+Village+Manhattan", reviews:999, price:"$$$", reservable:true, stars:4.4 },
+          { place:"Cafe Mogador", type:"Bar", desc:"Cafe Mogador", booking:"http://cafemogador.com/", maps:"Cafe+Mogador+East+Village+Manhattan", reviews:3032, price:"$$", reservable:true, stars:4.5 },
+          { place:"A10 Kitchen", type:"Bar", desc:"A10 Kitchen", booking:"https://a10kitchen.com/", maps:"A10+Kitchen+East+Village+Manhattan", reviews:293, price:"$$", reservable:true, stars:4.5 },
+          { place:"Via Della Pace", type:"Bar", desc:"Via Della Pace", booking:"http://viadellapacenyc.com/", maps:"Via+Della+Pace+East+Village+Manhattan", reviews:990, price:"$$", reservable:true, stars:4.6 },
+          { place:"The Wayland", type:"Bar", desc:"The Wayland", booking:"http://thewaylandnyc.com/", maps:"The+Wayland+East+Village+Manhattan", reviews:885, price:"$$", reservable:true, stars:4.6 },
+          { place:"Pineapple Club", type:"Bar", desc:"Pineapple Club", booking:"https://pineappleclub.com/", maps:"Pineapple+Club+East+Village+Manhattan", reviews:1155, price:"$$", reservable:true, stars:4.7 },
+          { place:"The Last Resort", type:"Bar", desc:"The Last Resort", booking:null, maps:"The+Last+Resort+East+Village+Manhattan", reviews:37, price:"$$", reservable:false, stars:4.7 }
+        ],
+      beer: [],
+      wine: [],
+      experimental: [],
       speakeasy: [
-        { id:"evs1", emoji:"☎️", place:"Please Don't Tell (PDT)", type:"Phone Booth Speakeasy", desc:"Enter through a payphone in Crif Dogs. Bacon-infused bourbon old fashioned. World famous.", booking:"pdtnyc.com", maps:"Please+Don't+Tell+PDT+East+Village+NYC", reviews:3800 },
-        { id:"evs2", emoji:"🗝️", place:"Lovers of Today", type:"Hidden Cocktail Bar", desc:"Walk through the gate marked 132½. Cushioned booths, alcoves, cocktails named after love songs.", booking:null, maps:"Lovers+of+Today+East+Village+NYC", reviews:640 },
-        { id:"evs3", emoji:"🎬", place:"Monsieur", type:"Hidden Cinema Bar", desc:"No obvious signage. Baz Luhrmann's newest project. Gothic medieval fantasy room behind a quiet door.", booking:"monsieurnyc.com", maps:"Monsieur+Bar+East+Village+NYC", reviews:290 },
-        { id:"evs4", emoji:"🐅", place:"Hidden Tiger", type:"Unmarked Lounge", desc:"No sign outside. Ring the bell. One of the EV's best kept secrets with outstanding cocktails.", booking:null, maps:"Hidden+Tiger+East+Village+NYC", reviews:140 },
-      ],
+          { place:"Please Don't Tell", type:"speakeasy", desc:"speakeasy", booking:"http://www.pdtnyc.com/", maps:"Please+Dont+Tell+East+Village+Manhattan", reviews:2417, price:"$$$", reservable:true, stars:4.3 },
+          { place:"Hidden Tiger", type:"korean, food & drink", desc:"korean, food & drink", booking:"http://hiddentigernyc.com/", maps:"Hidden+Tiger+East+Village+Manhattan", reviews:84, price:"$$", reservable:true, stars:4.3 }
+        ],
     },
     food: {
       japanese: [
-        { id:"evj1", emoji:"🍜", place:"Sobaya", type:"Japanese Soba", desc:"Quiet, elegant soba restaurant on 9th St. Handmade noodles, cold sake, zero attitude. A real gem.", booking:null, maps:"Sobaya+East+Village+NYC", reviews:820 },
-        { id:"evj2", emoji:"🥢", place:"Mala Project", type:"Sichuan Dry Pot", desc:"Order a dry pot to share. Customizable, fiery, numbing. Best with a group around a table.", booking:"malaproject.com", maps:"Mala+Project+East+Village+NYC", reviews:2400 },
-        { id:"evj3", emoji:"🍣", place:"Soothr", type:"Modern Thai Noodle", desc:"Michelin Bib Gourmand. Duck and dry crab noodles are the move. Homey Bangkok-street-food vibes.", booking:null, maps:"Soothr+East+Village+NYC", reviews:1100 },
-        { id:"evj4", emoji:"🌿", place:"Tsukimi", type:"Japanese Kaiseki", desc:"Counter-only, 12 seats, seasonal Japanese. The best reviewed restaurant in the East Village right now.", booking:"tsukiminyc.com", maps:"Tsukimi+East+Village+NYC", reviews:580 },
+        { id:"secchuyokota", emoji:"🥢", place:"Secchu Yokota 折衷よこ田", type:"japanese", desc:"An omakase menu focused on seasonal tempura in a modern, intimate dining room with an open kitchen.", booking:"http://www.secchuyokota.com/", maps:"Secchu+Yokota+", reviews:313, price:"$$", reservable:true, stars:4.9 },
+        { id:"odoeastvilla", emoji:"🥢", place:"Odo East Village", type:"japanese", desc:"4.9★ · japanese", booking:"https://www.odoeastvillage.nyc/", maps:"Odo+East+Village", reviews:22, price:"$$", reservable:true, stars:4.9 },
+        { id:"yakinikugene", emoji:"🥢", place:"Yakiniku Gen East Village", type:"japanese", desc:"4.9★ · japanese", booking:"https://yakinikugen.com/", maps:"Yakiniku+Gen+East+Village", reviews:1330, price:"$$", reservable:true, stars:4.9 },
+        { id:"rosella", emoji:"🥢", place:"Rosella", type:"japanese", desc:"Trendy restaurant offering Japanese cuisine including sushi, rice bowls & soup, plus sake & wine.", booking:"http://www.rosellanyc.com/", maps:"Rosella", reviews:398, price:"$$", reservable:true, stars:4.7 },
+        { id:"taishokennyc", emoji:"🥢", place:"Taishoken NYC", type:"japanese", desc:"4.6★ · japanese", booking:"http://www.nyc-taishoken.com/", maps:"Taishoken+NYC", reviews:186, price:"$$", reservable:true, stars:4.6 },
       ],
       pasta: [
-        { id:"evp1", emoji:"🍝", place:"Lil' Frankie's", type:"Italian", desc:"Frank Prisinzano's neighborhood gem. Reliable pasta, great pizza, honest Italian. Never disappoints.", booking:null, maps:"Lil+Frankies+East+Village+NYC", reviews:4200 },
-        { id:"evp2", emoji:"🕯️", place:"Supper", type:"Italian", desc:"Cash only, always busy. Spaghetti al limone is the order. Cozy like a snowstorm should be.", booking:null, maps:"Supper+Restaurant+East+Village+NYC", reviews:1800 },
-        { id:"evp3", emoji:"🌺", place:"Arté Cafe", type:"Northern Italian", desc:"Open since 1990. Fireplace, intimate garden, ravioli aurora. Genuinely timeless and romantic.", booking:"artecafenyc.com", maps:"Arte+Cafe+East+Village+NYC", reviews:680 },
-        { id:"evp4", emoji:"🍕", place:"Motorino", type:"Neapolitan Pizza", desc:"Some of the best pizza in Manhattan. Chill spot on 12th St. Charred, blistered, perfect.", booking:"motorinopizza.com", maps:"Motorino+East+Village+NYC", reviews:2600 },
+        { id:"pastarullo", emoji:"🍝", place:"Pasta Rullo", type:"italian dinner", desc:"4.9★ · italian dinner", booking:"https://pastarullo.com/", maps:"Pasta+Rullo", reviews:805, price:"$$", reservable:false, stars:4.9 },
+        { id:"maretta", emoji:"🍝", place:"Maretta", type:"italian dinner", desc:"4.8★ · italian dinner", booking:"https://www.marettanewyork.com/", maps:"Maretta", reviews:217, price:"$$", reservable:true, stars:4.8 },
+        { id:"ilpostoaccan", emoji:"🍝", place:"Il Posto Accanto", type:"italian dinner", desc:"Italian wines are paired with small plates at this rustic, brick-walled wine bar.", booking:"http://ilpostoaccantonyc.com/", maps:"Il+Posto+Accanto", reviews:596, price:"$$", reservable:true, stars:4.6 },
+        { id:"viadellapace", emoji:"🍝", place:"Via Della Pace", type:"italian dinner", desc:"Cozy, cash-only Italian restaurant in the East Village lined with exposed brick.", booking:"http://viadellapacenyc.com/", maps:"Via+Della+Pace", reviews:990, price:"$$", reservable:true, stars:4.6 },
       ],
       pizza: [
-        { id:"evpz1", emoji:"🍕", place:"Motorino", type:"Neapolitan", desc:"The East Village's finest pie. Clam pizza is the signature move.", booking:"motorinopizza.com", maps:"Motorino+East+Village+NYC", reviews:2600 },
-        { id:"evpz2", emoji:"🔥", place:"Lil' Frankie's", type:"Wood-Fired", desc:"Neighborhood institution. The margherita is perfectly simple.", booking:null, maps:"Lil+Frankies+East+Village+NYC", reviews:4200 },
-        { id:"evpz3", emoji:"🌿", place:"San Marzano", type:"Italian Pizza", desc:"Great outdoor seating on 2nd Ave. Lump crab benedict at brunch, wood-fired pies at dinner.", booking:null, maps:"San+Marzano+East+Village+NYC", reviews:1400 },
-        { id:"evpz4", emoji:"🫙", place:"Superiority Burger", type:"Vegetarian Burger", desc:"Michelin Bib Gourmand. The burnt broccoli and sloppy joe are revelations. Tiny, cash, genius.", booking:null, maps:"Superiority+Burger+East+Village+NYC", reviews:1900 },
+        { id:"popspizzaofe", emoji:"🍕", place:"Pop's Pizza of East Village", type:"pizza", desc:"5.0★ · pizza", booking:"http://popspizzanyc.com/", maps:"Pops+Pizza+of+East+Village", reviews:975, price:"$$", reservable:true, stars:5.0 },
+        { id:"cellospizzer", emoji:"🍕", place:"Cello's Pizzeria", type:"pizza", desc:"4.8★ · pizza", booking:"http://www.cellosnyc.com/", maps:"Cellos+Pizzeria", reviews:888, price:"$", reservable:false, stars:4.8 },
+        { id:"motorinopizz", emoji:"🍕", place:"Motorino Pizza", type:"pizza", desc:"Casual restaurant featuring artisanal, Neapolitan-style thin-crust pizzas, plus wine & beer.", booking:"https://www.motorinopizza.com/", maps:"Motorino+Pizza", reviews:764, price:"$$", reservable:true, stars:4.4 },
       ],
       mediterranean: [
-        { id:"evme1", emoji:"🌺", place:"Shaw-Nae's House", type:"Caribbean", desc:"NYT 2025 top 10. Goat curry, cobia fish, cassava dumplings. Feels like a secret despite the praise.", booking:null, maps:"Shaw+Naes+House+East+Village+NYC", reviews:480 },
-        { id:"evme2", emoji:"🫒", place:"Via della Pace", type:"Italian Mediterranean", desc:"Garden seating, fireplace in winter. The meatballs and flatbreads are a love language.", booking:null, maps:"Via+della+Pace+East+Village+NYC", reviews:820 },
-        { id:"evme3", emoji:"🌿", place:"Café Mogador", type:"Moroccan", desc:"The East Village institution since 1983. Tagines, halloumi eggs, Turkish espresso martini.", booking:"cafemogador.com", maps:"Cafe+Mogador+East+Village+NYC", reviews:3800 },
-        { id:"evme4", emoji:"🐟", place:"Pylos", type:"Greek", desc:"Suspended clay pots on the ceiling, warm room, excellent grilled fish and mezze.", booking:"pylosrestaurant.com", maps:"Pylos+Restaurant+East+Village+NYC", reviews:1200 },
+        { id:"fattoush", emoji:"🥙", place:"Fattoush", type:"mediterranean", desc:"4.9★ · mediterranean", booking:"https://www.fattousheastvillage.com/", maps:"Fattoush", reviews:268, price:"$$", reservable:true, stars:4.9 },
+        { id:"zestytabboul", emoji:"🥙", place:"Zesty Tabbouleh", type:"mediterranean", desc:"4.9★ · mediterranean", booking:"https://www.zestytabbouleh.com/", maps:"Zesty+Tabbouleh", reviews:161, price:"$$", reservable:true, stars:4.9 },
+        { id:"joseluismedi", emoji:"🥙", place:"Jose Luis Mediterranean Cuisine", type:"mediterranean", desc:"Tapas, paellas & pasta are served in this relaxed restaurant that has snug surroundings & a patio.", booking:"http://joseluisnewyork.com/", maps:"Jose+Luis+Mediterranean+Cuisine", reviews:703, price:"$$", reservable:true, stars:4.8 },
+        { id:"barbounia", emoji:"🥙", place:"Barbounia", type:"mediterranean", desc:"4.7★ · mediterranean", booking:"https://barbounia.com/", maps:"Barbounia", reviews:4864, price:"$$$", reservable:true, stars:4.7 },
+        { id:"baladeauthen", emoji:"🥙", place:"Balade | Authentic Lebanese Restaurant | East Village, NYC", type:"mediterranean", desc:"Lebanese bistro offering classic & creative dishes, such as kebabs & pita pizzas, plus beer & wine.", booking:"https://baladerestaurants.com/?utm_source=google", maps:"Balade++Authentic+Lebanese+Restaurant++East+Village+NYC", reviews:1562, price:"$$", reservable:true, stars:4.5 },
       ],
       american: [
-        { id:"eva1", emoji:"🥩", place:"The Smith", type:"American Brasserie", desc:"Solid all-day brasserie. Great for a classic NYC date — cocktails, steak, no fuss.", booking:"thesmithrestaurant.com", maps:"The+Smith+East+Village+NYC", reviews:5800 },
-        { id:"eva2", emoji:"🍗", place:"Root & Bone", type:"Southern Fried Chicken", desc:"Fried chicken on a biscuit, on waffles, or plain with honey tabasco. Always right.", booking:null, maps:"Root+and+Bone+East+Village+NYC", reviews:1600 },
-        { id:"eva3", emoji:"🌿", place:"Hearth", type:"Upscale American", desc:"The most grown-up room in the East Village. Polenta and sausage, kale ragu with eggs.", booking:"restauranthearth.com", maps:"Hearth+Restaurant+East+Village+NYC", reviews:1400 },
-        { id:"eva4", emoji:"🥬", place:"Superiority Burger", type:"Vegetarian", desc:"Michelin Bib Gourmand. Sloppy joe and burnt broccoli are the only orders. Tiny genius spot.", booking:null, maps:"Superiority+Burger+East+Village+NYC", reviews:1900 },
-      ],
+          { place:"Plado Tasting Bar", type:"Bar", desc:"Plado Tasting Bar", booking:"https://pladohospitality.com/", maps:"Plado+Tasting+Bar+East+Village+Manhattan", reviews:431, price:"$$", reservable:true, stars:4.7 },
+          { place:"Bungalow", type:"Bar", desc:"Bungalow", booking:"https://www.bungalowny.com/", maps:"Bungalow+East+Village+Manhattan", reviews:2344, price:"$$", reservable:true, stars:4.4 },
+          { place:"Smør", type:"Bar", desc:"Smør", booking:"http://www.smornyc.com/", maps:"Smør+East+Village+Manhattan", reviews:468, price:"$$", reservable:true, stars:4.6 },
+          { place:"Thursday Kitchen", type:"Bar", desc:"Thursday Kitchen", booking:"http://www.thursdaykitchen.com/", maps:"Thursday+Kitchen+East+Village+Manhattan", reviews:1417, price:"$$", reservable:false, stars:4.6 }
+        ],
       brunch: [
-        { id:"evbr1", emoji:"🥚", place:"Veselka", type:"24hr Ukrainian Diner", desc:"Open since 1954. Brunch pierogi with bacon and cheddar. Challah French toast. A NYC rite of passage.", booking:null, maps:"Veselka+East+Village+NYC", reviews:6200 },
-        { id:"evbr2", emoji:"🥐", place:"David's Cafe", type:"French-American Diner", desc:"St. Marks people-watching from the window. Run by two Daniel Boulud alums. Quietly exceptional.", booking:null, maps:"Davids+Cafe+East+Village+NYC", reviews:380 },
-        { id:"evbr3", emoji:"🌺", place:"Café Mogador", type:"Moroccan Brunch", desc:"Halloumi eggs, lamb tagine, Turkish espresso martini with mint. A neighborhood anchor since 1983.", booking:"cafemogador.com", maps:"Cafe+Mogador+East+Village+NYC", reviews:3800 },
-        { id:"evbr4", emoji:"🥞", place:"B&H Dairy", type:"Kosher Dairy Counter", desc:"Open since 1938. 400 square feet of challah french toast, matzoh ball soup, and latkes. Cash only.", booking:null, maps:"B+H+Dairy+East+Village+NYC", reviews:1600 },
+        { id:"poppy", emoji:"🥐", place:"Poppy", type:"brunch", desc:"4.9★ · brunch", booking:"https://www.poppyeastvillage.com/", maps:"Poppy", reviews:130, price:"$$", reservable:true, stars:4.9 },
+        { id:"cafmaud", emoji:"🥐", place:"Café Maud", type:"brunch", desc:"4.5★ · brunch", booking:"https://www.cafemaud.com/eastvillage", maps:"Caf+Maud", reviews:529, price:"$$", reservable:true, stars:4.5 },
+        { id:"cafemogador", emoji:"🥐", place:"Cafe Mogador", type:"brunch", desc:"Classic Moroccan flavors & outdoor seating draw a bohemian crowd to this neighborhood standby.", booking:"http://cafemogador.com/", maps:"Cafe+Mogador", reviews:3033, price:"$$", reservable:true, stars:4.5 },
+        { id:"post", emoji:"🥐", place:"POST", type:"brunch", desc:"Gourmet American eats & cocktails in a narrow, stylish space with a whitewashed bar & painted brick.", booking:"http://www.post-nyc.com/", maps:"POST", reviews:467, price:"$$", reservable:true, stars:4.5 },
       ],
       latenight: [
-        { id:"evln1", emoji:"🥟", place:"Veselka", type:"24hr Ukrainian Diner", desc:"The classic. Pierogies and borscht at 3am. Open every night, no exceptions.", booking:null, maps:"Veselka+East+Village+NYC", reviews:6200 },
-        { id:"evln2", emoji:"🌭", place:"Crif Dogs", type:"Late Night Hot Dogs", desc:"Open till 2am. Get a deep-fried hot dog. Also the entrance to PDT speakeasy.", booking:null, maps:"Crif+Dogs+East+Village+NYC", reviews:2800 },
-        { id:"evln3", emoji:"🍬", place:"Ray's Candy Store", type:"Late Night Sweets", desc:"Open since 1974. Egg creams, fried Oreos, funnel cake. Pure East Village after midnight.", booking:null, maps:"Rays+Candy+Store+East+Village+NYC", reviews:1400 },
-        { id:"evln4", emoji:"🍗", place:"Root & Bone", type:"Late Night Fried Chicken", desc:"Open till 1am weekdays, 3am weekends. The best fried chicken in the neighborhood at any hour.", booking:null, maps:"Root+and+Bone+East+Village+NYC", reviews:1600 },
+          { place:"Plado Tasting Bar", type:"Bar", desc:"Plado Tasting Bar", booking:"https://pladohospitality.com/", maps:"Plado+Tasting+Bar+East+Village+Manhattan", reviews:431, price:"$$", reservable:true, stars:4.7 },
+          { place:"Bungalow", type:"Bar", desc:"Bungalow", booking:"https://www.bungalowny.com/", maps:"Bungalow+East+Village+Manhattan", reviews:2344, price:"$$", reservable:true, stars:4.4 },
+          { place:"Smør", type:"Bar", desc:"Smør", booking:"http://www.smornyc.com/", maps:"Smør+East+Village+Manhattan", reviews:468, price:"$$", reservable:true, stars:4.6 },
+          { place:"Thursday Kitchen", type:"Bar", desc:"Thursday Kitchen", booking:"http://www.thursdaykitchen.com/", maps:"Thursday+Kitchen+East+Village+Manhattan", reviews:1417, price:"$$", reservable:false, stars:4.6 },
+        
+        { id:"nofork", emoji:"🌙", place:"No Fork", type:"late night", desc:"4.9★ · late night", booking:null, maps:"No+Fork", reviews:401, price:"$$", reservable:false, stars:4.9 },
+        { id:"soothr", emoji:"🌙", place:"Soothr", type:"late night", desc:"Intimate space with al fresco dining, offering Thai noodles and soups, plus cocktails.", booking:"http://soothrnyc.com/", maps:"Soothr", reviews:5853, price:"$$", reservable:true, stars:4.7 },
+        { id:"thesmith", emoji:"🌙", place:"The Smith", type:"late night", desc:"Trendy types gather for American eats & specialty drinks at this upbeat hangout & brunch favorite.", booking:"https://thesmithrestaurant.com/location/east-village/", maps:"The+Smith", reviews:2879, price:"$$", reservable:true, stars:4.4 },
+        { id:"bungalow", emoji:"🌙", place:"Bungalow", type:"late night", desc:"4.4★ · late night", booking:"https://www.bungalowny.com/", maps:"Bungalow", reviews:2344, price:"$$", reservable:true, stars:4.4 },
       ],
     },
-    activities: {
-      free: [
-        { id:"evaf1", emoji:"🌳", place:"Tompkins Square Park", type:"Park + People Watching", desc:"The beating heart of the East Village. Sit on a bench, watch the neighborhood unfold.", maps:"Tompkins+Square+Park+East+Village+NYC", reviews:8400 },
-        { id:"evaf2", emoji:"🎨", place:"St. Marks Place Walk", type:"Street Culture", desc:"Walk the strip from 3rd Ave to Ave A. Record shops, murals, decades of NYC counterculture.", maps:"St+Marks+Place+East+Village+NYC", reviews:null },
-        { id:"evaf3", emoji:"📖", place:"KGB Bar Reading Series", type:"Free Literary Events", desc:"Free readings most nights in a cramped, art-covered former Soviet club. Check calendar first.", maps:"KGB+Bar+East+Village+NYC", reviews:820 },
-        { id:"evaf4", emoji:"🌿", place:"Community Garden Crawl", type:"Hidden Gardens", desc:"The EV has over 600 community gardens. Wander 6th St between Aves B and C for the best cluster.", maps:"East+Village+Community+Gardens+NYC", reviews:null },
+    activities: { free: [], paid: [
+          { id:"nycomedyclubev", emoji:"😂", place:"New York Comedy Club", type:"comedy", desc:"One of NYC's most respected comedy clubs. Intimate room, strong lineups.", booking:"https://newyorkcomedyclub.com/", maps:"New+York+Comedy+Club+East+Village", reviews:956, price:"$$", reservable:true, stars:4.3 },
+          { id:"stmarkscc", emoji:"😂", place:"St. Marks Comedy Club", type:"comedy", desc:"Comedy club on St. Marks Place. Great for a first date.", booking:null, maps:"St+Marks+Comedy+Club+East+Village", reviews:829, price:"$$", reservable:false, stars:4.3 },
+          { id:"topsecretcc", emoji:"😂", place:"Top Secret Comedy Club", type:"comedy", desc:"Intimate comedy show in the East Village.", booking:"https://www.topsecretcomedy.com/", maps:"Top+Secret+Comedy+Club+East+Village", reviews:252, price:"$$", reservable:true, stars:4.9 },
+        ] },
+    happyHour: [],
+  },
+  west_village: {
+    bars: {
+      cocktails: [
+          { place:"Dante West Village", type:"Bar", desc:"Dante West Village", booking:"https://www.dante-nyc.com/wv/", maps:"Dante+West+Village+West+Village+Manhattan", reviews:1198, price:"$$$", reservable:true, stars:4.5 },
+          { place:"Serpentine", type:"Bar", desc:"Serpentine", booking:"https://www.serpentinenyc.com/", maps:"Serpentine+West+Village+Manhattan", reviews:138, price:"$$", reservable:true, stars:4.6 },
+          { place:"Do Not Disturb", type:"Bar", desc:"Do Not Disturb", booking:"http://www.dnd-nyc.com/", maps:"Do+Not+Disturb+West+Village+Manhattan", reviews:561, price:"$$", reservable:true, stars:4.6 },
+          { place:"WEST10WEST", type:"Bar", desc:"WEST10WEST", booking:"http://www.west10west.com/", maps:"WEST10WEST+West+Village+Manhattan", reviews:320, price:"$$", reservable:true, stars:4.8 },
+          { place:"LELABAR", type:"Bar", desc:"LELABAR", booking:"http://www.lelabar.com/", maps:"LELABAR+West+Village+Manhattan", reviews:357, price:"$$", reservable:true, stars:4.6 },
+          { place:"Cork Soho", type:"Bar", desc:"Cork Soho", booking:"http://corkny.com/", maps:"Cork+Soho+West+Village+Manhattan", reviews:230, price:"$$", reservable:true, stars:4.8 },
+          { place:"St Tropez West Village", type:"Bar", desc:"St Tropez West Village", booking:"https://www.sttropezwinebar.com/", maps:"St+Tropez+West+Village+West+Village+Manhattan", reviews:944, price:"$$", reservable:true, stars:4.6 },
+          { place:"The Garret", type:"Bar", desc:"The Garret", booking:"http://www.thegarretbars.com/", maps:"The+Garret+West+Village+Manhattan", reviews:833, price:"$$", reservable:false, stars:4.2 },
+          { place:"Employees Only", type:"Bar", desc:"Employees Only", booking:"http://www.employeesonlynyc.com/", maps:"Employees+Only+West+Village+Manhattan", reviews:3129, price:"$$$", reservable:true, stars:4.2 },
+          { place:"Angel's Share", type:"Bar", desc:"Angel's Share", booking:"http://www.angelssharenyc.com/", maps:"Angel's+Share+West+Village+Manhattan", reviews:1804, price:"$$", reservable:false, stars:4.4 },
+          { place:"The Mary Lane", type:"Bar", desc:"The Mary Lane", booking:"https://www.themarylanenyc.com/", maps:"The+Mary+Lane+West+Village+Manhattan", reviews:443, price:"$$", reservable:true, stars:4.6 },
+          { place:"The Happiest Hour", type:"Bar", desc:"The Happiest Hour", booking:"http://happiesthournyc.com/", maps:"The+Happiest+Hour+West+Village+Manhattan", reviews:1070, price:"$$", reservable:true, stars:4.1 },
+          { place:"Turks & Frogs", type:"Bar", desc:"Turks & Frogs", booking:"http://www.turksandfrogs.com/", maps:"Turks+&+Frogs+West+Village+Manhattan", reviews:165, price:"$$", reservable:true, stars:4.4 }
+        ],
+      beer: [],
+      wine: [
+          { place:"Entwine Cocktail Bar", type:"Bar", desc:"Entwine Cocktail Bar", booking:"http://www.entwinenyc.com/", maps:"Entwine+Cocktail+Bar+West+Village+Manhattan", reviews:428, price:"$$", reservable:true, stars:4.5 },
+          { place:"Amélie West Village Restaurant, Bistro & Wine Bar", type:"Bar", desc:"Amélie West Village Restaurant, Bistro & Wine Bar", booking:"http://www.ameliewinebar.com/", maps:"Amélie+West+Village+Restaurant,+Bistro+&+Wine+Bar+West+Village+Manhattan", reviews:1444, price:"$$", reservable:true, stars:4.6 },
+          { place:"CARTA Wine Bar New York", type:"Bar", desc:"CARTA Wine Bar New York", booking:"http://cartawinebar.com/", maps:"CARTA+Wine+Bar+New+York+West+Village+Manhattan", reviews:91, price:"$$", reservable:true, stars:4.7 },
+          { place:"Society Cafe", type:"Bar", desc:"Society Cafe", booking:"https://www.societycafenyc.com/", maps:"Society+Cafe+West+Village+Manhattan", reviews:687, price:"$$", reservable:true, stars:4.5 },
+          { place:"St Jardim", type:"Bar", desc:"St Jardim", booking:"http://www.stjardimnyc.com/", maps:"St+Jardim+West+Village+Manhattan", reviews:351, price:"$$", reservable:true, stars:4.5 }
+        ],
+      experimental: [],
+      speakeasy: [
+          { place:"Little Branch", type:"Bar", desc:"Little Branch", booking:null, maps:"Little+Branch+West+Village+Manhattan", reviews:904, price:"$$$", reservable:false, stars:4.4 }
+        ],
+    },
+    food: {
+      japanese: [
+        { id:"midoomakasew", emoji:"🥢", place:"Mido Omakase - West Village", type:"japanese", desc:"4.9★ · japanese", booking:"https://midojapanesegroup.com/", maps:"Mido+Omakase++West+Village", reviews:424, price:"$$", reservable:true, stars:4.9 },
+        { id:"blueribbonsu", emoji:"🥢", place:"Blue Ribbon Sushi & Sake", type:"japanese", desc:"4.9★ · japanese", booking:"https://www.blueribbonsushiandsake.com/", maps:"Blue+Ribbon+Sushi++Sake", reviews:68, price:"$$", reservable:true, stars:4.9 },
+        { id:"fukuomakase", emoji:"🥢", place:"Fuku Omakase", type:"japanese", desc:"4.8★ · japanese", booking:"http://fukuomakase.com/", maps:"Fuku+Omakase", reviews:331, price:"$$", reservable:true, stars:4.8 },
+        { id:"sushimakotoo", emoji:"🥢", place:"Sushi Makoto - Omakase", type:"japanese", desc:"4.8★ · japanese", booking:"http://sushimakoto.com/", maps:"Sushi+Makoto++Omakase", reviews:359, price:"$$", reservable:true, stars:4.8 },
+        { id:"naminoriwest", emoji:"🥢", place:"Nami Nori West Village", type:"japanese", desc:"Temaki hand rolls and other Japanese bites served in a minimalist setting with neutral tones.", booking:"http://naminori.nyc/", maps:"Nami+Nori+West+Village", reviews:1796, price:"$$", reservable:true, stars:4.4 },
       ],
-      paid: [
-        { id:"evap1", emoji:"😂", place:"New York Comedy Club", type:"Comedy Show", desc:"Right next to KGB Bar. Intimate room, strong lineups, great first date energy.", booking:"newyorkcomedyclub.com", maps:"New+York+Comedy+Club+East+Village+NYC", reviews:2800 },
-        { id:"evap2", emoji:"🎭", place:"Howl Arts Festival Venue", type:"Performance Space", desc:"Intimate performance space in the EV tradition. Experimental, weird, unforgettable.", booking:null, maps:"East+Village+Performance+Space+NYC", reviews:null },
-        { id:"evap3", emoji:"🎵", place:"Nublu", type:"Jazz + Electronic Club", desc:"Small club on Ave C. Jazz to electronic depending on the night. Truly local, zero tourists.", booking:"nublu.net", maps:"Nublu+East+Village+NYC", reviews:680 },
-        { id:"evap4", emoji:"🎤", place:"Sake Bar Decibel", type:"Underground Sake Bar", desc:"Basement sake bar, live jazz some nights. 200+ sakes, low ceilings, incredible date energy.", booking:null, maps:"Sake+Bar+Decibel+East+Village+NYC", reviews:1400 },
+      pasta: [
+          { place:"Canto West Village", type:"Bar", desc:"Canto West Village", booking:"https://www.cantonyc.com/", maps:"Canto+West+Village+West+Village+Manhattan", reviews:1549, price:"$$", reservable:true, stars:4.6 },
+          { place:"Boucherie West Village", type:"Bar", desc:"Boucherie West Village", booking:"https://www.boucherieus.com/west-village-menus/", maps:"Boucherie+West+Village+West+Village+Manhattan", reviews:9271, price:"$$$", reservable:true, stars:4.8 },
+          { place:"Joseph Leonard", type:"Bar", desc:"Joseph Leonard", booking:"http://www.josephleonard.com/", maps:"Joseph+Leonard+West+Village+Manhattan", reviews:1362, price:"$$$", reservable:true, stars:4.6 },
+          { place:"Le Petit Village", type:"Bar", desc:"Le Petit Village", booking:"https://www.lepetitvillagenyc.com/", maps:"Le+Petit+Village+West+Village+Manhattan", reviews:581, price:"$$", reservable:true, stars:4.7 },
+        
+        { id:"osterianonni", emoji:"🍝", place:"Osteria Nonnino", type:"italian dinner", desc:"4.8★ · italian dinner", booking:"http://www.osterianonnino.com/", maps:"Osteria+Nonnino", reviews:3761, price:"$$", reservable:true, stars:4.8 },
+        { id:"osteriacarli", emoji:"🍝", place:"Osteria Carlina West Village", type:"italian dinner", desc:"Quaint Italian restaurant serving pasta, meat dishes & desserts, plus weekend brunch & wine.", booking:"http://www.osteriacarlina.com/", maps:"Osteria+Carlina+West+Village", reviews:914, price:"$$", reservable:true, stars:4.7 },
+        { id:"cantowestvil", emoji:"🍝", place:"Canto West Village", type:"italian dinner", desc:"Vibrant outfit with exposed bricks & a wood ceiling serving Italian classics & cocktails.", booking:"https://www.cantonyc.com/", maps:"Canto+West+Village", reviews:1549, price:"$$", reservable:true, stars:4.6 },
+        { id:"palma", emoji:"🍝", place:"Palma", type:"italian dinner", desc:"Italian classics are crafted from organic ingredients in a sunwashed stucco space with a garden.", booking:"https://www.palmanyc.com/", maps:"Palma", reviews:1162, price:"$$$", reservable:true, stars:4.6 },
+        { id:"lalanternadi", emoji:"🍝", place:"La Lanterna di Vittorio", type:"italian dinner", desc:"A lantern-lit indoor garden & live jazz in the adjoining bar complement light Italian fare.", booking:"http://lalanterna.nyc/", maps:"La+Lanterna+di+Vittorio", reviews:2387, price:"$$", reservable:true, stars:4.5 },
+      ],
+      pizza: [
+        { id:"fermentopizz", emoji:"🍕", place:"Fermento Pizza NYC", type:"pizza", desc:"5.0★ · pizza", booking:"https://www.fermentonyc.com/", maps:"Fermento+Pizza+NYC", reviews:77, price:"$$", reservable:false, stars:5.0 },
+      ],
+      mediterranean: [],
+      american: [
+          { place:"Canto West Village", type:"Bar", desc:"Canto West Village", booking:"https://www.cantonyc.com/", maps:"Canto+West+Village+West+Village+Manhattan", reviews:1549, price:"$$", reservable:true, stars:4.6 },
+          { place:"Boucherie West Village", type:"Bar", desc:"Boucherie West Village", booking:"https://www.boucherieus.com/west-village-menus/", maps:"Boucherie+West+Village+West+Village+Manhattan", reviews:9271, price:"$$$", reservable:true, stars:4.8 },
+          { place:"Little Ruby's West Village", type:"Bar", desc:"Little Ruby's West Village", booking:"https://www.rubyscafe.com/", maps:"Little+Rubys+West+Village+West+Village+Manhattan", reviews:755, price:"$$", reservable:true, stars:4.4 },
+          { place:"Joseph Leonard", type:"Bar", desc:"Joseph Leonard", booking:"http://www.josephleonard.com/", maps:"Joseph+Leonard+West+Village+Manhattan", reviews:1362, price:"$$$", reservable:true, stars:4.6 },
+          { place:"Le Petit Village", type:"Bar", desc:"Le Petit Village", booking:"https://www.lepetitvillagenyc.com/", maps:"Le+Petit+Village+West+Village+Manhattan", reviews:581, price:"$$", reservable:true, stars:4.7 }
+        ],
+      brunch: [
+        { id:"sunrisetcaf", emoji:"🥐", place:"Sunriset Café", type:"brunch", desc:"4.9★ · brunch", booking:"https://sunrisetcafe.com/", maps:"Sunriset+Caf", reviews:35, price:"$$", reservable:false, stars:4.9 },
+        { id:"boucheriewes", emoji:"🥐", place:"Boucherie West Village", type:"brunch", desc:"Two-floor bistro serving dry-aged steaks and other French fare, with a bar that's strong on absinthe.", booking:"https://www.boucherieus.com/west-village-menus/", maps:"Boucherie+West+Village", reviews:9270, price:"$$$", reservable:true, stars:4.8 },
+        { id:"hungryllama", emoji:"🥐", place:"Hungry Llama", type:"brunch", desc:"4.8★ · brunch", booking:"https://www.hungryllamacafe.com/", maps:"Hungry+Llama", reviews:342, price:"$$", reservable:false, stars:4.8 },
+        { id:"themarylane", emoji:"🥐", place:"The Mary Lane", type:"brunch", desc:"4.6★ · brunch", booking:"https://www.themarylanenyc.com/", maps:"The+Mary+Lane", reviews:443, price:"$$", reservable:true, stars:4.6 },
+        { id:"littlerubysw", emoji:"🥐", place:"Little Ruby's West Village", type:"brunch", desc:"4.4★ · brunch", booking:"https://www.rubyscafe.com/", maps:"Little+Rubys+West+Village", reviews:755, price:"$$", reservable:true, stars:4.4 },
+      ],
+      latenight: [
+          { place:"Canto West Village", type:"Bar", desc:"Canto West Village", booking:"https://www.cantonyc.com/", maps:"Canto+West+Village+West+Village+Manhattan", reviews:1549, price:"$$", reservable:true, stars:4.6 },
+          { place:"Boucherie West Village", type:"Bar", desc:"Boucherie West Village", booking:"https://www.boucherieus.com/west-village-menus/", maps:"Boucherie+West+Village+West+Village+Manhattan", reviews:9271, price:"$$$", reservable:true, stars:4.8 },
+          { place:"Little Ruby's West Village", type:"Bar", desc:"Little Ruby's West Village", booking:"https://www.rubyscafe.com/", maps:"Little+Rubys+West+Village+West+Village+Manhattan", reviews:755, price:"$$", reservable:true, stars:4.4 },
+          { place:"Joseph Leonard", type:"Bar", desc:"Joseph Leonard", booking:"http://www.josephleonard.com/", maps:"Joseph+Leonard+West+Village+Manhattan", reviews:1362, price:"$$$", reservable:true, stars:4.6 },
+          { place:"Le Petit Village", type:"Bar", desc:"Le Petit Village", booking:"https://www.lepetitvillagenyc.com/", maps:"Le+Petit+Village+West+Village+Manhattan", reviews:581, price:"$$", reservable:true, stars:4.7 },
+        
+        { id:"west10west", emoji:"🌙", place:"WEST10WEST", type:"late night", desc:"4.8★ · late night", booking:"http://www.west10west.com/", maps:"WEST10WEST", reviews:320, price:"$$", reservable:true, stars:4.8 },
       ],
     },
-    happyHour: [
-      { id:"evhh1", emoji:"🍸", place:"Lovers of Today", type:"Speakeasy Bar", desc:"Half price cocktails 5-8pm daily. The most romantic happy hour in the neighborhood.", deal:"50% off cocktails", hours:"Daily 5-8pm", booking:null, maps:"Lovers+of+Today+East+Village+NYC", reviews:640 },
-      { id:"evhh2", emoji:"🥂", place:"Alison St. Marks", type:"Oyster Bar", desc:"$1.50 oysters, $9 wine, $9 cocktails Tue-Fri noon-7pm. The best deal in the East Village.", deal:"$1.50 oysters + $9 wine", hours:"Tue-Fri noon-7pm", booking:null, maps:"Alison+St+Marks+East+Village+NYC", reviews:520 },
-      { id:"evhh3", emoji:"🌶️", place:"Ding-A-Ling", type:"Dive Bar", desc:"$7 mixed drinks daily 4-7pm. No pretense, great music, best value HH on the block.", deal:"$7 mixed drinks", hours:"Daily 4-7pm", booking:null, maps:"Ding+A+Ling+East+Village+NYC", reviews:480 },
-      { id:"evhh4", emoji:"🍺", place:"Skinny Dennis East", type:"Honky-Tonk", desc:"$6 beers and frozen drinks noon-7pm daily. The East Village outpost of the Williamsburg classic.", deal:"$6 beers + frozen drinks", hours:"Daily noon-7pm", booking:null, maps:"Skinny+Dennis+East+Village+NYC", reviews:680 },
-    ],
+    activities: { free: [], paid: [
+          { place:"Pier 57", type:"Bar", desc:"Pier 57", booking:"https://www.pier57nyc.com/", maps:"Pier+57+West+Village+Manhattan", reviews:1870, price:"$$", reservable:false, stars:4.7 },
+        
+          { id:"moonflowerwv", emoji:"🌸", place:"Moonflower", type:"floral cocktail bar", desc:"Tiny floral cocktail bar. Intimate and absolutely unique.", booking:null, maps:"Moonflower+West+Village+NYC", reviews:114, price:"$$", reservable:false, stars:4.5 },
+        ] },
+    happyHour: [],
   },
   midtown: {
     bars: {
       cocktails: [
-        { id:"mtcc1", emoji:"🏛️", place:"The Campbell", type:"Grand Central Bar", desc:"John W. Campbell's private office, 1920s Florentine ceilings, antique fireplace. Drink in a room, not just at a bar.", booking:null, maps:"The+Campbell+Bar+Grand+Central+Terminal+New+York", reviews:3800 },
-        { id:"mtcc2", emoji:"🥊", place:"Jimmy's Corner", type:"Boxing Dive Bar", desc:"Times Square dive — and yet. Muhammad Ali photos, neon jukebox, soul music, $4 beers. The real New York.", booking:null, maps:"Jimmys+Corner+Bar+Times+Square+New+York", reviews:2200 },
-        { id:"mtcc3", emoji:"🪨", place:"Pebble Bar", type:"Townhouse Cocktail Bar", desc:"Pete Davidson-backed Rockefeller Center townhouse. Standing bar on 2nd floor, steak tartare on 3rd. $22 mojito but worth it.", booking:"pebblebar.com", maps:"Pebble+Bar+Rockefeller+Center+New+York", reviews:1400 },
-        { id:"mtcc4", emoji:"🎭", place:"Tanner Smith's", type:"Prohibition Cocktail Lounge", desc:"Named for a 1900s NYC gangster. Great house cocktails ~$18, rotating craft beer, live music some nights.", booking:"tannersmiths.com", maps:"Tanner+Smiths+Theater+District+New+York", reviews:1800 },
-      ],
-      beer: [
-        { id:"mtcb1", emoji:"🥊", place:"Jimmy's Corner", type:"Dive Bar", desc:"Best-value beer in Midtown. Boxing memorabilia, soul music jukebox, $4 drinks in Times Square. Defies all logic.", booking:null, maps:"Jimmys+Corner+Bar+Times+Square+New+York", reviews:2200 },
-        { id:"mtcb2", emoji:"🏠", place:"Tavern 29", type:"Townhouse Beer Garden", desc:"19th-century brownstone, rooftop beer garden with picnic tables, second bar in the back. Happy hour deals.", booking:null, maps:"Tavern+29+Midtown+New+York", reviews:1600 },
-        { id:"mtcb3", emoji:"🎭", place:"The Rum House", type:"Hotel Saloon", desc:"Old-timey saloon at the bottom of the Edison Hotel. Live music most nights. Casual Times Square escape.", booking:null, maps:"The+Rum+House+Edison+Hotel+New+York", reviews:2600 },
-        { id:"mtcb4", emoji:"🎸", place:"Ragtrader & Bo Peep", type:"Speakeasy Piano Bar", desc:"Garment factory turned bar. Downstairs speakeasy piano bar with live music. Prohibition-era roots.", booking:"ragtradernyc.com", maps:"Ragtrader+Bar+Midtown+New+York", reviews:980 },
-      ],
+          { place:"Madame George", type:"Bar", desc:"Madame George", booking:"https://www.madamegeorgenyc.com/", maps:"Madame+George+Midtown+Manhattan", reviews:530, price:"$$", reservable:true, stars:4.7 },
+          { place:"The Dickens", type:"Bar", desc:"The Dickens", booking:"https://www.thedickensnyc.com/", maps:"The+Dickens+Midtown+Manhattan", reviews:2143, price:"$$", reservable:true, stars:4.8 },
+          { place:"Sir Henry's", type:"Bar", desc:"Sir Henry's", booking:"https://sirhenrysnyc.com/", maps:"Sir+Henry's+Midtown+Manhattan", reviews:1198, price:"$$", reservable:true, stars:4.8 },
+          { place:"Shaken Not Stirred", type:"Bar", desc:"Shaken Not Stirred", booking:"http://shakennotstirrednyc.com/", maps:"Shaken+Not+Stirred+Midtown+Manhattan", reviews:579, price:"$$", reservable:true, stars:4.8 },
+          { place:"AperiBar", type:"Bar", desc:"AperiBar", booking:"https://www.aperibar.com/", maps:"AperiBar+Midtown+Manhattan", reviews:1082, price:"$$", reservable:true, stars:4.8 },
+          { place:"The Parlour Room", type:"Bar", desc:"The Parlour Room", booking:"https://www.parlourroomnyc.com/", maps:"The+Parlour+Room+Midtown+Manhattan", reviews:971, price:"$$", reservable:true, stars:4.7 },
+          { place:"The Woo Woo", type:"Bar", desc:"The Woo Woo", booking:"https://thewoowoonyc.com/", maps:"The+Woo+Woo+Midtown+Manhattan", reviews:1937, price:"$$", reservable:true, stars:4.8 },
+          { place:"Patent Pending", type:"Bar", desc:"Patent Pending", booking:"https://www.patentpendingnyc.com/", maps:"Patent+Pending+Midtown+Manhattan", reviews:1084, price:"$$$", reservable:true, stars:4.4 },
+          { place:"George Bang Bang", type:"Bar", desc:"George Bang Bang", booking:"http://www.gbbnyc.com/", maps:"George+Bang+Bang+Midtown+Manhattan", reviews:334, price:"$$", reservable:true, stars:4.6 },
+          { place:"LOLITA", type:"Bar", desc:"LOLITA", booking:"https://www.lolitanewyorkcity.com/", maps:"LOLITA+Midtown+Manhattan", reviews:571, price:"$$", reservable:true, stars:4.6 },
+          { place:"Isla & Co. - Midtown", type:"Bar", desc:"Isla & Co. - Midtown", booking:"http://www.isla-co.com/", maps:"Isla+&+Co.+-+Midtown+Midtown+Manhattan", reviews:4797, price:"$$", reservable:true, stars:4.8 },
+          { place:"STK Steakhouse Midtown NYC", type:"Bar", desc:"STK Steakhouse Midtown NYC", booking:"https://stksteakhouse.com/venues/nyc-midtown/", maps:"STK+Steakhouse+Midtown+NYC+Midtown+Manhattan", reviews:36675, price:"$$$", reservable:true, stars:4.8 },
+          { place:"VALERIE", type:"Bar", desc:"VALERIE", booking:"https://www.valerienewyorkcity.com/", maps:"VALERIE+Midtown+Manhattan", reviews:2213, price:"$$", reservable:true, stars:4.4 },
+          { place:"Albert's Bar", type:"Bar", desc:"Albert's Bar", booking:"https://www.albertsbar.com/", maps:"Albert's+Bar+Midtown+Manhattan", reviews:493, price:"$$", reservable:true, stars:4.5 },
+          { place:"Vida Verde - Tequila Bar", type:"Bar", desc:"Vida Verde - Tequila Bar", booking:"https://www.vidaverdeny.com/", maps:"Vida+Verde+-+Tequila+Bar+Midtown+Manhattan", reviews:4200, price:"$$", reservable:true, stars:4.6 }
+        ],
+      beer: [],
       wine: [
-        { id:"mtcw1", emoji:"🌹", place:"Fine & Rare", type:"Rare Spirits Lounge", desc:"Opulent décor, rare spirits, expertly crafted cocktails. Serious collectors and serious drinkers only.", booking:"fineandrarenyc.com", maps:"Fine+and+Rare+Bar+Midtown+New+York", reviews:1200 },
-        { id:"mtcw2", emoji:"🎻", place:"Valerie", type:"Gin Library Bar", desc:"Manhattan Golden Age interiors, 70+ gins, 35 signature cocktails. Beautiful room, serious program.", booking:"valerienewyork.com", maps:"Valerie+Bar+Midtown+New+York", reviews:1400 },
-        { id:"mtcw3", emoji:"🏛️", place:"The Campbell", type:"Grand Central Bar", desc:"Order wine in the Jazz Age office of a Gilded Age magnate. Grand Central's most beautiful secret.", booking:null, maps:"The+Campbell+Bar+Grand+Central+Terminal+New+York", reviews:3800 },
-        { id:"mtcw4", emoji:"🌊", place:"Bar SixtyFive", type:"65th Floor Wine Bar", desc:"Rockefeller Center, 65th floor. Refined wine and cocktail list with the whole city at your feet.", booking:"rainbowroom.com", maps:"Bar+SixtyFive+Rockefeller+Center+New+York", reviews:3200 },
-      ],
+          { place:"Sofia Wine Bar", type:"Bar", desc:"Sofia Wine Bar", booking:"http://sofiawinebar.com/", maps:"Sofia+Wine+Bar+Midtown+Manhattan", reviews:634, price:"$$", reservable:false, stars:4.6 },
+          { place:"Ayza Wine & Chocolate Bar", type:"Bar", desc:"Ayza Wine & Chocolate Bar", booking:"https://ayzanyc.com/", maps:"Ayza+Wine+&+Chocolate+Bar+Midtown+Manhattan", reviews:2184, price:"$$", reservable:true, stars:4.5 }
+        ],
       experimental: [
-        { id:"mtce1", emoji:"🔔", place:"Raines Law Room at The William", type:"Speakeasy", desc:"Ring the doorbell to enter. Prohibition-era plush couches, velvet curtains, intimate booths. No standing.", booking:"raineslawroom.com", maps:"Raines+Law+Room+The+William+Midtown+New+York", reviews:1600 },
-        { id:"mtce2", emoji:"🎸", place:"Ragtrader & Bo Peep", type:"Piano Speakeasy", desc:"Through the garment factory, down the stairs. Live piano, prohibition cocktails. Genuinely fun.", booking:"ragtradernyc.com", maps:"Ragtrader+Bar+Midtown+New+York", reviews:980 },
-        { id:"mtce3", emoji:"🌆", place:"Dear Irving on Hudson", type:"40th Floor Rooftop Bar", desc:"Manhattan's highest open-air hotel bar. 40th and 41st floors, multiple balconies, skyline views.", booking:"dearirving.com", maps:"Dear+Irving+on+Hudson+Aliz+Hotel+New+York", reviews:2800 },
-        { id:"mtce4", emoji:"🎷", place:"The Rum House", type:"Live Music Saloon", desc:"Nightly live jazz and swing in a dark saloon. Best combination of atmosphere and music in Midtown.", booking:null, maps:"The+Rum+House+Edison+Hotel+New+York", reviews:2600 },
+          { place:"Vintage Green Rooftop", type:"Bar", desc:"Vintage Green Rooftop", booking:"https://vintagegreen.nyc/", maps:"Vintage+Green+Rooftop+Midtown+Manhattan", reviews:2673, price:"$$", reservable:true, stars:4.9 },
+        
+        { id:"vintagegreen", emoji:"🌆", place:"Vintage Green Rooftop", type:"rooftop", desc:"4.9★ · rooftop", booking:"https://vintagegreen.nyc/", maps:"Vintage+Green+Rooftop", reviews:2674, price:"$$", reservable:true, stars:4.9 },
+        { id:"artmidtownro", emoji:"🌆", place:"ART Midtown - Rooftop Bars Midtown, NYC (Arlo Midtown)", type:"rooftop", desc:"4.6★ · rooftop", booking:"https://artrooftops.com/location/midtown/", maps:"ART+Midtown++Rooftop+Bars+Midtown+NYC+Arlo+Midtown", reviews:154, price:"$$", reservable:true, stars:4.6 },
+        { id:"refineryroof", emoji:"🌆", place:"Refinery Rooftop", type:"rooftop", desc:"Industrial-chic rooftop spot in the Refinery Hotel featuring cocktails, light fare, and dramatic views.", booking:"https://refineryrooftop.com/", maps:"Refinery+Rooftop", reviews:4262, price:"$$$", reservable:true, stars:4.5 },
+        { id:"rt60rooftopb", emoji:"🌆", place:"RT60 Rooftop Bar & Lounge", type:"rooftop", desc:"Sleek, music-themed bar offering craft cocktails, beer & small plates, plus terraces & live DJs.", booking:"https://hotel.hardrock.com/new-york/rt60-rooftop-bar.aspx?utm_campaign=hri%20%7C%20hotel%20%7C%20new-york%20%7C%20websitelisting&utm_medium=referral&utm_source=gmb", maps:"RT60+Rooftop+Bar++Lounge", reviews:808, price:"$$", reservable:true, stars:4.4 },
+        { id:"230fifthroof", emoji:"🌆", place:"230 Fifth Rooftop Bar", type:"rooftop", desc:"Chic penthouse bar & lounge featuring a rooftop garden & live music, plus global bites & brunch.", booking:"http://www.230-fifth.com/", maps:"230+Fifth+Rooftop+Bar", reviews:24883, price:"$$", reservable:true, stars:4.3 },
       ],
       speakeasy: [
-        { id:"mtcs1", emoji:"🔔", place:"Raines Law Room at The William", type:"Doorbell Speakeasy", desc:"Ring a doorbell on a townhouse on W 39th. Plush seating, bespoke cocktails, no standing at the bar allowed.", booking:"raineslawroom.com", maps:"Raines+Law+Room+The+William+Midtown+New+York", reviews:1600 },
-        { id:"mtcs2", emoji:"🎸", place:"Bo Peep at Ragtrader", type:"Basement Piano Bar", desc:"Hidden below a garment-district bar. Prohibition cocktails and a live piano player in a cave.", booking:"ragtradernyc.com", maps:"Ragtrader+Bar+Midtown+New+York", reviews:980 },
-        { id:"mtcs3", emoji:"🧳", place:"The Boardroom at The Hugh", type:"Food Hall Speakeasy", desc:"Hidden inside a Midtown food hall at 601 Lexington. Private meeting room by day, speakeasy by night.", booking:null, maps:"The+Hugh+Food+Hall+601+Lexington+New+York", reviews:540 },
-        { id:"mtcs4", emoji:"🥊", place:"Jimmy's Corner", type:"Local Secret", desc:"In the heart of Times Square — but tourists never find it. The city's most improbable dive bar.", booking:null, maps:"Jimmys+Corner+Bar+Times+Square+New+York", reviews:2200 },
+        { id:"thewoowoo", emoji:"🕯️", place:"The Woo Woo", type:"speakeasy", desc:"4.8★ · speakeasy", booking:"https://thewoowoonyc.com/", maps:"The+Woo+Woo", reviews:1938, price:"$$", reservable:true, stars:4.8 },
+        { id:"georgebangba", emoji:"🕯️", place:"George Bang Bang", type:"speakeasy", desc:"4.6★ · speakeasy", booking:"http://www.gbbnyc.com/", maps:"George+Bang+Bang", reviews:335, price:"$$", reservable:true, stars:4.6 },
+        { id:"patentpendin", emoji:"🕯️", place:"Patent Pending", type:"speakeasy", desc:"Low-lit bar behind a hidden door in Patent Coffee, serving cocktails with an electric theme.", booking:"https://www.patentpendingnyc.com/", maps:"Patent+Pending", reviews:1087, price:"$$$", reservable:true, stars:4.4 },
       ],
     },
     food: {
       japanese: [
-        { id:"mtj1", emoji:"⚗️", place:"Atomix", type:"Korean Tasting Counter", desc:"Two Michelin stars. 14 seats at a U-shaped counter, chef Park oversees every dish. The most ambitious meal in Midtown.", booking:"atomixnyc.com", maps:"Atomix+Restaurant+Midtown+New+York", reviews:1800 },
-        { id:"mtj2", emoji:"🍣", place:"Sushi Yasaka", type:"Omakase", desc:"Midtown omakase that overdelivers. Serious fish, intimate counter, fraction of the price of the downtown spots.", booking:null, maps:"Sushi+Yasaka+Midtown+New+York", reviews:620 },
-        { id:"mtj3", emoji:"🔥", place:"Yakitori Totto", type:"Yakitori", desc:"Smoky, intimate yakitori izakaya on 55th St. Skewers and sake in a low-lit, no-nonsense Japanese room.", booking:"totto.com", maps:"Yakitori+Totto+Midtown+New+York", reviews:2400 },
-        { id:"mtj4", emoji:"🌿", place:"Pure Thai Cookhouse", type:"Thai", desc:"Hell's Kitchen Thai that locals love. Fresh, uncompromising flavors and low prices. Pre-theater gem.", booking:null, maps:"Pure+Thai+Cookhouse+Hell's+Kitchen+New+York", reviews:2800 },
+        { id:"tatsudaomaka", emoji:"🥢", place:"Tatsuda Omakase", type:"japanese", desc:"4.8★ · japanese", booking:"http://tatsudanyc.com/", maps:"Tatsuda+Omakase", reviews:310, price:"$$", reservable:true, stars:4.8 },
+        { id:"fushimitimes", emoji:"🥢", place:"Fushimi Times Square", type:"japanese", desc:"Buzzing eatery & lounge offering Japanese dishes with a French twist, plus cocktails & beer.", booking:"https://fushimi.nyc/", maps:"Fushimi+Times+Square", reviews:704, price:"$$", reservable:true, stars:4.6 },
+        { id:"sakagura", emoji:"🥢", place:"Sakagura", type:"japanese", desc:"Japanese small plates & a deep sake list in a blond-wood izakaya hidden beneath an office building.", booking:"http://www.sakagura.com/", maps:"Sakagura", reviews:1443, price:"$$$", reservable:true, stars:4.5 },
+        { id:"nobufiftysev", emoji:"🥢", place:"Nobu Fifty Seven", type:"japanese", desc:"Sleek Japanese-Peruvian spot from Nobu Matsuhisa frequented by business types & celebs.", booking:"https://www.noburestaurants.com/fifty-seven/home/?utm_source=google&utm_medium=Yext", maps:"Nobu+Fifty+Seven", reviews:2692, price:"$$$$", reservable:true, stars:4.4 },
+        { id:"zumanewyork", emoji:"🥢", place:"Zuma New York", type:"japanese", desc:"Trendy, high-end Japanese place with an izakaya-inspired menu including sushi & robata grilled fare.", booking:"https://www.zumarestaurant.com/en/new-york?utm_source=InfoButtonClick&utm_medium=Home&utm_campaign=GoogleBusinessProfile", maps:"Zuma+New+York", reviews:2033, price:"$$$$", reservable:true, stars:4.3 },
       ],
       pasta: [
-        { id:"mtp1", emoji:"🕯️", place:"Le Veau d'Or", type:"French Bistro", desc:"Opened 1937, run by the Frenchette team. $135 prix fixe, side-by-side two-tops, mirror maps of France. Old Manhattan at its best.", booking:"levaudor.com", maps:"Le+Veau+dOr+Restaurant+New+York", reviews:1200 },
-        { id:"mtp2", emoji:"🪵", place:"Keens Steakhouse", type:"1885 Chophouse", desc:"Since 1885. 90,000 clay pipes on the ceiling, mutton chop of legend, dark wood paneling. Living history.", booking:"keens.com", maps:"Keens+Steakhouse+Midtown+New+York", reviews:6200 },
-        { id:"mtp3", emoji:"🎭", place:"Boucherie Midtown", type:"French Brasserie", desc:"Stunning heated alley between two buildings. French cuisine, signature cocktails, the best outdoor room in Midtown.", booking:"boucherieus.com", maps:"Boucherie+Midtown+New+York", reviews:2800 },
-        { id:"mtp4", emoji:"🍋", place:"Le Rock", type:"Art Deco French", desc:"Crown jewel of Rockefeller Plaza. Michelin-listed, celebrity crowd, Art Deco interiors, serious wine list.", booking:"lerocknvc.com", maps:"Le+Rock+Restaurant+Rockefeller+Center+New+York", reviews:3400 },
+          { place:"La Grande Boucherie", type:"Bar", desc:"La Grande Boucherie", booking:"https://www.boucherieus.com/", maps:"La+Grande+Boucherie+Midtown+Manhattan", reviews:9985, price:"$$", reservable:true, stars:4.6 },
+        
+        { id:"osterialabai", emoji:"🍝", place:"Osteria La Baia", type:"italian dinner", desc:"Traditional and creative Italian cuisine plus cocktails in a spacious venue with chic, polished decor.", booking:"https://www.labaianyc.com/?y_source=1_MTAwNTA2Mjg0My03MTUtbG9jYXRpb24ud2Vic2l0ZQ%3D%3D", maps:"Osteria+La+Baia", reviews:5384, price:"$$$$", reservable:true, stars:4.9 },
+        { id:"lapecorabian", emoji:"🍝", place:"La Pecora Bianca Bryant Park", type:"italian dinner", desc:"Stylish, bright eatery featuring market-driven Italian cuisine, regional wines & apéritifs.", booking:"https://www.lapecorabianca.com/", maps:"La+Pecora+Bianca+Bryant+Park", reviews:7020, price:"$$$", reservable:true, stars:4.8 },
+        { id:"tonysdinapol", emoji:"🍝", place:"Tony's Di Napoli", type:"italian dinner", desc:"Bustling eatery serving large, shareable portions of Italian comfort food in a lively setting.", booking:"https://www.tonysnyc.com/", maps:"Tonys+Di+Napoli", reviews:8174, price:"$$", reservable:true, stars:4.6 },
+        { id:"cisiamo", emoji:"🍝", place:"Ci Siamo", type:"italian dinner", desc:"Stylish restaurant offering high-end Mediterranean standards, plus wine and cocktails.", booking:"https://www.cisiamo.com/?utm_source=google&utm_medium=gmb", maps:"Ci+Siamo", reviews:2092, price:"$$$", reservable:true, stars:4.6 },
       ],
-      pizza: [
-        { id:"mtpz1", emoji:"🏒", place:"Ace's Pizza", type:"Detroit-Style Pizza", desc:"30 Rockefeller Plaza. Detroit-style pies at Rock Center, including vegan options. Fluffy crust, generous toppings.", booking:null, maps:"Aces+Pizza+Rockefeller+Center+New+York", reviews:1200 },
-        { id:"mtpz2", emoji:"🌶️", place:"Szechuan Gourmet", type:"Sichuan Chinese", desc:"W 56th St. Serious Sichuan in Midtown. Mapo tofu, dry-fried string beans, the real thing not the tourist version.", booking:null, maps:"Szechuan+Gourmet+Midtown+New+York", reviews:2400 },
-        { id:"mtpz3", emoji:"🧄", place:"Patsy's Italian", type:"Red Sauce Italian Since 1944", desc:"Family-run since 1944. Sinatra's table. The upstairs cocktail bar (2nd Floor Bar & Essen) runs late on weekends.", booking:"patsys.com", maps:"Patsys+Italian+Restaurant+Midtown+New+York", reviews:3200 },
-        { id:"mtpz4", emoji:"🌮", place:"Margon", type:"Cuban Counter", desc:"Tiny Cuban counter on W 46th. Roast pork, rice and beans, zero pretense. Where office workers actually eat.", booking:null, maps:"Margon+Restaurant+Midtown+New+York", reviews:1800 },
-      ],
-      mediterranean: [
-        { id:"mtme1", emoji:"🥩", place:"Keens Steakhouse", type:"Historic Steakhouse", desc:"The legendary mutton chop. Dark wood, clay pipe ceiling, Gilded Age atmosphere. One of NYC's great rooms.", booking:"keens.com", maps:"Keens+Steakhouse+Midtown+New+York", reviews:6200 },
-        { id:"mtme2", emoji:"🎻", place:"Le Rock", type:"Michelin French", desc:"Art Deco Rockefeller Plaza brasserie. Dimly lit, celebrity crowd, consistently excellent food and wine.", booking:"lerocknvc.com", maps:"Le+Rock+Restaurant+Rockefeller+Center+New+York", reviews:3400 },
-        { id:"mtme3", emoji:"🕯️", place:"Boucherie Midtown", type:"French Brasserie Alley", desc:"Eat in a heated alley between skyscrapers. French onion soup, steak frites, craft cocktails. Only in New York.", booking:"boucherieus.com", maps:"Boucherie+Midtown+New+York", reviews:2800 },
-        { id:"mtme4", emoji:"🌿", place:"Chola", type:"Indian", desc:"E 58th St. Underrated, authentic Indian — biryanis and curries that outclass the price point. A Midtown secret.", booking:"cholanyc.com", maps:"Chola+Restaurant+Midtown+New+York", reviews:1600 },
-      ],
+      pizza: [],
+      mediterranean: [],
       american: [
-        { id:"mta1", emoji:"🥩", place:"Keens Steakhouse", type:"1885 Chophouse", desc:"The mutton chop is iconic. 90,000 clay pipes on the ceiling, Lincoln's wanted poster on the wall.", booking:"keens.com", maps:"Keens+Steakhouse+Midtown+New+York", reviews:6200 },
-        { id:"mta2", emoji:"🏛️", place:"Le Veau d'Or", type:"French Bistro", desc:"Opened 1937, Frenchette team. $135 prix fixe, side-by-side two-tops. The most romantic small room in Midtown.", booking:"levaudor.com", maps:"Le+Veau+dOr+Restaurant+New+York", reviews:1200 },
-        { id:"mta3", emoji:"🥪", place:"Katz's Deli at Midtown (Pastrami Queen)", type:"Jewish Deli", desc:"The real-deal Jewish deli in Midtown. Pastrami, brisket, matzo ball soup. Don't skip the 2nd Floor Bar & Essen upstairs.", booking:null, maps:"Pastrami+Queen+Midtown+New+York", reviews:1800 },
-        { id:"mta4", emoji:"🍔", place:"Pebble Bar Dining Room", type:"American", desc:"3rd floor of Pebble Bar. Steak tartare with truffle aioli, intimate room, great wine. Rockefeller Center hidden floor.", booking:"pebblebar.com", maps:"Pebble+Bar+Rockefeller+Center+New+York", reviews:1400 },
-      ],
+          { place:"La Pecora Bianca Bryant Park", type:"Bar", desc:"La Pecora Bianca Bryant Park", booking:"https://www.lapecorabianca.com/", maps:"La+Pecora+Bianca+Bryant+Park+Midtown+Manhattan", reviews:7011, price:"$$$", reservable:true, stars:4.8 },
+          { place:"Monkey Bar", type:"Bar", desc:"Monkey Bar", booking:"https://nycmonkeybar.com/", maps:"Monkey+Bar+Midtown+Manhattan", reviews:1745, price:"$$$", reservable:true, stars:4.5 },
+          { place:"The Reading Room", type:"Bar", desc:"The Reading Room", booking:"https://readingroomnyc.com/", maps:"The+Reading+Room+Midtown+Manhattan", reviews:339, price:"$$", reservable:true, stars:4.4 },
+          { place:"Parker & Quinn", type:"Bar", desc:"Parker & Quinn", booking:"https://parkerandquinn.com/", maps:"Parker+&+Quinn+Midtown+Manhattan", reviews:3015, price:"$$", reservable:true, stars:4.6 },
+          { place:"Little Collins", type:"Bar", desc:"Little Collins", booking:"http://www.littlecollinsnyc.com/", maps:"Little+Collins+Midtown+Manhattan", reviews:2624, price:"$$", reservable:false, stars:4.5 },
+          { place:"In Common NYC - A Breakfast & Brunch Restaurant", type:"Bar", desc:"In Common NYC - A Breakfast & Brunch Restaurant", booking:"https://www.incommonnyc.com/", maps:"In+Common+NYC+-+A+Breakfast+&+Brunch+Restaurant+Midtown+Manhattan", reviews:2100, price:"$$", reservable:true, stars:4.6 },
+          { place:"La Grande Boucherie", type:"Bar", desc:"La Grande Boucherie", booking:"https://www.boucherieus.com/", maps:"La+Grande+Boucherie+Midtown+Manhattan", reviews:9985, price:"$$", reservable:true, stars:4.6 },
+          { place:"Tony's Di Napoli", type:"Bar", desc:"Tony's Di Napoli", booking:"https://www.tonysnyc.com/", maps:"Tonys+Di+Napoli+Midtown+Manhattan", reviews:8173, price:"$$", reservable:true, stars:4.6 },
+          { place:"Grand Brasserie", type:"Bar", desc:"Grand Brasserie", booking:"https://www.grandbrasserie.com/", maps:"Grand+Brasserie+Midtown+Manhattan", reviews:582, price:"$$", reservable:true, stars:4.1 }
+        ],
       brunch: [
-        { id:"mtbr1", emoji:"🎭", place:"Tanner Smith's Bootleg Brunch", type:"Bottomless Brunch", desc:"Prohibition-themed bottomless brunch Thu-Sun. American classics, cocktails, live music atmosphere.", booking:"tannersmiths.com", maps:"Tanner+Smiths+Theater+District+New+York", reviews:1800 },
-        { id:"mtbr2", emoji:"🌞", place:"Lodi at Rockefeller", type:"Italian Café Brunch", desc:"Aperitivo-inspired brunch at Rock Center. Leisurely Italian café culture in the middle of Midtown.", booking:"lodirestaurant.com", maps:"Lodi+Restaurant+Rockefeller+Center+New+York", reviews:2400 },
-        { id:"mtbr3", emoji:"🥞", place:"Boucherie Midtown", type:"French Brunch", desc:"Heated outdoor alley brunch. French onion soup, croque monsieur, proper cocktails in a stunning setting.", booking:"boucherieus.com", maps:"Boucherie+Midtown+New+York", reviews:2800 },
-        { id:"mtbr4", emoji:"🍋", place:"Le Rock Weekend Brunch", type:"French Brasserie", desc:"Michelin-adjacent, Art Deco, Rockefeller Plaza. The most glamorous brunch room in Midtown Manhattan.", booking:"lerocknvc.com", maps:"Le+Rock+Restaurant+Rockefeller+Center+New+York", reviews:3400 },
+        { id:"holeinthewal", emoji:"🥐", place:"Hole In The Wall - Murray Hill", type:"brunch", desc:"4.8★ · brunch", booking:"https://holeinthewallnyc.com/murray-hill", maps:"Hole+In+The+Wall++Murray+Hill", reviews:2170, price:"$$", reservable:true, stars:4.8 },
+        { id:"incommonnyca", emoji:"🥐", place:"In Common NYC - A Breakfast & Brunch Restaurant", type:"brunch", desc:"4.6★ · brunch", booking:"https://www.incommonnyc.com/", maps:"In+Common+NYC++A+Breakfast++Brunch+Restaurant", reviews:2100, price:"$$", reservable:true, stars:4.6 },
+        { id:"parkerquinn", emoji:"🥐", place:"Parker & Quinn", type:"brunch", desc:"American dining & creative cocktails set against a vintage backdrop in the Refinery Hotel.", booking:"https://parkerandquinn.com/", maps:"Parker++Quinn", reviews:3015, price:"$$", reservable:true, stars:4.6 },
+        { id:"thereadingro", emoji:"🥐", place:"The Reading Room", type:"brunch", desc:"4.4★ · brunch", booking:"https://readingroomnyc.com/", maps:"The+Reading+Room", reviews:339, price:"$$", reservable:true, stars:4.4 },
       ],
       latenight: [
-        { id:"mtln1", emoji:"🥨", place:"Patsy's 2nd Floor Bar & Essen", type:"Late Night Bar", desc:"Hidden upstairs at Patsy's Italian. Runs late on weekends, cocktail bar separate from the dining room.", booking:null, maps:"Patsys+Italian+Restaurant+Midtown+New+York", reviews:3200 },
-        { id:"mtln2", emoji:"🥊", place:"Jimmy's Corner Late", type:"Dive Bar", desc:"Open till 4am on Fridays and Saturdays. Best late-night spot in Times Square by a mile.", booking:null, maps:"Jimmys+Corner+Bar+Times+Square+New+York", reviews:2200 },
-        { id:"mtln3", emoji:"🎷", place:"The Rum House", type:"Late Jazz Saloon", desc:"Live music and cocktails late into the night in the Edison Hotel. Nightly jazz keeps it going.", booking:null, maps:"The+Rum+House+Edison+Hotel+New+York", reviews:2600 },
-        { id:"mtln4", emoji:"🌮", place:"Urban Hawker Food Hall", type:"Late Night Food Hall", desc:"Singapore hawker-style food hall. Multiple vendors, late hours, best cheap late-night eating in Midtown.", booking:null, maps:"Urban+Hawker+Food+Hall+Midtown+New+York", reviews:3200 },
-      ],
+          { place:"La Pecora Bianca Bryant Park", type:"Bar", desc:"La Pecora Bianca Bryant Park", booking:"https://www.lapecorabianca.com/", maps:"La+Pecora+Bianca+Bryant+Park+Midtown+Manhattan", reviews:7011, price:"$$$", reservable:true, stars:4.8 },
+          { place:"Monkey Bar", type:"Bar", desc:"Monkey Bar", booking:"https://nycmonkeybar.com/", maps:"Monkey+Bar+Midtown+Manhattan", reviews:1745, price:"$$$", reservable:true, stars:4.5 },
+          { place:"The Reading Room", type:"Bar", desc:"The Reading Room", booking:"https://readingroomnyc.com/", maps:"The+Reading+Room+Midtown+Manhattan", reviews:339, price:"$$", reservable:true, stars:4.4 },
+          { place:"Parker & Quinn", type:"Bar", desc:"Parker & Quinn", booking:"https://parkerandquinn.com/", maps:"Parker+&+Quinn+Midtown+Manhattan", reviews:3015, price:"$$", reservable:true, stars:4.6 },
+          { place:"Little Collins", type:"Bar", desc:"Little Collins", booking:"http://www.littlecollinsnyc.com/", maps:"Little+Collins+Midtown+Manhattan", reviews:2624, price:"$$", reservable:false, stars:4.5 },
+          { place:"In Common NYC - A Breakfast & Brunch Restaurant", type:"Bar", desc:"In Common NYC - A Breakfast & Brunch Restaurant", booking:"https://www.incommonnyc.com/", maps:"In+Common+NYC+-+A+Breakfast+&+Brunch+Restaurant+Midtown+Manhattan", reviews:2100, price:"$$", reservable:true, stars:4.6 },
+          { place:"La Grande Boucherie", type:"Bar", desc:"La Grande Boucherie", booking:"https://www.boucherieus.com/", maps:"La+Grande+Boucherie+Midtown+Manhattan", reviews:9985, price:"$$", reservable:true, stars:4.6 },
+          { place:"Tony's Di Napoli", type:"Bar", desc:"Tony's Di Napoli", booking:"https://www.tonysnyc.com/", maps:"Tonys+Di+Napoli+Midtown+Manhattan", reviews:8173, price:"$$", reservable:true, stars:4.6 },
+          { place:"Grand Brasserie", type:"Bar", desc:"Grand Brasserie", booking:"https://www.grandbrasserie.com/", maps:"Grand+Brasserie+Midtown+Manhattan", reviews:582, price:"$$", reservable:true, stars:4.1 }
+        ],
     },
-    activities: {
-      free: [
-        { id:"mtaf1", emoji:"🏛️", place:"Grand Central Terminal", type:"Architectural Wonder", desc:"Free to wander. The Whispering Gallery, the Oyster Bar, the Campbell. One of the great buildings on earth.", maps:"Grand+Central+Terminal+New+York", reviews:42000 },
-        { id:"mtaf2", emoji:"🌳", place:"Bryant Park", type:"Park + Events", desc:"Free movies in summer, ice skating in winter, chess tables all year. The best public park in Midtown.", maps:"Bryant+Park+New+York", reviews:38000 },
-        { id:"mtaf3", emoji:"🏙️", place:"Top of the Rock Observation Deck", type:"Skyline Views", desc:"Paid admission but bookable. Rockefeller Center's 70th floor. Better views of the Empire State Building than the ESB itself.", maps:"Top+of+the+Rock+Rockefeller+Center+New+York", reviews:62000 },
-        { id:"mtaf4", emoji:"🎨", place:"MoMA", type:"World-Class Art Museum", desc:"Suggested admission. Picasso, Matisse, Warhol. One of the top five art museums on the planet.", maps:"MoMA+Museum+Modern+Art+New+York", reviews:58000 },
-      ],
-      paid: [
-        { id:"mtap1", emoji:"🎭", place:"Broadway Show", type:"Theater", desc:"The obvious answer done right. Get lottery or rush tickets same-day for half price. Life-changing on a budget.", booking:"luckyseat.com", maps:"Broadway+Theater+District+New+York", reviews:null },
-        { id:"mtap2", emoji:"🎶", place:"Carnegie Hall Rush Tickets", type:"Concert Hall", desc:"$20 rush tickets available day-of at the box office. World's greatest musicians in the world's most famous hall.", booking:"carnegiehall.org", maps:"Carnegie+Hall+New+York", reviews:22000 },
-        { id:"mtap3", emoji:"🎳", place:"RPM Underground", type:"Themed Karaoke", desc:"18 themed karaoke rooms — Avengers room, Sunset Blvd room, vinyl shop, two bars. Pure commitment.", booking:"rpmunderground.com", maps:"RPM+Underground+Midtown+New+York", reviews:1800 },
-        { id:"mtap4", emoji:"🌆", place:"Dear Irving on Hudson", type:"Rooftop Bar Experience", desc:"40th + 41st floors of Aliz Hotel. Seating stations for two, multiple open-air balconies, city-wide views.", booking:"dearirving.com", maps:"Dear+Irving+on+Hudson+Aliz+Hotel+New+York", reviews:2800 },
-      ],
-    },
-    happyHour: [
-      { id:"mthh1", emoji:"🥊", place:"Jimmy's Corner", type:"Dive Bar", desc:"Under $4 for most drinks all day, every day. The best happy hour deal within 10 blocks of Times Square.", deal:"$3.50 wells all day", hours:"Daily 11:30am-close", booking:null, maps:"Jimmys+Corner+Bar+Times+Square+New+York", reviews:2200 },
-      { id:"mthh2", emoji:"🏠", place:"Tavern 29", type:"Townhouse Bar", desc:"Rooftop beer garden happy hour with picnic tables and good deals. The neighborhood feel Midtown never has.", deal:"$6 beers + $9 cocktails", hours:"Mon-Fri 4-7pm", booking:null, maps:"Tavern+29+Midtown+New+York", reviews:1600 },
-      { id:"mthh3", emoji:"🌞", place:"Lodi at Rockefeller", type:"Italian Café", desc:"Aperitivo hour at Rock Center. Italian wine, spritzes, snacks — the only genuinely European happy hour in Midtown.", deal:"$12 spritzes + $10 wine", hours:"Mon-Fri 4-6pm", booking:"lodirestaurant.com", maps:"Lodi+Restaurant+Rockefeller+Center+New+York", reviews:2400 },
-      { id:"mthh4", emoji:"🎭", place:"Tanner Smith's", type:"Cocktail Lounge", desc:"Pre-theater happy hour with well-made $12 cocktails. The best deal if you're catching a show nearby.", deal:"$12 cocktails + $6 beer", hours:"Mon-Fri 4-7pm", booking:"tannersmiths.com", maps:"Tanner+Smiths+Theater+District+New+York", reviews:1800 },
-    ],
+    activities: { free: [], paid: [
+          { place:"SUMMIT One Vanderbilt", type:"Bar", desc:"SUMMIT One Vanderbilt", booking:"https://summitov.com/", maps:"SUMMIT+One+Vanderbilt+Midtown+Manhattan", reviews:33385, price:"$$", reservable:false, stars:4.7 },
+        
+          { id:"swingersnomd", emoji:"⛳", place:"Swingers NoMad", type:"crazy golf + bar", desc:"Immersive crazy golf with cocktails. One of the best date activities in Midtown.", booking:"https://www.swingersusa.com/", maps:"Swingers+NoMad+Midtown+NYC", reviews:1257, price:"$$", reservable:true, stars:4.4 },
+        ] },
+    happyHour: [],
   },
   lic: {
     bars: {
       cocktails: [
-        { id:"lcc1", emoji:"🔴", place:"Dutch Kills", type:"Speakeasy Cocktail Bar", desc:"Small red neon sign, dark wood booths, hand-cut ice. From the Milk & Honey team. LIC's best bar.", booking:null, maps:"Dutch+Kills+Bar+Long+Island+City+Queens", reviews:1200 },
-        { id:"lcc2", emoji:"🗞️", place:"The Newsroom", type:"Hidden Speakeasy", desc:"Basement bar in a former hotel. Enter through the 90s subway station — open the Snapple fridge.", booking:null, maps:"The+Newsroom+Bar+Long+Island+City+Queens", reviews:380 },
-        { id:"lcc3", emoji:"🎵", place:"Record Room", type:"Listening Bar", desc:"Red-lit, luxe, hi-fi sound system. Espresso martini with coconut foam and hot chicken sandwiches.", booking:null, maps:"Record+Room+LIC+Long+Island+City+Queens", reviews:480 },
-        { id:"lcc4", emoji:"🐯", place:"The Huntress", type:"Whiskey Bar", desc:"Dim lighting, rustic decor, knowledgeable staff. The best whiskey selection in Long Island City.", booking:null, maps:"The+Huntress+Bar+Long+Island+City+Queens", reviews:320 },
-      ],
-      beer: [
-        { id:"lcb1", emoji:"🍺", place:"LIC Bar", type:"Neighborhood Bar", desc:"Brick, wood, tin ceilings, backyard patio. The quintessential LIC neighborhood hangout.", booking:null, maps:"LIC+Bar+Long+Island+City+Queens", reviews:1400 },
-        { id:"lcb2", emoji:"🌿", place:"Alewife LIC", type:"Craft Beer Hall", desc:"28 taps of rotating craft beer in a bi-level space. Reliably excellent, easy to get a seat.", booking:null, maps:"Alewife+LIC+Long+Island+City+Queens", reviews:980 },
-        { id:"lcb3", emoji:"😂", place:"The Creek and the Cave", type:"Comedy Bar", desc:"Free comedy shows weekdays, $5 weekends, no drink minimum. Mexican food next door is genuinely good.", booking:"creeknyc.com", maps:"The+Creek+and+the+Cave+Long+Island+City+Queens", reviews:1100 },
-        { id:"lcb4", emoji:"🏠", place:"Jackson's Eatery Bar", type:"Neighborhood Bar", desc:"Local ingredients, warm staff, great for a casual date. LIC's hidden gem for a low-key evening.", booking:null, maps:"Jacksons+Eatery+Bar+Long+Island+City+Queens", reviews:480 },
-      ],
+          { place:"Bar Enzo", type:"Bar", desc:"Bar Enzo", booking:"http://barenzonyc.com/", maps:"Bar+Enzo+Long+Island+City+Queens", reviews:266, price:"$$", reservable:true, stars:5.0 },
+          { place:"Drinkology NYC", type:"Bar", desc:"Drinkology NYC", booking:"https://www.drinkologynyc.com/", maps:"Drinkology+NYC+Long+Island+City+Queens", reviews:429, price:"$$", reservable:true, stars:4.8 },
+          { place:"The Beast Next Door", type:"Bar", desc:"The Beast Next Door", booking:"http://thebeastnextdoor.com/", maps:"The+Beast+Next+Door+Long+Island+City+Queens", reviews:787, price:"$$", reservable:true, stars:4.6 },
+          { place:"The Infamous", type:"Bar", desc:"The Infamous", booking:"https://infamousbar.com/", maps:"The+Infamous+Long+Island+City+Queens", reviews:279, price:"$$", reservable:true, stars:4.7 },
+          { place:"The Newsroom", type:"Bar", desc:"The Newsroom", booking:"https://newsroomny.com/", maps:"The+Newsroom+Long+Island+City+Queens", reviews:1312, price:"$$", reservable:true, stars:4.9 },
+          { place:"The Last Word", type:"Bar", desc:"The Last Word", booking:"http://tlwcocktailbar.com/", maps:"The+Last+Word+Long+Island+City+Queens", reviews:684, price:"$$$", reservable:true, stars:4.7 },
+          { place:"Dutch Kills", type:"Bar", desc:"Dutch Kills", booking:"https://www.dutchkillsbar.com/", maps:"Dutch+Kills+Long+Island+City+Queens", reviews:1299, price:"$$", reservable:false, stars:4.4 },
+          { place:"Blend on the Water", type:"Bar", desc:"Blend on the Water", booking:"http://www.blendonthewater.com/", maps:"Blend+on+the+Water+Long+Island+City+Queens", reviews:5904, price:"$$", reservable:true, stars:4.2 },
+          { place:"Café Henri", type:"Bar", desc:"Café Henri", booking:"https://cafehenrilic.com/", maps:"Café+Henri+Long+Island+City+Queens", reviews:1114, price:"$$", reservable:true, stars:4.4 },
+          { place:"Casa Enrique", type:"Bar", desc:"Casa Enrique", booking:"https://casaenriquelic.com/", maps:"Casa+Enrique+Long+Island+City+Queens", reviews:3017, price:"$$", reservable:true, stars:4.5 },
+          { place:"Beija Flor", type:"Bar", desc:"Beija Flor", booking:"https://www.beijaflor.nyc/", maps:"Beija+Flor+Long+Island+City+Queens", reviews:1100, price:"$$", reservable:true, stars:4.5 }
+        ],
+      beer: [],
       wine: [
-        { id:"lcw1", emoji:"🌊", place:"On The 7 Wine Bar", type:"Wine Bar", desc:"Named for the 7 train. Natural wine and occasional M. Wells pop-ups. Neighborhood anchor.", booking:null, maps:"On+The+7+Wine+Bar+Long+Island+City+Queens", reviews:420 },
-        { id:"lcw2", emoji:"🏙️", place:"The Waterfront Club", type:"Waterfront Wine Bar", desc:"Vintage furniture, chandeliers, faces Gantry Plaza. The most atmospheric bar in LIC.", booking:null, maps:"The+Waterfront+Club+Long+Island+City+Queens", reviews:180 },
-        { id:"lcw3", emoji:"🎸", place:"The Beast Next Door", type:"Wine + Cocktail Bar", desc:"Brick and wood, charcuterie boards, signature cocktails, craft beer. Cozy and undiscovered.", booking:null, maps:"The+Beast+Next+Door+Long+Island+City+Queens", reviews:240 },
-        { id:"lcw4", emoji:"🌅", place:"Vista Sky Lounge", type:"Rooftop Bar", desc:"Rooftop with Manhattan skyline and bridge views. Best outdoor date bar in the borough.", booking:null, maps:"Vista+Sky+Lounge+Long+Island+City+Queens", reviews:680 },
-      ],
+          { place:"DiWine Natural Wine Bar & Restaurant", type:"Bar", desc:"DiWine Natural Wine Bar & Restaurant", booking:"http://www.diwineonline.com/", maps:"DiWine+Natural+Wine+Bar+&+Restaurant+Long+Island+City+Queens", reviews:572, price:"$$", reservable:true, stars:4.6 }
+        ],
       experimental: [
-        { id:"lce1", emoji:"🎵", place:"Record Room", type:"Hi-Fi Listening Bar", desc:"The coolest concept in LIC. Audiophile sound system, red lighting, great snacks. No talking during sets.", booking:null, maps:"Record+Room+LIC+Long+Island+City+Queens", reviews:480 },
-        { id:"lce2", emoji:"🗞️", place:"The Newsroom", type:"Hidden Hotel Bar", desc:"Find the Snapple fridge, open it. 1990s subway entrance, swank bar inside. Dealer's choice cocktails.", booking:null, maps:"The+Newsroom+Bar+Long+Island+City+Queens", reviews:380 },
-        { id:"lce3", emoji:"🌅", place:"Vista Sky Lounge", type:"Rooftop Skyline Bar", desc:"Breathtaking Midtown views from a rooftop lounge. Starlit cocktails above the 7 train.", booking:null, maps:"Vista+Sky+Lounge+Long+Island+City+Queens", reviews:680 },
-        { id:"lce4", emoji:"🎷", place:"Dutch Kills Upstairs", type:"Live Music Loft", desc:"Cozy upstairs space at Dutch Kills with live music some nights. Check schedule before going.", booking:null, maps:"Dutch+Kills+Bar+Long+Island+City+Queens", reviews:1200 },
+          { place:"Lost in Paradise Rooftop", type:"Bar", desc:"Lost in Paradise Rooftop", booking:"https://www.lostinparadiserooftop.com/", maps:"Lost+in+Paradise+Rooftop+Long+Island+City+Queens", reviews:6591, price:"$$", reservable:true, stars:4.7 },
+          { place:"Skybar Rooftop & Lounge", type:"Bar", desc:"Skybar Rooftop & Lounge", booking:"https://skybarlic.com/", maps:"Skybar+Rooftop+&+Lounge+Long+Island+City+Queens", reviews:381, price:"$$", reservable:true, stars:4.0 },
+        
+        { id:"evenihgskylo", emoji:"🌆", place:"EVEN IHG Sky Lounge and Bar", type:"rooftop", desc:"4.4★ · rooftop", booking:"https://www.skyloungelic.com/", maps:"EVEN+IHG+Sky+Lounge+and+Bar", reviews:10, price:"$$", reservable:true, stars:4.4 },
       ],
       speakeasy: [
-        { id:"lcs1", emoji:"🗞️", place:"The Newsroom", type:"Fridge Door Speakeasy", desc:"Enter through a Snapple fridge in a fake 90s subway station. One of NYC's most creative entrances.", booking:null, maps:"The+Newsroom+Bar+Long+Island+City+Queens", reviews:380 },
-        { id:"lcs2", emoji:"🔴", place:"Dutch Kills", type:"Unmarked Speakeasy", desc:"Just a small red neon sign from outside. Inside: dark wood, handcut ice, flawless classic cocktails.", booking:null, maps:"Dutch+Kills+Bar+Long+Island+City+Queens", reviews:1200 },
-        { id:"lcs3", emoji:"🐯", place:"The Huntress", type:"Hidden Whiskey Bar", desc:"Easy to walk past. Dim inside, serious whiskey list, knowledgeable bartenders who mean it.", booking:null, maps:"The+Huntress+Bar+Long+Island+City+Queens", reviews:320 },
-        { id:"lcs4", emoji:"🎵", place:"Record Room", type:"Underground Listening Bar", desc:"Below street level. No sign. Ring the bell. Hi-fi sound system and serious cocktails inside.", booking:null, maps:"Record+Room+LIC+Long+Island+City+Queens", reviews:480 },
+        { id:"barenzo", emoji:"🕯️", place:"Bar Enzo", type:"speakeasy", desc:"5.0★ · speakeasy", booking:"http://barenzonyc.com/", maps:"Bar+Enzo", reviews:268, price:"$$", reservable:true, stars:5.0 },
+        { id:"25hours", emoji:"🕯️", place:"25 HOURS", type:"speakeasy", desc:"4.8★ · speakeasy", booking:"http://25hours.bar/", maps:"25+HOURS", reviews:25, price:"$$", reservable:true, stars:4.8 },
+        { id:"theinfamous", emoji:"🕯️", place:"The Infamous", type:"speakeasy", desc:"4.7★ · speakeasy", booking:"https://infamousbar.com/", maps:"The+Infamous", reviews:279, price:"$$", reservable:true, stars:4.7 },
+        { id:"thebeastnext", emoji:"🕯️", place:"The Beast Next Door", type:"speakeasy", desc:"Brick- & wood-lined space offering cafe bites, charcuterie & cocktails along with live bands & DJs.", booking:"http://thebeastnextdoor.com/", maps:"The+Beast+Next+Door", reviews:787, price:"$$", reservable:true, stars:4.6 },
       ],
     },
     food: {
       japanese: [
-        { id:"lcj1", emoji:"🍣", place:"Meju", type:"Korean Fermentation Counter", desc:"Michelin-starred, 8 seats, hidden inside the Little Banchan Shop. Korean fermentation tasting menu.", booking:"mejunyc.com", maps:"Meju+Restaurant+Long+Island+City+Queens", reviews:380 },
-        { id:"lcj2", emoji:"🥢", place:"SHI", type:"Pan-Asian Waterfront", desc:"Floor-to-ceiling windows, full Manhattan skyline. Japanese and Chinese with a full sushi bar.", booking:"shilic.com", maps:"SHI+Restaurant+Long+Island+City+Queens", reviews:820 },
-        { id:"lcj3", emoji:"🎋", place:"56709", type:"Asian Pop Music Bar", desc:"First-date gold. Sister to bar 929. Japanese, Cantonese, Mandarin pop. Intimate and sceney.", booking:null, maps:"56709+Bar+Long+Island+City+Queens", reviews:480 },
-        { id:"lcj4", emoji:"🌿", place:"Soothr LIC", type:"Modern Thai", desc:"Massive LIC outpost of the EV institution. 15 exclusive dishes, whole dungeness crab curry.", booking:"soothrlicnyc.com", maps:"Soothr+LIC+Long+Island+City+Queens", reviews:680 },
+        { id:"warabiomakas", emoji:"🥢", place:"Warabi Omakase", type:"japanese", desc:"4.9★ · japanese", booking:"https://www.warabiomakase.com/", maps:"Warabi+Omakase", reviews:64, price:"$$", reservable:true, stars:4.9 },
+        { id:"matsuzukisak", emoji:"🥢", place:"Matsuzuki Sakura", type:"japanese", desc:"4.9★ · japanese", booking:"http://www.matsuzukisakura.com/", maps:"Matsuzuki+Sakura", reviews:47, price:"$$", reservable:false, stars:4.9 },
+        { id:"izakayanonam", emoji:"🥢", place:"Izakaya Noname", type:"japanese", desc:"4.6★ · japanese", booking:"http://www.nonameus.com/", maps:"Izakaya+Noname", reviews:363, price:"$$", reservable:true, stars:4.6 },
+        { id:"daihachisush", emoji:"🥢", place:"Dai Hachi Sushi in Long Island City", type:"japanese", desc:"Laid-back Japanese restaurant with exposed-brick walls offering sushi, ramen, noodles & sake.", booking:"https://daihachinyc.com/", maps:"Dai+Hachi+Sushi+in+Long+Island+City", reviews:536, price:"$$", reservable:true, stars:4.6 },
+        { id:"hibinolic", emoji:"🥢", place:"Hibino LIC", type:"japanese", desc:"Unusual restaurant offering sushi, small plates & other Japanese fare in a minimalist setting.", booking:"https://hibino-lic.com/", maps:"Hibino+LIC", reviews:588, price:"$$", reservable:true, stars:4.5 },
       ],
       pasta: [
-        { id:"lcp1", emoji:"🍝", place:"Maiella", type:"Italian-Argentinian", desc:"Fresh pasta meets Argentine grill. Great tiramisu. Consistently one of the best rooms in LIC.", booking:"maiellanyc.com", maps:"Maiella+Long+Island+City+Queens", reviews:1600 },
-        { id:"lcp2", emoji:"🫙", place:"Terrone", type:"Italian Farm to Table", desc:"Farm-to-table Italian, seasonal menu. Warm room, neighborhood crowd, no pretension.", booking:"terronelic.com", maps:"Terrone+Long+Island+City+Queens", reviews:920 },
-        { id:"lcp3", emoji:"🌊", place:"American Brass", type:"American Waterfront", desc:"Waterfront seating, solid burger, seafood platter, mac and cheese. Sit outside always.", booking:"americanbrass.com", maps:"American+Brass+Long+Island+City+Queens", reviews:2200 },
-        { id:"lcp4", emoji:"🧡", place:"4747 LIC", type:"New American", desc:"Vernon Blvd neighborhood gem. Small, intimate, great cocktails. The kind of place you return to.", booking:"4747lic.com", maps:"4747+LIC+Long+Island+City+Queens", reviews:340 },
+        { id:"manettasrist", emoji:"🍝", place:"Manetta's Ristorante", type:"italian dinner", desc:"A fireplace adds a homey touch to this longtime Italian joint with a basic menu & brick-oven pizzas.", booking:"http://www.manettaslic.com/", maps:"Manettas+Ristorante", reviews:931, price:"$$", reservable:true, stars:4.6 },
+        { id:"osteriabrook", emoji:"🍝", place:"Osteria Brooklyn @LIC On the Water", type:"italian dinner", desc:"4.6★ · italian dinner", booking:"https://www.osteriabrooklyn.com/", maps:"Osteria+Brooklyn+LIC+On+the+Water", reviews:769, price:"$$$", reservable:true, stars:4.6 },
+        { id:"manducatisru", emoji:"🍝", place:"Manducatis Rustica VIG", type:"italian dinner", desc:"Old-world Italian cafe with a warm vibe offering homemade pasta dishes, pizzas & house-made gelato.", booking:"http://www.manducatisrustica.com/", maps:"Manducatis+Rustica+VIG", reviews:569, price:"$$", reservable:true, stars:4.6 },
+        { id:"sottolaluna", emoji:"🍝", place:"Sotto la Luna", type:"italian dinner", desc:"4.5★ · italian dinner", booking:"https://www.sottolalunanyc.com/", maps:"Sotto+la+Luna", reviews:869, price:"$$", reservable:true, stars:4.5 },
+        { id:"maiella", emoji:"🍝", place:"Maiella", type:"italian dinner", desc:"Sophisticated waterfront bar & restaurant crafting contemporary Italian dishes & cocktails.", booking:"https://www.maiellalic.com/", maps:"Maiella", reviews:1978, price:"$$$", reservable:true, stars:4.4 },
       ],
       pizza: [
-        { id:"lcpz1", emoji:"🍕", place:"Traze Pizza", type:"Creative Pizza", desc:"Inventive pies you won't find anywhere else in the city. Including some designed for breakfast.", booking:null, maps:"Traze+Pizza+Long+Island+City+Queens", reviews:580 },
-        { id:"lcpz2", emoji:"🔥", place:"JACX & Co Food Hall", type:"Food Hall", desc:"Queens' answer to Chelsea Market. Crif Dogs, Taim falafel, multiple vendors in one building.", booking:null, maps:"JACX+Food+Hall+Long+Island+City+Queens", reviews:1400 },
-        { id:"lcpz3", emoji:"🥩", place:"John Brown BBQ", type:"Kansas City BBQ", desc:"Genuine Kansas City-style BBQ, not a Brooklyn facsimile. Great brisket, cold beer.", booking:null, maps:"John+Brown+BBQ+Long+Island+City+Queens", reviews:1800 },
-        { id:"lcpz4", emoji:"🌮", place:"Casa Enrique", type:"Mexican", desc:"LIC's Michelin-starred Mexican institution. Fish tacos, mole de Piaxtla, watermelon margaritas.", booking:"enriquerestaurant.com", maps:"Casa+Enrique+Long+Island+City+Queens", reviews:2800 },
+        { id:"sauceypizzab", emoji:"🍕", place:"Saucey Pizza Bar", type:"pizza", desc:"5.0★ · pizza", booking:"https://www.sauceypizzabar.com/", maps:"Saucey+Pizza+Bar", reviews:307, price:"$$", reservable:true, stars:5.0 },
+        { id:"sohopizza", emoji:"🍕", place:"Soho Pizza", type:"pizza", desc:"4.8★ · pizza", booking:"http://sohopizzany.com/", maps:"Soho+Pizza", reviews:52, price:"$$", reservable:false, stars:4.8 },
+        { id:"sottolestell", emoji:"🍕", place:"Sotto Le Stelle", type:"pizza", desc:"Neighborhood Italian spot for wood-fired pies by a pizzaiolo from Naples, plus panini & antipasti.", booking:"https://www.sottolestelleny.com/", maps:"Sotto+Le+Stelle", reviews:1027, price:"$$", reservable:true, stars:4.7 },
       ],
-      mediterranean: [
-        { id:"lcme1", emoji:"🥩", place:"R40", type:"Argentinian BBQ", desc:"Romantic upscale Argentinian. Parrillada for two, great non-grilled dishes. The best date spot in LIC.", booking:"r40nyc.com", maps:"R40+Restaurant+Long+Island+City+Queens", reviews:680 },
-        { id:"lcme2", emoji:"🌶️", place:"Casa Enrique", type:"Michelin Mexican", desc:"Intimate, Michelin-starred, impeccable. The guacamole with fresh totopos and lengua tacos.", booking:"enriquerestaurant.com", maps:"Casa+Enrique+Long+Island+City+Queens", reviews:2800 },
-        { id:"lcme3", emoji:"🌿", place:"Hupo", type:"Sichuan Chinese", desc:"Hanging lanterns, cumin lamb, mala dry pots, mapo tofu. Extensive Sichuan menu, full bar.", booking:null, maps:"Hupo+Restaurant+Long+Island+City+Queens", reviews:780 },
-        { id:"lcme4", emoji:"🐟", place:"SHI Waterfront", type:"Pan-Asian Waterfront", desc:"Floor-to-ceiling windows over the East River. Skyline views, sake list, date-night energy.", booking:"shilic.com", maps:"SHI+Restaurant+Long+Island+City+Queens", reviews:820 },
-      ],
+      mediterranean: [],
       american: [
-        { id:"lca1", emoji:"🌊", place:"American Brass", type:"American Waterfront", desc:"Burger, oysters, mac and cheese on the waterfront. Sit outside for Midtown skyline views.", booking:"americanbrass.com", maps:"American+Brass+Long+Island+City+Queens", reviews:2200 },
-        { id:"lca2", emoji:"🥩", place:"R40", type:"Argentinian Steakhouse", desc:"Special occasion dinner. The $120 parrillada for two, fancy-getaway-house atmosphere.", booking:"r40nyc.com", maps:"R40+Restaurant+Long+Island+City+Queens", reviews:680 },
-        { id:"lca3", emoji:"🌮", place:"Chinelos Birria", type:"Birria Taco Truck", desc:"The original LIC birria truck, right by Gantry Plaza. Three sopping tacos for $14. Cash only.", booking:null, maps:"Chinelos+Birria+Long+Island+City+Queens", reviews:1200 },
-        { id:"lca4", emoji:"🍔", place:"4747 LIC", type:"New American", desc:"Neighborhood spot on Vernon Blvd. Seasonal menu, warm room, excellent cocktails.", booking:"4747lic.com", maps:"4747+LIC+Long+Island+City+Queens", reviews:340 },
-      ],
+          { place:"Lighthouse Rooftop", type:"Bar", desc:"Lighthouse Rooftop", booking:"http://lighthouserooftop.com/", maps:"Lighthouse+Rooftop+Long+Island+City+Queens", reviews:912, price:"$$", reservable:true, stars:4.1 },
+          { place:"Maiella", type:"Bar", desc:"Maiella", booking:"https://www.maiellalic.com/", maps:"Maiella+Long+Island+City+Queens", reviews:1978, price:"$$$", reservable:true, stars:4.4 },
+          { place:"Osteria Brooklyn @LIC On the Water", type:"Bar", desc:"Osteria Brooklyn @LIC On the Water", booking:"https://www.osteriabrooklyn.com/", maps:"Osteria+Brooklyn+@LIC+On+the+Water+Long+Island+City+Queens", reviews:769, price:"$$$", reservable:true, stars:4.6 },
+          { place:"4747LIC", type:"Bar", desc:"4747LIC", booking:"http://4747lic.com/", maps:"4747LIC+Long+Island+City+Queens", reviews:621, price:"$$", reservable:true, stars:4.8 },
+          { place:"Café Coco", type:"Bar", desc:"Café Coco", booking:"https://www.cafe-coco.com/", maps:"Café+Coco+Long+Island+City+Queens", reviews:104, price:"$$", reservable:false, stars:4.6 },
+          { place:"Kakes NYC", type:"Bar", desc:"Kakes NYC", booking:"http://www.kakes.nyc/", maps:"Kakes+NYC+Long+Island+City+Queens", reviews:752, price:"$$", reservable:true, stars:4.7 },
+          { place:"Tournesol", type:"Bar", desc:"Tournesol", booking:"https://www.tournesolnyc.com/", maps:"Tournesol+Long+Island+City+Queens", reviews:723, price:"$$", reservable:true, stars:4.5 }
+        ],
       brunch: [
-        { id:"lcbr1", emoji:"🌅", place:"Blend on the Water", type:"Waterfront Brunch", desc:"Sat outside on a nice day and watched sunset on Manhattan. The view is the experience.", booking:"blendlic.com", maps:"Blend+on+the+Water+Long+Island+City+Queens", reviews:1800 },
-        { id:"lcbr2", emoji:"🥚", place:"Court Square Diner", type:"24hr Diner", desc:"Open 24 hours. Pancakes and chicken parm at 4pm or 4am. Pure Queens diner, no pretense.", booking:null, maps:"Court+Square+Diner+Long+Island+City+Queens", reviews:1600 },
-        { id:"lcbr3", emoji:"🌮", place:"Casa Enrique", type:"Mexican Brunch", desc:"Watermelon margaritas and ceviche around a big bar watching soccer. Casual and perfect.", booking:"enriquerestaurant.com", maps:"Casa+Enrique+Long+Island+City+Queens", reviews:2800 },
-        { id:"lcbr4", emoji:"🥞", place:"Terrone", type:"Italian Brunch", desc:"Farm-to-table Italian brunch. Pork chop with hot cherry peppers is a standout weekend order.", booking:"terronelic.com", maps:"Terrone+Long+Island+City+Queens", reviews:920 },
+        { id:"4747lic", emoji:"🥐", place:"4747LIC", type:"brunch", desc:"4.8★ · brunch", booking:"http://4747lic.com/", maps:"4747LIC", reviews:621, price:"$$", reservable:true, stars:4.8 },
+        { id:"kakesnyc", emoji:"🥐", place:"Kakes NYC", type:"brunch", desc:"4.7★ · brunch", booking:"http://www.kakes.nyc/", maps:"Kakes+NYC", reviews:752, price:"$$", reservable:true, stars:4.7 },
+        { id:"carla", emoji:"🥐", place:"Carla", type:"brunch", desc:"Bright spot for burgers, salads & wings, plus Tex-Mex classics, vegan options & creative cocktails.", booking:"http://www.carlalic.com/", maps:"Carla", reviews:437, price:"$$", reservable:true, stars:4.6 },
+        { id:"cafhenri", emoji:"🥐", place:"Café Henri", type:"brunch", desc:"Quaint & classic haunt specializing in crêpes & other classic French plates.", booking:"https://cafehenrilic.com/", maps:"Caf+Henri", reviews:1114, price:"$$", reservable:true, stars:4.4 },
       ],
       latenight: [
-        { id:"lcln1", emoji:"🥚", place:"Court Square Diner", type:"24hr Diner", desc:"The only 24-hour spot in LIC. Pancakes, chicken parm, and honest diner food at any hour.", booking:null, maps:"Court+Square+Diner+Long+Island+City+Queens", reviews:1600 },
-        { id:"lcln2", emoji:"🌮", place:"Chinelos Birria Truck", type:"Late Night Taco Truck", desc:"Parked near Gantry Plaza late into the night. Three birria tacos for $14. The real deal.", booking:null, maps:"Chinelos+Birria+Long+Island+City+Queens", reviews:1200 },
-        { id:"lcln3", emoji:"🍔", place:"JACX & Co Late", type:"Food Hall Late Night", desc:"Several vendors open late. Crif Dogs and other options after the kitchen closes elsewhere.", booking:null, maps:"JACX+Food+Hall+Long+Island+City+Queens", reviews:1400 },
-        { id:"lcln4", emoji:"🔴", place:"Dutch Kills Late", type:"Late Night Cocktails", desc:"Open till 2am on weekends. Best cocktails in Queens to close out a night in LIC.", booking:null, maps:"Dutch+Kills+Bar+Long+Island+City+Queens", reviews:1200 },
+          { place:"Lighthouse Rooftop", type:"Bar", desc:"Lighthouse Rooftop", booking:"http://lighthouserooftop.com/", maps:"Lighthouse+Rooftop+Long+Island+City+Queens", reviews:912, price:"$$", reservable:true, stars:4.1 },
+          { place:"Maiella", type:"Bar", desc:"Maiella", booking:"https://www.maiellalic.com/", maps:"Maiella+Long+Island+City+Queens", reviews:1978, price:"$$$", reservable:true, stars:4.4 },
+          { place:"Osteria Brooklyn @LIC On the Water", type:"Bar", desc:"Osteria Brooklyn @LIC On the Water", booking:"https://www.osteriabrooklyn.com/", maps:"Osteria+Brooklyn+@LIC+On+the+Water+Long+Island+City+Queens", reviews:769, price:"$$$", reservable:true, stars:4.6 },
+          { place:"4747LIC", type:"Bar", desc:"4747LIC", booking:"http://4747lic.com/", maps:"4747LIC+Long+Island+City+Queens", reviews:621, price:"$$", reservable:true, stars:4.8 },
+          { place:"Café Coco", type:"Bar", desc:"Café Coco", booking:"https://www.cafe-coco.com/", maps:"Café+Coco+Long+Island+City+Queens", reviews:104, price:"$$", reservable:false, stars:4.6 },
+          { place:"Kakes NYC", type:"Bar", desc:"Kakes NYC", booking:"http://www.kakes.nyc/", maps:"Kakes+NYC+Long+Island+City+Queens", reviews:752, price:"$$", reservable:true, stars:4.7 },
+          { place:"Tournesol", type:"Bar", desc:"Tournesol", booking:"https://www.tournesolnyc.com/", maps:"Tournesol+Long+Island+City+Queens", reviews:723, price:"$$", reservable:true, stars:4.5 },
+        
+        { id:"dkpublic", emoji:"🌙", place:"DK PubLIC", type:"late night", desc:"4.5★ · late night", booking:"http://dkpublic.com/", maps:"DK+PubLIC", reviews:395, price:"$$", reservable:true, stars:4.5 },
+        { id:"redsorghum", emoji:"🌙", place:"Red Sorghum 夜宴", type:"late night", desc:"4.5★ · late night", booking:"https://redsorghumlic.com/", maps:"Red+Sorghum+", reviews:1131, price:"$$", reservable:true, stars:4.5 },
       ],
     },
-    activities: {
-      free: [
-        { id:"lcaf1", emoji:"🌅", place:"Gantry Plaza State Park", type:"Waterfront Park", desc:"Midtown skyline straight ahead, famous Pepsi-Cola sign to the north. Best sunset in Queens.", maps:"Gantry+Plaza+State+Park+Long+Island+City+Queens", reviews:8200 },
-        { id:"lcaf2", emoji:"🌉", place:"Queensbridge Park", type:"Bridge & Skyline Views", desc:"Under the Queensboro Bridge, Roosevelt Island Tram overhead, west-facing sunset views. Locals only.", maps:"Queensbridge+Park+Long+Island+City+Queens", reviews:3400 },
-        { id:"lcaf3", emoji:"🎨", place:"MoMA PS1", type:"Contemporary Art", desc:"Suggested admission. World-class contemporary art in an LIC institution. Summer Warm Up is legendary.", maps:"MoMA+PS1+Long+Island+City+Queens", reviews:6800 },
-        { id:"lcaf4", emoji:"🚲", place:"Vernon Blvd Street Art Walk", type:"Street Art", desc:"Walk Vernon Blvd north from the waterfront. Murals, galleries, and the Pepsi-Cola sign landmark.", maps:"Vernon+Blvd+Long+Island+City+Queens", reviews:null },
-      ],
-      paid: [
-        { id:"lcap1", emoji:"⛴️", place:"NYC Ferry Sunset Ride", type:"Ferry Ride", desc:"$2.75 each way. Board at Gantry Plaza, ride to Manhattan at sunset. Best cheap date in the city.", booking:"ferry.nyc", maps:"Gantry+Plaza+Ferry+Long+Island+City+Queens", reviews:4200 },
-        { id:"lcap2", emoji:"🎨", place:"SculptureCenter", type:"Art Gallery", desc:"Cutting-edge contemporary sculpture in a converted trolley repair shop. Intimate and fascinating.", booking:"sculpture-center.org", maps:"SculptureCenter+Long+Island+City+Queens", reviews:1200 },
-        { id:"lcap3", emoji:"😂", place:"The Creek and the Cave", type:"Comedy Club", desc:"Free weekdays, $5 weekends, no drink minimum. Intimate room, good Mexican food next door.", booking:"creeknyc.com", maps:"The+Creek+and+the+Cave+Long+Island+City+Queens", reviews:1100 },
-        { id:"lcap4", emoji:"🏐", place:"Hunter's Point South Park", type:"Waterfront Park", desc:"Long stretch of waterfront lawn with Midtown views. Kayaking and events in summer.", booking:null, maps:"Hunters+Point+South+Park+Long+Island+City+Queens", reviews:5600 },
-      ],
-    },
-    happyHour: [
-      { id:"lchh1", emoji:"🍸", place:"Dutch Kills", type:"Cocktail Bar", desc:"Early hour specials on classic cocktails. Best value for quality drinks in all of Queens.", deal:"$12 cocktails", hours:"Tue-Fri 5-7pm", booking:null, maps:"Dutch+Kills+Bar+Long+Island+City+Queens", reviews:1200 },
-      { id:"lchh2", emoji:"🌮", place:"Dive Bar LIC", type:"Dive Bar", desc:"$8 margaritas and $5 beers Mon-Fri 5-8pm with tacos and sliders. The neighborhood after-work spot.", deal:"$8 margaritas + $5 beer", hours:"Mon-Fri 5-8pm", booking:null, maps:"Dive+Bar+LIC+Long+Island+City+Queens", reviews:980 },
-      { id:"lchh3", emoji:"🥂", place:"American Brass", type:"Waterfront Bar", desc:"Oysters and discounted drinks early evening with the Manhattan skyline as your backdrop.", deal:"$1.50 oysters + $8 wine", hours:"Mon-Fri 5-6:30pm", booking:"americanbrass.com", maps:"American+Brass+Long+Island+City+Queens", reviews:2200 },
-      { id:"lchh4", emoji:"🍺", place:"LIC Bar", type:"Neighborhood Bar", desc:"Cheap beers in the backyard garden. The most relaxed happy hour in the neighborhood.", deal:"$5 beers + $6 wells", hours:"Daily 4-7pm", booking:null, maps:"LIC+Bar+Long+Island+City+Queens", reviews:1400 },
-    ],
+    activities: { free: [], paid: [
+          { id:"gamingcity", emoji:"🎮", place:"Gaming City", type:"arcade + bar", desc:"Huge arcade bar -- games, drinks, great date energy.", booking:null, maps:"Gaming+City+Long+Island+City", reviews:2766, price:"$$", reservable:false, stars:4.9 },
+          { id:"drinkologyact", emoji:"🍸", place:"Drinkology NYC", type:"cocktail experience", desc:"Interactive cocktail experience and bar.", booking:"https://www.drinkologynyc.com/", maps:"Drinkology+NYC+Long+Island+City", reviews:429, price:"$$", reservable:true, stars:4.8 },
+        ] },
+    happyHour: [],
   },
 };
 
-// ─── FLOW LOGIC ───────────────────────────────────────────────────────────────
-// Flow: neighborhood → budget → dateType → focus → [drinkType|foodType|activityType] → [vibe] → timeOfDay → results
-// "Both date types" always reach food/drinks questions equally
-// "daytime" added as last question before results for drinks, food, activity
 
 const getQuestion = (a) => {
   if (!a.neighborhood) return { id:"neighborhood", special:"neighborhood" };
   if (!a.budget) return { id:"budget", emoji:"💰", q:"What's the budget?", opts:[
     {l:"Free ($0)",v:"free",i:"🌿"},{l:"Under $50",v:"under50",i:"🪙"},
-    {l:"$50–$150",v:"mid",i:"💵"},{l:"$150+",v:"splurge",i:"💎"}
+    {l:"$50-$150",v:"mid",i:"💵"},{l:"$150+",v:"splurge",i:"💎"}
   ]};
   if (!a.dateType) return { id:"dateType", emoji:"💬", q:"First date or you two?", opts:[
     {l:"First date",v:"first",i:"🦋"},{l:"We're together",v:"couple",i:"🔥"}
   ]};
   if (!a.focus) return { id:"focus", emoji:"✨", q:"What's the plan?", opts:[
-    {l:"Drinks",v:"drinks",i:"🍸"},{l:"Food",v:"food",i:"🍽️"},
-    {l:"Activity",v:"activity",i:"🎯"},{l:"Happy Hour",v:"happyhour",i:"🎉"}
+    {l:"Food",v:"food",i:"🍽️"},{l:"Drinks",v:"drinks",i:"🍸"},
+    {l:"Food & Drinks",v:"fooddrinks",i:"🥂"},
+    {l:"Activity",v:"activity",i:"🎯"},{l:"Happy Hour",v:"happyhour",i:"🎉"},
+    {l:"Our Pick",v:"ourpick",i:"⭐"}
   ]};
-  if (a.focus === "drinks" && !a.drinkType) return { id:"drinkType", emoji:"🍹", q:"What are you drinking?", opts:DRINK_OPTS };
-  if (a.focus === "food"   && !a.foodType)  return { id:"foodType",  emoji:"🍽️", q:"What are you feeling?",  opts:FOOD_OPTS };
-  if (a.focus === "activity" && !a.activityType) return { id:"activityType", emoji:"🌟", q:"Activity type?", opts:[
+  if (a.focus === "ourpick") return null; // go straight to results
+  if (a.focus === "drinks"     && !a.drinkType)     return { id:"drinkType",     emoji:"🍹", q:"What are you drinking?",  opts:DRINK_OPTS };
+  if (a.focus === "food"       && !a.foodType)       return { id:"foodType",      emoji:"🍽️", q:"What are you feeling?",   opts:FOOD_OPTS };
+  if (a.focus === "fooddrinks" && !a.foodDrinkType)  return { id:"foodDrinkType", emoji:"🥂", q:"What kind of combo?",      opts:FOOD_DRINK_OPTS };
+  if (a.focus === "activity"   && !a.activityType)   return { id:"activityType",  emoji:"🌟", q:"Activity type?", opts:[
     {l:"Free ($0)",v:"free",i:"🌿"},{l:"Paid",v:"paid",i:"🎟️"}
   ]};
-  if ((a.focus === "drinks" || (a.focus === "food" && a.foodType !== "brunch")) && !a.vibe) return { id:"vibe", emoji:"🌡️", q:"What's the energy?", opts:[
-    {l:"Lively & buzzing",v:"lively",i:"⚡"},{l:"Quiet & intimate",v:"quiet",i:"🕯️"}
-  ]};
-  // Time-of-day question — for drinks, food, activity (not happyhour)
+  if ((a.focus === "drinks" || a.focus === "fooddrinks" || (a.focus === "food" && a.foodType !== "brunch")) && !a.vibe) return {
+    id:"vibe", emoji:"🌡️", q:"What's the energy?", opts:[
+      {l:"Lively & buzzing",v:"lively",i:"⚡"},{l:"Quiet & intimate",v:"quiet",i:"🕯️"}
+    ]
+  };
   if (a.focus !== "happyhour" && !a.timeOfDay) return { id:"timeOfDay", emoji:"🕐", q:"When are you going?", opts:[
     {l:"Daytime",v:"day",i:"☀️"},{l:"Evening",v:"evening",i:"🌆"},{l:"Late Night",v:"late",i:"🌙"}
   ]};
@@ -566,37 +518,224 @@ const getQuestion = (a) => {
 };
 
 const getSpots = (a) => {
-  if (a.budget === "free") {
-    const pool = DB[a.neighborhood]?.activities?.free || [];
-    return pool.slice(0, 6);
-  }
+  if (a.budget === "free") return (DB[a.neighborhood]?.activities?.free || []).slice(0, 6);
   const nb = DB[a.neighborhood] || DB.williamsburg;
   if (a.focus === "happyhour") return (nb.happyHour || []).slice(0, 6);
 
-  let pool = [];
-  if (a.focus === "drinks") {
-    pool = nb.bars[a.drinkType] || nb.bars.cocktails;
-    if (a.vibe === "quiet") pool = [...pool].sort((x,y) => gemScore(y.reviews) - gemScore(x.reviews));
-    else pool = [...pool].sort(() => Math.random() - 0.5);
+  // ── OUR PICK: curated + featured first ──────────────────────────────────
+  if (a.focus === "ourpick") {
+    const all = [
+      ...(nb.bars.cocktails||[]), ...(nb.bars.wine||[]), ...(nb.bars.speakeasy||[]),
+      ...(nb.food.pasta||[]), ...(nb.food.japanese||[]), ...(nb.food.mediterranean||[]),
+      ...(nb.food.american||[]),
+    ];
+    // Featured (paid) spots always first, then highest rated
+    const featured = all.filter(s => s.featured);
+    const rest = all.filter(s => !s.featured).sort((a,b) => (b.stars||0)-(a.stars||0));
+    return [...featured, ...rest].slice(0, 6);
   }
+
+  // Budget price filter -- unknown price ("?" or missing) excluded on budget selections
+  const priceOk = (spot) => {
+    if (!a.budget || a.budget === "splurge") return true;
+    const p = (spot.price || "").replace(/\?/g, "").trim();
+    if (!p) return false; // no price data = exclude when budget matters
+    if (a.budget === "under50") return p === "$" || p === "$$";
+    if (a.budget === "mid")     return p === "$" || p === "$$" || p === "$$$";
+    return true;
+  };
+
+  // Date type review filter
+  const dateOk = (spot) => {
+    if (!spot.reviews) return true;
+    if (a.dateType === "first")      return spot.reviews >= 500;      // established, well-reviewed
+    if (a.dateType === "couple")     return spot.reviews <= 1000;      // hidden gems only
+    return true;
+  };
+
+  let pool = [];
+
+  if (a.focus === "drinks") {
+    pool = [...(nb.bars[a.drinkType] || nb.bars.cocktails)];
+    if (a.vibe === "quiet") pool.sort((x,y) => gemScore(y.reviews) - gemScore(x.reviews));
+    else pool.sort(() => Math.random() - 0.5);
+  }
+
   if (a.focus === "food") {
     let key;
-    if (a.foodType === "brunch" || a.timeOfDay === "day") {
-      key = "brunch";
-    } else if (a.timeOfDay === "late") {
-      key = "latenight";
-    } else {
-      key = a.foodType || "american";
-    }
+    if (a.foodType === "brunch" || a.timeOfDay === "day") key = "brunch";
+    else if (a.timeOfDay === "late") key = "latenight";
+    else key = a.foodType || "american";
     pool = [...(nb.food[key] || nb.food.american || [])];
+    // If evening, exclude spots that are brunch-only
+    if (a.timeOfDay === "evening" && key !== "brunch") {
+      const filtered = pool.filter(s => !String(s.type||"").toLowerCase().includes("brunch"));
+      if (filtered.length >= 2) pool = filtered;
+    }
   }
+
+  if (a.focus === "fooddrinks") {
+    if (a.foodDrinkType === "dinner_cocktails") {
+      pool = [...(nb.bars.cocktails||[]).slice(0,2), ...(nb.food.american||[]).slice(0,2), ...(nb.bars.wine||[]).slice(0,2)];
+    } else if (a.foodDrinkType === "wine_plates") {
+      pool = [...(nb.bars.wine||[]), ...(nb.food.mediterranean||[]).slice(0,2)];
+    } else if (a.foodDrinkType === "brunch_drinks") {
+      pool = [...(nb.food.brunch||[])];
+    } else {
+      pool = [...(nb.food.latenight||[])];
+    }
+    if (a.vibe === "quiet") pool.sort((x,y) => gemScore(y.reviews) - gemScore(x.reviews));
+    else pool.sort(() => Math.random() - 0.5);
+  }
+
   if (a.focus === "activity") {
     pool = [...(a.activityType === "free" ? nb.activities.free : nb.activities.paid) || []];
   }
+
+  // Apply budget + date type filters -- fall back to unfiltered if too few results
+  const filtered = pool.filter(s => priceOk(s) && dateOk(s));
+  if (filtered.length >= 2) pool = filtered;
+  else {
+    // Partial fallback: at least apply budget
+    const budgetOnly = pool.filter(s => priceOk(s));
+    if (budgetOnly.length >= 2) pool = budgetOnly;
+  }
+
+  // First date: also bubble spots with reservations to top
+  if (a.dateType === "first") {
+    const withBooking = pool.filter(s => s.booking);
+    const without = pool.filter(s => !s.booking);
+    if (withBooking.length >= 1) pool = [...withBooking, ...without];
+  }
+
   return pool.slice(0, 6);
 };
 
-// ─── SKYLINE SVG ──────────────────────────────────────────────────────────────
+const NB_SILHOUETTES = {
+  williamsburg: () => (
+    <svg viewBox="0 0 240 60" style={{width:"100%",height:"52px",display:"block"}}>
+      <defs>
+        <linearGradient id="wbg" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#c9a96e" stopOpacity="1"/>
+          <stop offset="100%" stopColor="#9b6b9b" stopOpacity="0.6"/>
+        </linearGradient>
+        <filter id="wbf"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g fill="url(#wbg)" filter="url(#wbf)">
+        <rect x="4" y="32" width="14" height="28"/><rect x="6" y="24" width="10" height="10"/><rect x="8" y="18" width="6" height="8"/>
+        <line x1="11" y1="18" x2="11" y2="8" stroke="#c9a96e" strokeWidth="1.5" opacity="0.8"/>
+        <circle cx="11" cy="7" r="3" fill="none" stroke="#c9a96e" strokeWidth="1.2" opacity="0.8"/>
+        <rect x="22" y="22" width="20" height="38"/><rect x="26" y="14" width="12" height="10"/>
+        <rect x="46" y="36" width="12" height="24"/><rect x="48" y="29" width="8" height="9"/>
+        <rect x="62" y="26" width="18" height="34"/><rect x="65" y="18" width="12" height="10"/>
+        <rect x="84" y="40" width="10" height="20"/><rect x="98" y="28" width="16" height="32"/>
+        <rect x="101" y="20" width="10" height="10"/><rect x="118" y="42" width="10" height="18"/>
+        <rect x="132" y="32" width="14" height="28"/><rect x="150" y="36" width="12" height="24"/>
+        <rect x="166" y="24" width="18" height="36"/><rect x="169" y="16" width="12" height="10"/>
+        <rect x="188" y="40" width="12" height="20"/><rect x="204" y="30" width="16" height="30"/>
+        <rect x="224" y="38" width="12" height="22"/>
+      </g>
+      <g fill="#fff8e0" opacity="0.25">
+        {[32,40,50].map(y=>[24,30,66,72,100,106,136,142].map(x=><rect key={`${x}-${y}`} x={x} y={y} width="2" height="2"/>))}
+      </g>
+    </svg>
+  ),
+  east_village: () => (
+    <svg viewBox="0 0 240 60" style={{width:"100%",height:"52px",display:"block"}}>
+      <defs>
+        <linearGradient id="evbg" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#9b6b9b" stopOpacity="1"/>
+          <stop offset="100%" stopColor="#c9a96e" stopOpacity="0.5"/>
+        </linearGradient>
+        <filter id="evbf"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g fill="url(#evbg)" filter="url(#evbf)">
+        {[0,1,2,3,4,5,6,7,8,9,10].map(i => {
+          const x = 4+i*22, h=[22,26,20,24,28,22,26,20,24,22,26][i], w=16;
+          return <g key={i}>
+            <rect x={x} y={60-h} width={w} height={h}/>
+            <rect x={x+2} y={60-h-5} width={w-4} height={5}/>
+            <rect x={x+2} y={60-h+4} width={4} height={5} opacity="0.4"/>
+            <rect x={x+10} y={60-h+4} width={4} height={5} opacity="0.4"/>
+          </g>;
+        })}
+      </g>
+      <g fill="#fff8e0" opacity="0.2">
+        {[0,1,2,3,4].map(i=>{const x=4+i*44,h=[22,26,24,28,22][i];return [38,46,54].map(y=>y<(60-h+8)?null:<rect key={`${x}-${y}`} x={x+2} y={y} width="2" height="2"/>);})}
+      </g>
+    </svg>
+  ),
+  west_village: () => (
+    <svg viewBox="0 0 240 60" style={{width:"100%",height:"52px",display:"block"}}>
+      <defs>
+        <linearGradient id="wvbg" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#6b9b8b" stopOpacity="1"/>
+          <stop offset="100%" stopColor="#c9a96e" stopOpacity="0.5"/>
+        </linearGradient>
+        <filter id="wvbf"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g fill="url(#wvbg)" filter="url(#wvbf)">
+        {[0,1,2,3,4,5,6,7,8,9,10].map(i => {
+          const x=4+i*22, h=[20,24,18,22,26,20,24,18,22,20,24][i], w=16;
+          return <g key={i}>
+            <path d={`M${x},60 L${x},${60-h} Q${x+w/2},${60-h-6} ${x+w},${60-h} L${x+w},60 Z`}/>
+            <rect x={x+3} y={60-h+4} width={3} height={4} opacity="0.3"/>
+            <rect x={x+10} y={60-h+4} width={3} height={4} opacity="0.3"/>
+          </g>;
+        })}
+      </g>
+    </svg>
+  ),
+  midtown: () => (
+    <svg viewBox="0 0 240 60" style={{width:"100%",height:"52px",display:"block"}}>
+      <defs>
+        <linearGradient id="mtbg" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#ff8c42" stopOpacity="1"/>
+          <stop offset="100%" stopColor="#c9a96e" stopOpacity="0.5"/>
+        </linearGradient>
+        <filter id="mtbf"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g fill="url(#mtbg)" filter="url(#mtbf)">
+        <rect x="4" y="36" width="14" height="24"/><rect x="22" y="22" width="18" height="38"/>
+        <rect x="44" y="8" width="22" height="52"/><rect x="47" y="2" width="16" height="8"/><rect x="52" y="-2" width="6" height="6"/>
+        <rect x="70" y="20" width="18" height="40"/><rect x="92" y="12" width="20" height="48"/>
+        <rect x="95" y="5" width="14" height="9"/><rect x="116" y="26" width="16" height="34"/>
+        <rect x="136" y="14" width="20" height="46"/><rect x="139" y="7" width="14" height="9"/>
+        <rect x="160" y="24" width="18" height="36"/><rect x="182" y="10" width="22" height="50"/>
+        <rect x="185" y="3" width="16" height="9"/><rect x="208" y="28" width="14" height="32"/>
+        <rect x="226" y="18" width="10" height="42"/>
+      </g>
+      <g fill="#fff8e0" opacity="0.2">
+        {[20,32,44].map(y=>[46,52,94,100,138,144,184,190].map(x=><rect key={`${x}-${y}`} x={x} y={y} width="2" height="2"/>))}
+      </g>
+    </svg>
+  ),
+  lic: () => (
+    <svg viewBox="0 0 240 60" style={{width:"100%",height:"52px",display:"block"}}>
+      <defs>
+        <linearGradient id="licbg" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#c9a96e" stopOpacity="1"/>
+          <stop offset="100%" stopColor="#ff6b6b" stopOpacity="0.5"/>
+        </linearGradient>
+        <filter id="licbf"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g fill="url(#licbg)" filter="url(#licbf)">
+        <rect x="4" y="38" width="14" height="22"/><rect x="22" y="26" width="18" height="34"/>
+        <rect x="44" y="16" width="22" height="44"/><rect x="47" y="9" width="16" height="9"/>
+        <rect x="70" y="32" width="14" height="28"/>
+        <line x1="96" y1="0" x2="90" y2="60" stroke="#c9a96e" strokeWidth="2.5" opacity="0.45"/>
+        <line x1="106" y1="0" x2="100" y2="60" stroke="#c9a96e" strokeWidth="2.5" opacity="0.45"/>
+        <line x1="88" y1="22" x2="108" y2="22" stroke="#c9a96e" strokeWidth="1.5" opacity="0.45"/>
+        <line x1="86" y1="40" x2="110" y2="40" stroke="#c9a96e" strokeWidth="1.5" opacity="0.45"/>
+        <rect x="118" y="30" width="16" height="30"/><rect x="138" y="20" width="20" height="40"/>
+        <rect x="141" y="12" width="14" height="10"/><rect x="162" y="34" width="14" height="26"/>
+        <rect x="180" y="22" width="18" height="38"/><rect x="202" y="30" width="14" height="30"/>
+        <rect x="220" y="16" width="18" height="44"/><rect x="223" y="9" width="12" height="9"/>
+      </g>
+    </svg>
+  ),
+};
+
 const Skyline = () => (
   <svg viewBox="0 0 500 140" style={{width:"100%",maxWidth:"440px",margin:"0 auto",display:"block"}}>
     <defs>
@@ -649,152 +788,424 @@ const Skyline = () => (
   </svg>
 );
 
-// ─── RESULTS LAYOUT: Best Pick + 2 Backups ────────────────────────────────────
-const ResultCards = ({ spots, mode }) => {
+const MODE_EMOJI = {
+  food: { brunch:"🥐", japanese:"🍣", pasta:"🍝", pizza:"🍕", mediterranean:"🥙", american:"🥩", latenight:"🌙", default:"🍽️" },
+  drinks: { cocktails:"🍸", beer:"🍺", wine:"🍷", experimental:"🧪", speakeasy:"🕯️", default:"🥂" },
+  fooddrinks: { dinner_cocktails:"🍸", wine_plates:"🍷", brunch_drinks:"🥂", late_bites:"🌙", default:"🥂" },
+  activity: { free:"🌿", paid:"🎯", default:"✨" },
+  happyhour: { default:"🎉" },
+};
+
+const getModeEmoji = (focus, subtype) => {
+  const map = MODE_EMOJI[focus];
+  if (!map) return "✨";
+  return map[subtype] || map.default;
+};
+
+const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) => {
+  const [idx, setIdx] = useState(0);
   const mapsUrl = (q) => `https://www.google.com/maps/search/?api=1&query=${q}`;
+  const resyUrl = (name) => `https://resy.com/cities/ny?query=${encodeURIComponent(name)}`;
+
   if (!spots || !spots.length) return (
     <div style={{textAlign:"center",color:T.sub,padding:"32px",fontFamily:"sans-serif"}}>No spots found for this selection.</div>
   );
 
-  const best = spots[0];
-  const backups = spots.slice(1, 3);
+  const spot = spots[idx];
+  const gem = gemScore(spot.reviews);
+  const isGem = gem >= 8;
+  const cycleNext = () => setIdx(i => (i + 1) % spots.length);
 
-  const GemBadge = ({ spot }) => {
-    const gem = gemScore(spot.reviews);
-    if (gem >= 8) return <span style={{fontSize:"9px",background:`${T.accent}22`,color:T.accent,padding:"2px 7px",borderRadius:"10px",fontFamily:"sans-serif",letterSpacing:"0.5px"}}>💎 Hidden {gem}/10</span>;
-    if (gem >= 5) return <span style={{fontSize:"9px",color:T.sub,fontFamily:"sans-serif"}}>💎 {gem}/10</span>;
-    return <span style={{fontSize:"9px",color:T.sub+"66",fontFamily:"sans-serif",opacity:0.6}}>📍 Well-known</span>;
-  };
+  const starRating = spot.stars || 0;
+  const fullStars = Math.floor(starRating);
+  const halfStar = starRating - fullStars >= 0.5;
 
-  const Links = ({ spot, compact }) => (
-    <div style={{display:"flex",gap:"10px",flexWrap:"wrap",marginTop: compact ? "6px" : "12px"}}>
-      {spot.booking && (
-        <a href={`https://${spot.booking}`} target="_blank" rel="noopener noreferrer"
-          style={{fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"1.5px",textTransform:"uppercase",color:T.accent,textDecoration:"none",borderBottom:`1px solid ${T.accent}44`,paddingBottom:"1px"}}>
-          📅 Reserve
-        </a>
-      )}
-      <a href={mapsUrl(spot.maps)} target="_blank" rel="noopener noreferrer"
-        style={{fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"1.5px",textTransform:"uppercase",color:T.sub,textDecoration:"none",borderBottom:`1px solid ${T.sub}44`,paddingBottom:"1px"}}>
-        🗺️ Maps
-      </a>
-    </div>
-  );
+  const SilSvg = NB_SILHOUETTES[neighborhood];
+  const nbAccent = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e"}[neighborhood] || T.accent;
+
+  // Don't show desc if it's just the place name or a raw notes tag
+  const SKIP_DESCS = ["brunch","bar","late night","latenight","dinner","activity","pizza","japanese","italian dinner","american dinner","mediterranean","cocktail bar","wine bar","speakeasy","rooftop","happy hour"];
+  const desc = spot.desc && spot.desc !== spot.place && !SKIP_DESCS.includes(spot.desc.toLowerCase().trim()) ? spot.desc : null;
+
+  // Category emoji
+  const subtype = answers?.drinkType || answers?.foodType || answers?.foodDrinkType || answers?.activityType || "";
+  const catEmoji = getModeEmoji(mode, subtype);
 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-      {/* BEST PICK */}
-      <div style={{
-        background:"rgba(15,13,22,0.97)",
-        border:`1px solid ${T.accent}55`,
-        borderLeft:`3px solid ${T.accent}`,
-        borderRadius:"6px",
-        padding:"22px 20px",
-        position:"relative",
-        boxShadow:`0 20px 50px rgba(0,0,0,0.5), 0 0 40px ${T.accent}12`
-      }}>
-        <div style={{position:"absolute",top:"12px",right:"14px"}}>
-          <span style={{fontSize:"9px",background:`linear-gradient(135deg,${T.accent},${T.accent2})`,color:T.bg,padding:"3px 9px",borderRadius:"10px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"1.5px",textTransform:"uppercase"}}>
-            Best Pick
-          </span>
-        </div>
-        <div style={{fontSize:"9px",color:T.accent,fontFamily:"sans-serif",letterSpacing:"2.5px",textTransform:"uppercase",marginBottom:"4px"}}>{best.type}</div>
-        <div style={{display:"flex",gap:"12px",alignItems:"flex-start"}}>
-          <span style={{fontSize:"30px",flexShrink:0}}>{best.emoji}</span>
-          <div style={{flex:1}}>
-            <div style={{fontSize:"20px",marginBottom:"2px",lineHeight:1.15}}>{best.place}</div>
-            <div style={{marginBottom:"8px"}}><GemBadge spot={best}/></div>
-            <p style={{fontSize:"13px",color:T.sub,fontFamily:"sans-serif",lineHeight:1.65,margin:"0 0 4px"}}>{best.desc}</p>
-            {mode === "happyhour" && best.deal && (
-              <div style={{fontSize:"12px",color:T.accent,fontFamily:"sans-serif",fontWeight:"700",marginBottom:"4px"}}>🎉 {best.deal} · {best.hours}</div>
-            )}
-            <Links spot={best} compact={false}/>
+
+      {/* ── GRAND REVEAL CARD ── */}
+      <div style={{background:`linear-gradient(160deg,rgba(14,10,22,0.99),rgba(8,6,14,0.99))`,border:`1px solid ${nbAccent}44`,borderRadius:"14px",overflow:"hidden",boxShadow:`0 40px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)`}}>
+
+        {/* Top accent line */}
+        <div style={{height:"2px",background:`linear-gradient(90deg,transparent,${nbAccent},transparent)`}}/>
+
+        {/* ── HERO: emoji + pick label + name ── */}
+        <div style={{padding:"22px 22px 0",background:`linear-gradient(180deg,${nbAccent}14 0%,transparent 100%)`}}>
+
+          {/* Pick label + category emoji + featured badge */}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+              <div style={{fontSize:"8px",letterSpacing:"4px",textTransform:"uppercase",color:nbAccent,fontFamily:"sans-serif"}}>
+                {idx === 0 ? "Tonight's Pick" : `Pick ${idx + 1} of ${spots.length}`}
+              </div>
+              {spot.featured && (
+                <div style={{fontSize:"8px",letterSpacing:"1.5px",textTransform:"uppercase",color:"#fff",fontFamily:"sans-serif",background:`linear-gradient(135deg,${nbAccent},${T.accent2})`,padding:"2px 7px",borderRadius:"10px"}}>
+                  ⭐ Featured
+                </div>
+              )}
+            </div>
+            <div style={{fontSize:"28px",lineHeight:1}}>{catEmoji}</div>
+          </div>
+
+          {/* BIG place name — above the silhouette */}
+          <div style={{fontSize:"clamp(28px,8vw,44px)",lineHeight:1.05,letterSpacing:"-1px",fontWeight:"normal",textShadow:`0 2px 30px ${nbAccent}33`,marginBottom:"0"}}>
+            {spot.place}
           </div>
         </div>
+
+        {/* ── SILHOUETTE below the name ── */}
+        {SilSvg && (
+          <div style={{opacity:0.25,marginTop:"-4px",pointerEvents:"none"}}>
+            <SilSvg/>
+          </div>
+        )}
+
+        {/* ── DETAILS SECTION ── */}
+        <div style={{padding:"8px 22px 20px"}}>
+
+          {/* Stars + rating */}
+          <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"6px"}}>
+            <div style={{display:"flex",gap:"2px"}}>
+              {[1,2,3,4,5].map(i => (
+                <span key={i} style={{fontSize:"13px",color:i<=fullStars||(i===fullStars+1&&halfStar)?nbAccent:"#2a2420"}}>★</span>
+              ))}
+            </div>
+            {starRating > 0 && <span style={{fontSize:"13px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"700"}}>{starRating.toFixed(1)}</span>}
+            {spot.reviews > 0 && <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>· {Number(spot.reviews).toLocaleString()} reviews</span>}
+            {isGem && <span style={{fontSize:"9px",color:nbAccent,fontFamily:"sans-serif",background:`${nbAccent}18`,border:`1px solid ${nbAccent}44`,padding:"2px 7px",borderRadius:"20px",marginLeft:"4px"}}>💎 Gem</span>}
+          </div>
+
+          {spot.reservable && (
+            <div style={{fontSize:"10px",color:"#6b9b8b",fontFamily:"sans-serif",marginBottom:"12px"}}>✓ Takes Reservations</div>
+          )}
+
+          {/* Divider */}
+          <div style={{height:"1px",background:`linear-gradient(90deg,${nbAccent}44,transparent)`,marginBottom:"14px"}}/>
+
+          {desc && (
+            <p style={{fontSize:"14px",color:"#b8a898",fontFamily:"sans-serif",lineHeight:1.8,margin:"0 0 16px",fontStyle:"italic"}}>{desc}</p>
+          )}
+
+          {mode === "happyhour" && spot.deal && (
+            <div style={{background:`${nbAccent}14`,border:`1px solid ${nbAccent}33`,borderRadius:"6px",padding:"10px 14px",marginBottom:"16px"}}>
+              <div style={{fontSize:"12px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"700"}}>🎉 {spot.deal}</div>
+              <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif",marginTop:"3px"}}>{spot.hours}</div>
+            </div>
+          )}
+
+          <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+            {spot.booking && (
+              <a href={spot.booking.startsWith("http") ? spot.booking : `https://${spot.booking}`} target="_blank" rel="noopener noreferrer"
+                style={{display:"inline-block",padding:"10px 18px",background:`linear-gradient(135deg,${nbAccent},${T.accent2})`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"2px",textTransform:"uppercase",color:T.bg,textDecoration:"none"}}>
+                📅 Reserve
+              </a>
+            )}
+            {dateType === "first" && spot.booking && (
+              <a href={resyUrl(spot.place)} target="_blank" rel="noopener noreferrer"
+                style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.accent2}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.accent2,textDecoration:"none"}}>
+                🍽️ Resy
+              </a>
+            )}
+            <a href={mapsUrl(spot.maps)} target="_blank" rel="noopener noreferrer"
+              style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.sub,textDecoration:"none"}}>
+              🗺️ Maps
+            </a>
+          </div>
+        </div>
+
+        <div style={{height:"2px",background:`linear-gradient(90deg,transparent,${nbAccent}66,transparent)`}}/>
       </div>
 
-      {/* ALSO CONSIDER label */}
-      {backups.length > 0 && (
-        <div style={{fontSize:"9px",letterSpacing:"3px",textTransform:"uppercase",color:T.sub,fontFamily:"sans-serif",textAlign:"center",marginTop:"4px",opacity:0.7}}>
-          Also consider
-        </div>
+      {spots.length > 1 && (
+        <button onClick={cycleNext}
+          style={{width:"100%",padding:"14px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"8px",color:T.sub,fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",transition:"all 0.2s"}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor=nbAccent;e.currentTarget.style.color=nbAccent;}}
+          onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
+          {idx < spots.length - 1 ? `Show Another Pick (${spots.length - idx - 1} more)` : "Start from the top"}
+        </button>
       )}
 
-      {/* BACKUP CARDS */}
-      {backups.map((spot, i) => {
-        const color = accentAt(i + 1);
-        return (
-          <div key={spot.id} style={{
-            background:T.card,
-            border:`1px solid ${T.border}`,
-            borderLeft:`2px solid ${color}66`,
-            borderRadius:"5px",
-            padding:"14px 16px",
-          }}>
-            <div style={{fontSize:"9px",color:color,fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",marginBottom:"6px",opacity:0.8}}>{spot.type}</div>
-            <div style={{display:"flex",gap:"10px",alignItems:"center"}}>
-              <span style={{fontSize:"22px",flexShrink:0}}>{spot.emoji}</span>
-              <div style={{flex:1}}>
-                <div style={{fontSize:"15px",marginBottom:"3px"}}>{spot.place}</div>
-                <p style={{fontSize:"12px",color:T.sub,fontFamily:"sans-serif",lineHeight:1.5,margin:"0 0 2px"}}>{spot.desc}</p>
-                {mode === "happyhour" && spot.deal && (
-                  <div style={{fontSize:"11px",color:color,fontFamily:"sans-serif",fontWeight:"700"}}>🎉 {spot.deal} · {spot.hours}</div>
-                )}
-                <Links spot={spot} compact={true}/>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+      <div style={{padding:"8px 12px",fontSize:"10px",color:T.sub+"55",fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
+        🔍 Always verify on Google Maps — NYC spots close unexpectedly.
+      </div>
+    </div>
+  );
 
-      {/* Closed spot note */}
-      <div style={{
-        marginTop:"6px",
-        padding:"10px 14px",
-        background:"rgba(255,255,255,0.02)",
-        border:`1px solid ${T.border}`,
-        borderRadius:"4px",
-        fontSize:"10px",
-        color:T.sub+"88",
-        fontFamily:"sans-serif",
-        lineHeight:1.6,
-        textAlign:"center"
-      }}>
-        🔍 Always verify on Google Maps before you go — NYC restaurants close unexpectedly.
+
+  return (
+    <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+
+      {/* ── GRAND REVEAL CARD ── */}
+      <div style={{background:`linear-gradient(160deg,rgba(12,8,18,0.99),rgba(8,6,14,0.99))`,border:`1px solid ${nbAccent}33`,borderRadius:"14px",overflow:"hidden",boxShadow:`0 40px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)`}}>
+
+        {/* ── HERO HEADER with silhouette ── */}
+        <div style={{position:"relative",background:`linear-gradient(180deg, ${nbAccent}22 0%, ${nbAccent}08 60%, rgba(8,6,14,0) 100%)`,padding:"28px 22px 0",overflow:"hidden"}}>
+
+          {/* Background silhouette - large and faded */}
+          {SilSvg && (
+            <div style={{position:"absolute",bottom:"-2px",left:0,right:0,opacity:0.35,transform:"scale(1.1)"}}>
+              <SilSvg/>
+            </div>
+          )}
+
+          {/* Top accent line */}
+          <div style={{position:"absolute",top:0,left:0,right:0,height:"2px",background:`linear-gradient(90deg,transparent,${nbAccent},transparent)`}}/>
+
+          {/* Pick label */}
+          <div style={{fontSize:"8px",letterSpacing:"4px",textTransform:"uppercase",color:nbAccent,fontFamily:"sans-serif",marginBottom:"16px",position:"relative"}}>
+            {idx === 0 ? "Tonight's Pick" : `Pick ${idx + 1} of ${spots.length}`}
+          </div>
+
+          {/* BIG place name */}
+          <div style={{fontSize:"clamp(30px,9vw,46px)",lineHeight:1.0,letterSpacing:"-1.5px",fontWeight:"normal",position:"relative",paddingBottom:"24px",textShadow:`0 0 60px ${nbAccent}44`}}>
+            {spot.place}
+          </div>
+        </div>
+
+        {/* ── DETAILS SECTION ── */}
+        <div style={{padding:"16px 22px"}}>
+
+          {/* Stars + rating */}
+          <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px"}}>
+            <div style={{display:"flex",gap:"2px"}}>
+              {[1,2,3,4,5].map(i => (
+                <span key={i} style={{fontSize:"14px",color:i<=fullStars||( i===fullStars+1&&halfStar)?nbAccent:"#2a2420"}}>★</span>
+              ))}
+            </div>
+            {starRating > 0 && <span style={{fontSize:"13px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"700"}}>{starRating.toFixed(1)}</span>}
+            {spot.reviews > 0 && <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>· {Number(spot.reviews).toLocaleString()} reviews</span>}
+            {isGem && <span style={{fontSize:"9px",color:nbAccent,fontFamily:"sans-serif",background:`${nbAccent}18`,border:`1px solid ${nbAccent}44`,padding:"2px 7px",borderRadius:"20px",marginLeft:"4px"}}>💎 Gem</span>}
+          </div>
+
+          {/* Reservation badge */}
+          {spot.reservable && (
+            <div style={{fontSize:"10px",color:"#6b9b8b",fontFamily:"sans-serif",letterSpacing:"0.5px",marginBottom:"12px"}}>✓ Takes Reservations</div>
+          )}
+
+          {/* Divider */}
+          <div style={{height:"1px",background:`linear-gradient(90deg,${nbAccent}44,transparent)`,marginBottom:"14px"}}/>
+
+          {/* Description */}
+          {desc && (
+            <p style={{fontSize:"14px",color:"#b8a898",fontFamily:"sans-serif",lineHeight:1.8,margin:"0 0 16px",fontStyle:"italic"}}>{desc}</p>
+          )}
+
+          {/* Happy hour deal */}
+          {mode === "happyhour" && spot.deal && (
+            <div style={{background:`${nbAccent}14`,border:`1px solid ${nbAccent}33`,borderRadius:"6px",padding:"10px 14px",marginBottom:"16px"}}>
+              <div style={{fontSize:"12px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"700"}}>🎉 {spot.deal}</div>
+              <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif",marginTop:"3px"}}>{spot.hours}</div>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+            {spot.booking && (
+              <a href={spot.booking.startsWith("http") ? spot.booking : `https://${spot.booking}`} target="_blank" rel="noopener noreferrer"
+                style={{display:"inline-block",padding:"10px 18px",background:`linear-gradient(135deg,${nbAccent},${T.accent2})`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"2px",textTransform:"uppercase",color:T.bg,textDecoration:"none"}}>
+                📅 Reserve
+              </a>
+            )}
+            {dateType === "first" && spot.booking && (
+              <a href={resyUrl(spot.place)} target="_blank" rel="noopener noreferrer"
+                style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.accent2}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.accent2,textDecoration:"none"}}>
+                🍽️ Resy
+              </a>
+            )}
+            <a href={mapsUrl(spot.maps)} target="_blank" rel="noopener noreferrer"
+              style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.sub,textDecoration:"none"}}>
+              🗺️ Maps
+            </a>
+          </div>
+        </div>
+
+        {/* Bottom gradient bar */}
+        <div style={{height:"2px",background:`linear-gradient(90deg,transparent,${nbAccent}66,transparent)`}}/>
+      </div>
+
+      {/* Cycle button */}
+      {spots.length > 1 && (
+        <button onClick={cycleNext}
+          style={{width:"100%",padding:"14px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"8px",color:T.sub,fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",transition:"all 0.2s"}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor=nbAccent;e.currentTarget.style.color=nbAccent;}}
+          onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
+          {idx < spots.length - 1 ? `Show Another Pick (${spots.length - idx - 1} more)` : "Start from the top"}
+        </button>
+      )}
+
+      <div style={{padding:"8px 12px",fontSize:"10px",color:T.sub+"55",fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
+        🔍 Always verify on Google Maps — NYC spots close unexpectedly.
+      </div>
+    </div>
+  );
+
+
+  return (
+    <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+
+      {/* ── GRAND REVEAL CARD ── */}
+      <div style={{background:`linear-gradient(160deg, rgba(15,10,20,0.99) 0%, rgba(10,8,16,0.99) 100%)`,border:`1px solid ${T.accent}44`,borderRadius:"12px",overflow:"hidden",boxShadow:`0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06)`}}>
+
+        {/* Top gradient bar */}
+        <div style={{height:"3px",background:`linear-gradient(90deg,${T.accent2},${T.accent},${T.accent2})`}}/>
+
+        {/* Eyebrow + pick counter */}
+        <div style={{padding:"20px 22px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{fontSize:"8px",letterSpacing:"3.5px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif"}}>
+            {idx === 0 ? "Tonight's Pick" : `Pick ${idx + 1} of ${spots.length}`}
+          </div>
+          {isGem && (
+            <div style={{fontSize:"8px",letterSpacing:"1.5px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif",background:`${T.accent}18`,border:`1px solid ${T.accent}44`,padding:"3px 8px",borderRadius:"20px"}}>
+              💎 Hidden Gem
+            </div>
+          )}
+        </div>
+
+        {/* Place name */}
+        <div style={{padding:"14px 22px 0"}}>
+          <div style={{fontSize:"clamp(28px,8vw,40px)",lineHeight:1.0,letterSpacing:"-1px",fontWeight:"normal"}}>
+            {spot.place}
+          </div>
+        </div>
+
+        {/* Real star rating + review count */}
+        <div style={{padding:"10px 22px 0",display:"flex",alignItems:"center",gap:"8px"}}>
+          <div style={{display:"flex",gap:"2px"}}>
+            {[1,2,3,4,5].map(i => (
+              <span key={i} style={{fontSize:"13px",color: i <= fullStars ? T.accent : i === fullStars+1 && halfStar ? T.accent : "#2a2420",opacity: i <= fullStars || (i === fullStars+1 && halfStar) ? 1 : 0.3}}>
+                {i <= fullStars ? "★" : i === fullStars+1 && halfStar ? "⭑" : "★"}
+              </span>
+            ))}
+          </div>
+          {starRating > 0 && <span style={{fontSize:"12px",color:T.accent,fontFamily:"sans-serif",fontWeight:"600"}}>{starRating.toFixed(1)}</span>}
+          {spot.reviews > 0 && <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>· {Number(spot.reviews).toLocaleString()} reviews</span>}
+        </div>
+
+        {/* Reservation badge */}
+        {spot.reservable && (
+          <div style={{padding:"8px 22px 0"}}>
+            <span style={{fontSize:"9px",color:"#6b9b8b",fontFamily:"sans-serif",letterSpacing:"0.5px"}}>✓ Takes Reservations</span>
+          </div>
+        )}
+
+        {/* Divider */}
+        <div style={{margin:"14px 22px 0",height:"1px",background:`linear-gradient(90deg,${T.accent}44,transparent)`}}/>
+
+        {/* Description */}
+        <div style={{padding:"14px 22px"}}>
+          <p style={{fontSize:"14px",color:"#b0a090",fontFamily:"sans-serif",lineHeight:1.8,margin:"0 0 18px",fontStyle:"italic"}}>{spot.desc}</p>
+
+          {mode === "happyhour" && spot.deal && (
+            <div style={{background:`${T.accent}14`,border:`1px solid ${T.accent}33`,borderRadius:"5px",padding:"10px 14px",marginBottom:"16px"}}>
+              <div style={{fontSize:"12px",color:T.accent,fontFamily:"sans-serif",fontWeight:"700"}}>🎉 {spot.deal}</div>
+              <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif",marginTop:"3px"}}>{spot.hours}</div>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+            {spot.booking && (
+              <a href={spot.booking.startsWith("http") ? spot.booking : `https://${spot.booking}`} target="_blank" rel="noopener noreferrer"
+                style={{display:"inline-block",padding:"10px 18px",background:`linear-gradient(135deg,${T.accent},${T.accent2})`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"2px",textTransform:"uppercase",color:T.bg,textDecoration:"none"}}>
+                📅 Reserve
+              </a>
+            )}
+            {dateType === "first" && spot.booking && (
+              <a href={resyUrl(spot.place)} target="_blank" rel="noopener noreferrer"
+                style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.accent2}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.accent2,textDecoration:"none"}}>
+                🍽️ Resy
+              </a>
+            )}
+            <a href={mapsUrl(spot.maps)} target="_blank" rel="noopener noreferrer"
+              style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.sub,textDecoration:"none"}}>
+              🗺️ Maps
+            </a>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div style={{height:"2px",background:`linear-gradient(90deg,transparent,${T.accent}44,transparent)`}}/>
+      </div>
+
+      {/* Cycle + Start Over */}
+      {spots.length > 1 && (
+        <button onClick={cycleNext}
+          style={{width:"100%",padding:"14px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"6px",color:T.sub,fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",transition:"all 0.2s"}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.color=T.accent;}}
+          onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
+          {idx < spots.length - 1 ? `Show Another Pick (${spots.length - idx - 1} more)` : "Start from the top"}
+        </button>
+      )}
+
+      <div style={{padding:"8px 12px",background:"rgba(255,255,255,0.02)",border:`1px solid ${T.border}`,borderRadius:"4px",fontSize:"10px",color:T.sub+"66",fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
+        🔍 Always verify on Google Maps — NYC spots close unexpectedly.
       </div>
     </div>
   );
 };
 
-// ─── MAIN APP ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [screen, setScreen] = useState("intro");
   const [answers, setAnswers] = useState({});
+  const [questionHistory, setQuestionHistory] = useState([]);
   const [currentQ, setCurrentQ] = useState(null);
   const [results, setResults] = useState(null);
   const [hoverNb, setHoverNb] = useState(null);
 
-  const totalSteps = 6;
+  const totalSteps = 7;
   const progress = Math.min((Object.keys(answers).length / totalSteps) * 100, 95);
 
   const advance = (key, val) => {
     const next = { ...answers, [key]: val };
+    setQuestionHistory(h => [...h, key]);
     setAnswers(next);
     const q = getQuestion(next);
     if (q) { setCurrentQ(q); setScreen("quiz"); }
     else { setScreen("loading"); setTimeout(() => { setResults(getSpots(next)); setScreen("result"); }, 1000); }
   };
 
-  const reset = () => { setScreen("intro"); setAnswers({}); setCurrentQ(null); setResults(null); setHoverNb(null); };
+  const goBack = () => {
+    if (questionHistory.length === 0) { reset(); return; }
+    const lastKey = questionHistory[questionHistory.length - 1];
+    const newAnswers = { ...answers };
+    delete newAnswers[lastKey];
+    const newHistory = questionHistory.slice(0, -1);
+    setQuestionHistory(newHistory);
+    setAnswers(newAnswers);
+    const q = getQuestion(newAnswers);
+    if (q) { setCurrentQ(q); setScreen("quiz"); } else { setScreen("intro"); }
+  };
+
+  const reset = () => {
+    setScreen("intro");
+    setAnswers({});
+    setQuestionHistory([]);
+    setCurrentQ(null);
+    setResults(null);
+    setHoverNb(null);
+  };
 
   const resultTitle = () => {
     if (answers.budget === "free") return "Free Tonight";
     const timeLabel = answers.timeOfDay === "day" ? "Daytime" : answers.timeOfDay === "late" ? "Late Night" : "Tonight's";
     const focusMap = {
-      drinks: `${timeLabel} Bar`,
-      food: answers.timeOfDay === "day" ? "Brunch Picks" : `${timeLabel} Table`,
-      activity: answers.activityType === "free" ? "Free Activities" : `${timeLabel} Activity`,
-      happyhour: "Best Happy Hours"
+      drinks:     `${timeLabel} Bar`,
+      food:       answers.timeOfDay === "day" ? "Brunch Picks" : `${timeLabel} Table`,
+      fooddrinks: `${timeLabel} Food & Drinks`,
+      activity:   answers.activityType === "free" ? "Free Activities" : `${timeLabel} Activity`,
+      happyhour:  "Best Happy Hours",
+      ourpick:    "Our Pick Tonight",
     };
     return focusMap[answers.focus] || "Your Picks";
   };
@@ -810,7 +1221,6 @@ export default function App() {
 
       <div style={{position:"relative",zIndex:1,width:"100%",maxWidth:"520px"}}>
 
-        {/* ── INTRO ── */}
         {screen === "intro" && (
           <div style={{textAlign:"center",animation:"fadeUp 0.7s ease"}}>
             <Skyline/>
@@ -825,12 +1235,11 @@ export default function App() {
               style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"14px 42px",fontSize:"11px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s"}}
               onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.04)";e.currentTarget.style.boxShadow=`0 10px 36px ${T.accent}44`;}}
               onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="none";}}>
-              Plan Our Date →
+              Plan Our Date
             </button>
           </div>
         )}
 
-        {/* ── QUIZ ── */}
         {screen === "quiz" && currentQ && (
           <div style={{animation:"fadeUp 0.35s ease"}}>
             {currentQ.special !== "neighborhood" && (
@@ -847,27 +1256,44 @@ export default function App() {
                   <div style={{fontSize:"10px",letterSpacing:"4px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif",marginBottom:"6px"}}>Where are you going?</div>
                   <h2 style={{fontSize:"clamp(20px,5vw,26px)",fontWeight:"normal"}}>Pick your neighborhood</h2>
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {NEIGHBORHOODS.slice(0,4).map(nb=>(
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"10px"}}>
+                  {NEIGHBORHOODS.slice(0,4).map(nb=>{
+                    const SilSvg = NB_SILHOUETTES[nb.id];
+                    const acc = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e"}[nb.id]||T.accent;
+                    return (
                     <button key={nb.id} onClick={()=>advance("neighborhood",nb.id)}
-                      style={{background:hoverNb===nb.id?`linear-gradient(135deg,${T.accent}18,${T.accent2}18)`:T.card,border:hoverNb===nb.id?`1px solid ${T.accent}`:`1px solid ${T.border}`,color:T.text,padding:"20px 14px",cursor:"pointer",borderRadius:"4px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"8px"}}
+                      style={{background:hoverNb===nb.id?`linear-gradient(135deg,${acc}22,${acc}08)`:T.card,border:hoverNb===nb.id?`1px solid ${acc}`:`1px solid ${T.border}`,color:T.text,padding:"0",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"stretch",overflow:"hidden"}}
                       onMouseEnter={()=>setHoverNb(nb.id)}
                       onMouseLeave={()=>setHoverNb(null)}>
-                      <span style={{fontSize:"26px"}}>{nb.emoji}</span>
-                      <span style={{fontSize:"13px",fontFamily:"sans-serif",fontWeight:"700"}}>{nb.label}</span>
-                      <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>{nb.sub}</span>
+                      <div style={{padding:"10px 10px 0",background:`${acc}10`}}>
+                        {SilSvg && <SilSvg/>}
+                      </div>
+                      <div style={{padding:"8px 12px 12px",textAlign:"center"}}>
+                        <div style={{fontSize:"12px",fontFamily:"sans-serif",fontWeight:"700",marginBottom:"2px"}}>{nb.label}</div>
+                        <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif"}}>{nb.sub}</div>
+                      </div>
                     </button>
-                  ))}
+                  )})}
                 </div>
-                <div style={{display:"flex",justifyContent:"center",marginTop:"10px"}}>
-                  <button onClick={()=>advance("neighborhood",NEIGHBORHOODS[4].id)}
-                    style={{background:hoverNb===NEIGHBORHOODS[4].id?`linear-gradient(135deg,${T.accent}18,${T.accent2}18)`:T.card,border:hoverNb===NEIGHBORHOODS[4].id?`1px solid ${T.accent}`:`1px solid ${T.border}`,color:T.text,padding:"20px 14px",cursor:"pointer",borderRadius:"4px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"8px",width:"calc(50% - 5px)"}}
-                    onMouseEnter={()=>setHoverNb(NEIGHBORHOODS[4].id)}
-                    onMouseLeave={()=>setHoverNb(null)}>
-                    <span style={{fontSize:"26px"}}>{NEIGHBORHOODS[4].emoji}</span>
-                    <span style={{fontSize:"13px",fontFamily:"sans-serif",fontWeight:"700"}}>{NEIGHBORHOODS[4].label}</span>
-                    <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>{NEIGHBORHOODS[4].sub}</span>
-                  </button>
+                <div style={{display:"flex",justifyContent:"center"}}>
+                  {(() => {
+                    const nb = NEIGHBORHOODS[4];
+                    const SilSvg = NB_SILHOUETTES[nb.id];
+                    const acc = "#c9a96e";
+                    return (
+                    <button onClick={()=>advance("neighborhood",nb.id)}
+                      style={{background:hoverNb===nb.id?`linear-gradient(135deg,${acc}22,${acc}08)`:T.card,border:hoverNb===nb.id?`1px solid ${acc}`:`1px solid ${T.border}`,color:T.text,padding:"0",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"stretch",overflow:"hidden",width:"48%"}}
+                      onMouseEnter={()=>setHoverNb(nb.id)}
+                      onMouseLeave={()=>setHoverNb(null)}>
+                      <div style={{padding:"8px 10px 0",background:`${acc}10`}}>
+                        {SilSvg && <SilSvg/>}
+                      </div>
+                      <div style={{padding:"6px 12px 10px",textAlign:"center"}}>
+                        <div style={{fontSize:"11px",fontFamily:"sans-serif",fontWeight:"700",marginBottom:"2px"}}>{nb.label}</div>
+                        <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif"}}>{nb.sub}</div>
+                      </div>
+                    </button>
+                  );})()}
                 </div>
               </div>
             ) : (
@@ -887,13 +1313,24 @@ export default function App() {
                 </div>
               </>
             )}
-            {Object.keys(answers).length > 0 && (
-              <button onClick={reset} style={{marginTop:"20px",background:"transparent",border:"none",color:T.sub,fontSize:"11px",fontFamily:"sans-serif",cursor:"pointer",display:"block",margin:"20px auto 0"}}>← start over</button>
-            )}
+
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"24px"}}>
+              <button onClick={goBack}
+                style={{background:"transparent",border:"none",color:T.sub,fontSize:"11px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",transition:"color 0.15s",padding:"0"}}
+                onMouseEnter={e=>e.currentTarget.style.color=T.accent}
+                onMouseLeave={e=>e.currentTarget.style.color=T.sub}>
+                ← back
+              </button>
+              <button onClick={reset}
+                style={{background:"transparent",border:"none",color:T.sub+"88",fontSize:"10px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",transition:"color 0.15s",padding:"0"}}
+                onMouseEnter={e=>e.currentTarget.style.color=T.sub}
+                onMouseLeave={e=>e.currentTarget.style.color=T.sub+"88"}>
+                start over
+              </button>
+            </div>
           </div>
         )}
 
-        {/* ── LOADING ── */}
         {screen === "loading" && (
           <div style={{textAlign:"center",animation:"fadeUp 0.4s ease"}}>
             <div style={{fontSize:"40px",marginBottom:"16px",animation:"pulse 1s ease infinite"}}>🗽</div>
@@ -904,7 +1341,6 @@ export default function App() {
           </div>
         )}
 
-        {/* ── RESULT ── */}
         {screen === "result" && results && (
           <div style={{animation:"fadeUp 0.5s ease"}}>
             <div style={{textAlign:"center",marginBottom:"20px"}}>
@@ -913,17 +1349,17 @@ export default function App() {
               <div style={{width:"32px",height:"1px",background:T.accent,margin:"8px auto",opacity:0.4}}/>
             </div>
 
-            <ResultCards spots={results} mode={answers.focus}/>
+            <ResultCards spots={results} mode={answers.focus} dateType={answers.dateType} onReset={reset} neighborhood={answers.neighborhood} answers={answers}/>
 
-            <div style={{display:"flex",gap:"10px",marginTop:"20px"}}>
+            <div style={{display:"flex",gap:"10px",marginTop:"16px"}}>
               <button onClick={reset}
-                style={{flex:1,background:"transparent",border:`1px solid ${T.border}`,color:T.sub,padding:"12px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",borderRadius:"2px",transition:"all 0.2s"}}
+                style={{flex:1,background:"transparent",border:`1px solid ${T.border}`,color:T.sub,padding:"12px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",borderRadius:"4px",transition:"all 0.2s"}}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.color=T.accent;}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
                 ↺ Start Over
               </button>
               <button
-                style={{flex:2,background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"12px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",fontWeight:"800",borderRadius:"2px"}}
+                style={{flex:2,background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"12px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",fontWeight:"800",borderRadius:"4px"}}
                 onClick={()=>navigator.share&&navigator.share({title:"Table for Two",text:`Check out tonight's picks in ${nbLabel}`})}>
                 📲 Share These Spots
               </button>
