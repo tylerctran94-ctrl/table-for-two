@@ -746,15 +746,7 @@ const getSpots = (a) => {
     const _seen = new Set(); pool = pool.filter(s => { if (_seen.has(s.place)) return false; _seen.add(s.place); return true; }); return pool.slice(0, 6);
   }
 
-  // ── BRUNCH SHORTCUT (daytime pick) ─────────────────────────────────────────
-  if (a.focus === "brunch") {
-    let pool = [...(nb.food.brunch || nb.food.american || [])];
-    const filtered = pool.filter(s => priceOk(s) && dateOk(s));
-    if (filtered.length >= 2) pool = filtered;
-    const _seen = new Set(); pool = pool.filter(s => { if (_seen.has(s.place)) return false; _seen.add(s.place); return true; }); return pool.slice(0, 6);
-  }
-
-  // ── OUR PICK: curated + featured first ──────────────────────────────────────
+  // ── BRUNCH SHORTCUT (daytime pick) — moved to after priceOk is defined below
   if (a.focus === "ourpick") {
     const all = [
       ...(nb.bars.cocktails||[]), ...(nb.bars.wine||[]), ...(nb.bars.speakeasy||[]),
@@ -781,6 +773,14 @@ const getSpots = (a) => {
     if (a.budget === "mid")     return p === "$" || p === "$$" || p === "$$$";
     return true;
   };
+
+  // ── BRUNCH SHORTCUT (daytime) ────────────────────────────────────────────────
+  if (a.focus === "brunch") {
+    let pool = [...(nb.food.brunch || nb.food.american || [])];
+    const filtered = pool.filter(s => priceOk(s) && dateOk(s));
+    if (filtered.length >= 2) pool = filtered;
+    const _seen = new Set(); pool = pool.filter(s => { if (_seen.has(s.place)) return false; _seen.add(s.place); return true; }); return pool.slice(0, 6);
+  }
 
   let pool = [];
 
