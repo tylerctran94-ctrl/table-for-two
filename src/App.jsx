@@ -29,16 +29,35 @@ const NEIGHBORHOODS = [
 
 const DRINK_OPTS = [
   { v:"cocktails", l:"🍹 Cocktails" }, { v:"beer", l:"🍺 Beer / Dive" },
-  { v:"wine", l:"🍷 Wine" }, { v:"experimental", l:"🧪 Experimental" },
-  { v:"speakeasy", l:"🕯️ Speakeasy" },
+  { v:"wine", l:"🍷 Wine" },  { v:"speakeasy", l:"🕯️ Speakeasy" },
 ];
 const FOOD_OPTS = [
-  { v:"brunch", l:"🥐 Brunch" }, { v:"coffee", l:"☕ Coffee & Matcha" },
-  { v:"japanese", l:"🍣 Japanese" }, { v:"korean", l:"🥩 Korean" },
-  { v:"chinese", l:"🥢 Chinese" }, { v:"pasta", l:"🍝 Italian" },
-  { v:"pizza", l:"🍕 Pizza" }, { v:"mediterranean", l:"🥙 Mediterranean" },
-  { v:"mexican", l:"🌮 Mexican" }, { v:"vegan", l:"🌿 Vegan" },
-  { v:"american", l:"🍔 American" },
+  // Coffee & Daytime
+  { v:"coffee",        l:"☕ Coffee & Matcha" },
+  { v:"boba",          l:"🧋 Boba" },
+  { v:"brunch",        l:"🥐 Brunch" },
+  { v:"diner",         l:"🍳 Diner" },
+  // American
+  { v:"burgers",       l:"🍔 Burgers" },
+  { v:"steakhouse",    l:"🥩 Steakhouse" },
+  { v:"american",      l:"🇺🇸 American" },
+  // European
+  { v:"pasta",         l:"🍝 Italian" },
+  { v:"french",        l:"🥐 French" },
+  // Asian
+  { v:"japanese",      l:"🍣 Japanese" },
+  { v:"korean",        l:"🥩 Korean" },
+  { v:"chinese",       l:"🥢 Chinese" },
+  { v:"indian",        l:"🍛 Indian" },
+  // Latin & Mediterranean
+  { v:"mexican",       l:"🌮 Mexican" },
+  { v:"peruvian",      l:"🫙 Peruvian" },
+  { v:"colombian",     l:"🫘 Colombian" },
+  { v:"mediterranean", l:"🥙 Mediterranean" },
+  // Other
+  { v:"halal",         l:"🌙 Halal" },
+  { v:"pizza",         l:"🍕 Pizza" },
+  { v:"vegan",         l:"🌿 Vegan" },
 ];
 const FOOD_DRINK_OPTS = [
   { v:"dinner_cocktails", l:"🍸 Dinner + Cocktails" },
@@ -80,9 +99,7 @@ const DB = {
           { place:"Bouquet", type:"wine bar", desc:"wine bar", booking:"http://www.bouquetbk.com/", maps:"Bouquet+Williamsburg+Brooklyn", reviews:123, price:"$$", reservable:false, stars:4.9 },
           { place:"DOC Wine Bar", type:"wine bar, italian food", desc:"wine bar, italian food", booking:"http://www.docwinebar.com/", maps:"DOC+Wine+Bar+Williamsburg+Brooklyn", reviews:471, price:"$$", reservable:true, stars:4.4 },
           { place:"Maison Premiere", type:"wine bar", desc:"wine bar", booking:"http://maisonpremiere.com/", maps:"Maison+Premiere+Williamsburg+Brooklyn", reviews:2037, price:"$$$", reservable:true, stars:4.6 , latenight:true}
-        ],
-      experimental: [],
-      speakeasy: [
+        ],      speakeasy: [
           { place:"The Hidden Pearl", type:"speakeasy", desc:"speakeasy", booking:"https://www.hiddenpearlbk.com/", maps:"The+Hidden+Pearl+Williamsburg+Brooklyn", reviews:166, price:"$$", reservable:true, stars:4.8 }
         ],
     },
@@ -269,9 +286,7 @@ const DB = {
         { id:"hiddentiger", emoji:"🍸", place:"Hidden Tiger", type:"late night bar", desc:"Open until 2:00am.", booking:"http://hiddentigernyc.com/", maps:"Hidden+Tiger+NYC", reviews:84, price:"$$", reservable:false, stars:4.3, latenight:true },
       ],
       beer: [],
-      wine: [],
-      experimental: [],
-      speakeasy: [
+      wine: [],      speakeasy: [
           { place:"Please Don't Tell", type:"speakeasy", desc:"speakeasy", booking:"http://www.pdtnyc.com/", maps:"Please+Dont+Tell+East+Village+Manhattan", reviews:2417, price:"$$$", reservable:true, stars:4.3 },
           { place:"Hidden Tiger", type:"korean, food & drink", desc:"korean, food & drink", booking:"http://hiddentigernyc.com/", maps:"Hidden+Tiger+East+Village+Manhattan", reviews:84, price:"$$", reservable:true, stars:4.3 }
         ],
@@ -442,9 +457,7 @@ const DB = {
           { place:"CARTA Wine Bar New York", type:"Bar", desc:"CARTA Wine Bar New York", booking:"http://cartawinebar.com/", maps:"CARTA+Wine+Bar+New+York+West+Village+Manhattan", reviews:91, price:"$$", reservable:true, stars:4.7 },
           { place:"Society Cafe", type:"Bar", desc:"Society Cafe", booking:"https://www.societycafenyc.com/", maps:"Society+Cafe+West+Village+Manhattan", reviews:687, price:"$$", reservable:true, stars:4.5 },
           { place:"St Jardim", type:"Bar", desc:"St Jardim", booking:"http://www.stjardimnyc.com/", maps:"St+Jardim+West+Village+Manhattan", reviews:351, price:"$$", reservable:true, stars:4.5 }
-        ],
-      experimental: [],
-      speakeasy: [
+        ],      speakeasy: [
           { place:"Little Branch", type:"Bar", desc:"Little Branch", booking:null, maps:"Little+Branch+West+Village+Manhattan", reviews:904, price:"$$$", reservable:false, stars:4.4 }
         ],
     },
@@ -595,14 +608,8 @@ const DB = {
         { id:"bartleydunne", emoji:"🍸", place:"Bartley Dunnes", type:"late night bar", desc:"Open until 3:00am.", booking:"https://bartleydunnesnyc.com/", maps:"Bartley+Dunnes+NYC", reviews:827, price:"$$", reservable:false, stars:4.7, latenight:true },
         { id:"jimmyscorner", emoji:"🍸", place:"Jimmy's Corner", type:"late night bar", desc:"Narrow, old-school Times Square bar with boxing memorabilia covering the walls. Open until 4:00am.", booking:"https://m.facebook.com/jimmyscornernyc", maps:"Jimmys+Corner+NYC", reviews:2211, price:"$", reservable:false, stars:4.6, latenight:true },
         { id:"tannersmiths", emoji:"🍸", place:"Tanner Smith's", type:"late night bar", desc:"Watering hole with a Prohibition theme serving craft cocktails, beer, wine & bar bites. Open until 3:00am.", booking:"http://www.tannersmiths.com/", maps:"Tanner+Smiths+NYC", reviews:3324, price:"$$", reservable:false, stars:4.4, latenight:true },
-      ],
-      beer: [],
-      wine: [
-          { place:"Sofia Wine Bar", type:"Bar", desc:"Sofia Wine Bar", booking:"http://sofiawinebar.com/", maps:"Sofia+Wine+Bar+Midtown+Manhattan", reviews:634, price:"$$", reservable:false, stars:4.6 },
-          { place:"Ayza Wine & Chocolate Bar", type:"Bar", desc:"Ayza Wine & Chocolate Bar", booking:"https://ayzanyc.com/", maps:"Ayza+Wine+&+Chocolate+Bar+Midtown+Manhattan", reviews:2184, price:"$$", reservable:true, stars:4.5 }
-        ],
-      experimental: [
-          { place:"Vintage Green Rooftop", type:"Bar", desc:"Vintage Green Rooftop", booking:"https://vintagegreen.nyc/", maps:"Vintage+Green+Rooftop+Midtown+Manhattan", reviews:2673, price:"$$", reservable:true, stars:4.9 },
+      
+{ place:"Vintage Green Rooftop", type:"Bar", desc:"Vintage Green Rooftop", booking:"https://vintagegreen.nyc/", maps:"Vintage+Green+Rooftop+Midtown+Manhattan", reviews:2673, price:"$$", reservable:true, stars:4.9 },
         
         { id:"vintagegreen", emoji:"🌆", place:"Vintage Green Rooftop", type:"rooftop", desc:"4.9★ · rooftop", booking:"https://vintagegreen.nyc/", maps:"Vintage+Green+Rooftop", reviews:2674, price:"$$", reservable:true, stars:4.9 },
         { id:"artmidtownro", emoji:"🌆", place:"ART Midtown - Rooftop Bars Midtown, NYC (Arlo Midtown)", type:"rooftop", desc:"4.6★ · rooftop", booking:"https://artrooftops.com/location/midtown/", maps:"ART+Midtown++Rooftop+Bars+Midtown+NYC+Arlo+Midtown", reviews:154, price:"$$", reservable:true, stars:4.6 },
@@ -610,7 +617,11 @@ const DB = {
         { id:"rt60rooftopb", emoji:"🌆", place:"RT60 Rooftop Bar & Lounge", type:"rooftop", desc:"Sleek, music-themed bar offering craft cocktails, beer & small plates, plus terraces & live DJs.", booking:"https://hotel.hardrock.com/new-york/rt60-rooftop-bar.aspx?utm_campaign=hri%20%7C%20hotel%20%7C%20new-york%20%7C%20websitelisting&utm_medium=referral&utm_source=gmb", maps:"RT60+Rooftop+Bar++Lounge", reviews:808, price:"$$", reservable:true, stars:4.4 },
         { id:"230fifthroof", emoji:"🌆", place:"230 Fifth Rooftop Bar", type:"rooftop", desc:"Chic penthouse bar & lounge featuring a rooftop garden & live music, plus global bites & brunch.", booking:"http://www.230-fifth.com/", maps:"230+Fifth+Rooftop+Bar", reviews:24883, price:"$$", reservable:true, stars:4.3 },
       ],
-      speakeasy: [
+      beer: [],
+      wine: [
+          { place:"Sofia Wine Bar", type:"Bar", desc:"Sofia Wine Bar", booking:"http://sofiawinebar.com/", maps:"Sofia+Wine+Bar+Midtown+Manhattan", reviews:634, price:"$$", reservable:false, stars:4.6 },
+          { place:"Ayza Wine & Chocolate Bar", type:"Bar", desc:"Ayza Wine & Chocolate Bar", booking:"https://ayzanyc.com/", maps:"Ayza+Wine+&+Chocolate+Bar+Midtown+Manhattan", reviews:2184, price:"$$", reservable:true, stars:4.5 }
+        ],      speakeasy: [
         { id:"thewoowoo", emoji:"🕯️", place:"The Woo Woo", type:"speakeasy", desc:"4.8★ · speakeasy", booking:"https://thewoowoonyc.com/", maps:"The+Woo+Woo", reviews:1938, price:"$$", reservable:true, stars:4.8 },
         { id:"georgebangba", emoji:"🕯️", place:"George Bang Bang", type:"speakeasy", desc:"4.6★ · speakeasy", booking:"http://www.gbbnyc.com/", maps:"George+Bang+Bang", reviews:335, price:"$$", reservable:true, stars:4.6 },
         { id:"patentpendin", emoji:"🕯️", place:"Patent Pending", type:"speakeasy", desc:"Low-lit bar behind a hidden door in Patent Coffee, serving cocktails with an electric theme.", booking:"https://www.patentpendingnyc.com/", maps:"Patent+Pending", reviews:1087, price:"$$$", reservable:true, stars:4.4 },
@@ -780,18 +791,16 @@ const DB = {
         { id:"dutchkills", emoji:"🍸", place:"Dutch Kills", type:"late night bar", desc:"Classic & newly invented craft cocktails served with hand-cut ice in a dark, throwback-style space. Open until 2:00am.", booking:"https://www.dutchkillsbar.com/", maps:"Dutch+Kills+NYC", reviews:1302, price:"$$", reservable:false, stars:4.4, latenight:true },
         { id:"divebarlic", emoji:"🍸", place:"Dive Bar LIC", type:"late night bar", desc:"Laid-back hangout whipping up finger foods, burgers & pizza, plus cocktails & happy-hour specials. Open until 2:00am.", booking:"http://www.divebarlic.com/", maps:"Dive+Bar+LIC+NYC", reviews:473, price:"$$", reservable:false, stars:4.3, latenight:true },
         { id:"gantrybar", emoji:"🍸", place:"Gantry Bar", type:"late night bar", desc:"Hip bar & eatery offering small plates, sandwiches & brunch, plus craft beers & cocktails. Open until 2:00am.", booking:null, maps:"Gantry+Bar+NYC", reviews:289, price:"$$", reservable:false, stars:4.3, latenight:true },
-      ],
-      beer: [],
-      wine: [
-          { place:"DiWine Natural Wine Bar & Restaurant", type:"Bar", desc:"DiWine Natural Wine Bar & Restaurant", booking:"http://www.diwineonline.com/", maps:"DiWine+Natural+Wine+Bar+&+Restaurant+Long+Island+City+Queens", reviews:572, price:"$$", reservable:true, stars:4.6 }
-        ],
-      experimental: [
-          { place:"Lost in Paradise Rooftop", type:"Bar", desc:"Lost in Paradise Rooftop", booking:"https://www.lostinparadiserooftop.com/", maps:"Lost+in+Paradise+Rooftop+Long+Island+City+Queens", reviews:6591, price:"$$", reservable:true, stars:4.7 },
+      
+{ place:"Lost in Paradise Rooftop", type:"Bar", desc:"Lost in Paradise Rooftop", booking:"https://www.lostinparadiserooftop.com/", maps:"Lost+in+Paradise+Rooftop+Long+Island+City+Queens", reviews:6591, price:"$$", reservable:true, stars:4.7 },
           { place:"Skybar Rooftop & Lounge", type:"Bar", desc:"Skybar Rooftop & Lounge", booking:"https://skybarlic.com/", maps:"Skybar+Rooftop+&+Lounge+Long+Island+City+Queens", reviews:381, price:"$$", reservable:true, stars:4.0 },
         
         { id:"evenihgskylo", emoji:"🌆", place:"EVEN IHG Sky Lounge and Bar", type:"rooftop", desc:"4.4★ · rooftop", booking:"https://www.skyloungelic.com/", maps:"EVEN+IHG+Sky+Lounge+and+Bar", reviews:10, price:"$$", reservable:true, stars:4.4 },
       ],
-      speakeasy: [
+      beer: [],
+      wine: [
+          { place:"DiWine Natural Wine Bar & Restaurant", type:"Bar", desc:"DiWine Natural Wine Bar & Restaurant", booking:"http://www.diwineonline.com/", maps:"DiWine+Natural+Wine+Bar+&+Restaurant+Long+Island+City+Queens", reviews:572, price:"$$", reservable:true, stars:4.6 }
+        ],      speakeasy: [
         { id:"barenzo", emoji:"🕯️", place:"Bar Enzo", type:"speakeasy", desc:"5.0★ · speakeasy", booking:"http://barenzonyc.com/", maps:"Bar+Enzo", reviews:268, price:"$$", reservable:true, stars:5.0 },
         { id:"25hours", emoji:"🕯️", place:"25 HOURS", type:"speakeasy", desc:"4.8★ · speakeasy", booking:"http://25hours.bar/", maps:"25+HOURS", reviews:25, price:"$$", reservable:true, stars:4.8 },
         { id:"theinfamous", emoji:"🕯️", place:"The Infamous", type:"speakeasy", desc:"4.7★ · speakeasy", booking:"https://infamousbar.com/", maps:"The+Infamous", reviews:279, price:"$$", reservable:true, stars:4.7 },
@@ -925,9 +934,7 @@ const DB = {
         { id:"marcelas", emoji:"🍷", place:"Marcela's", type:"wine bar", desc:"4.7★ · wine bar", booking:"http://marcelasnyc.com/", maps:"Marcelas+NYC", reviews:255, price:"$$", reservable:true, stars:4.7 },
         { id:"tabarbushwic", emoji:"🍷", place:"Tabaré Bushwick", type:"wine bar", desc:"4.7★ · wine bar", booking:"https://www.tabarenyc.com/", maps:"Tabar+Bushwick+NYC", reviews:542, price:"$$", reservable:true, stars:4.7 },
         { id:"palmetto", emoji:"🍷", place:"Palmetto", type:"wine bar", desc:"4.5★ · wine bar", booking:"http://www.palmettobushwick.com/", maps:"Palmetto+NYC", reviews:295, price:"$$", reservable:false, stars:4.5 },
-      ],
-      experimental: [],
-      speakeasy: [],
+      ],      speakeasy: [],
     },
     food: {
       japanese: [],
@@ -993,6 +1000,10 @@ const DB = {
         { id:"thedeadrabbi", emoji:"🍸", place:"The Dead Rabbit", type:"cocktails", desc:"This 2-story spot combines a lunch taproom with a parlor serving small plates & vintage cocktails.", booking:"https://thedeadrabbit.com/?utm_source=google_business_profile&utm_medium=gbp_view_website&utm_campaign=google_business_profile", maps:"The+Dead+Rabbit+NYC", reviews:8313, price:"$$", reservable:true, stars:4.7 },
         { id:"thebedfordst", emoji:"🍸", place:"The Bedford Stone Street", type:"cocktails", desc:"4.6★ · cocktails", booking:"https://thebedford.nyc/?utm_source=google_business_profile&utm_medium=gbp_view_website", maps:"The+Bedford+Stone+Street+NYC", reviews:73, price:"$$", reservable:true, stars:4.6 },
         { id:"recreation", emoji:"🍸", place:"Recreation", type:"late night bar", desc:"This hip bar with cocktails on tap, light fare, games & a vintage vibe is a co-working space by day.", booking:"https://www.recreationbar.com/", maps:"Recreation+NYC", reviews:338, price:"$$", reservable:true, stars:4.4 },
+      
+{ id:"hiderooftop", emoji:"🌆", place:"Hide Rooftop", type:"cocktails", desc:"4.7★ · cocktails", booking:"https://www.hiderooftop.com/", maps:"Hide+Rooftop+NYC", reviews:223, price:"$$", reservable:true, stars:4.7 },
+        { id:"highwaterroo", emoji:"🌆", place:"Highwater Rooftop", type:"rooftop", desc:"4.4★ · rooftop", booking:"https://www.highwaterrooftop.com/", maps:"Highwater+Rooftop+NYC", reviews:310, price:"$$", reservable:true, stars:4.4 },
+        { id:"one40rooftop", emoji:"🌆", place:"One40 Rooftop Restaurant & Bar", type:"rooftop", desc:"4.3★ · rooftop", booking:"https://www.one40rooftop.com/", maps:"One40+Rooftop+Restaurant++Bar+NYC", reviews:288, price:"$$", reservable:true, stars:4.3 },
       ],
       beer: [],
       wine: [
@@ -1000,13 +1011,7 @@ const DB = {
         { id:"chambers", emoji:"🍷", place:"Chambers", type:"wine bar", desc:"4.7★ · wine bar", booking:"http://chambers.nyc/", maps:"Chambers+NYC", reviews:354, price:"$$", reservable:true, stars:4.7 },
         { id:"ziziwinebar", emoji:"🍷", place:"Zizi Wine Bar", type:"wine bar", desc:"4.6★ · wine bar", booking:"https://ziziwinebarnyc.com/", maps:"Zizi+Wine+Bar+NYC", reviews:95, price:"$$", reservable:true, stars:4.6 },
         { id:"overstory", emoji:"🍷", place:"Overstory", type:"wine bar", desc:"Creative cocktails, wine & snacks in a retro-chic bar with a 64th-floor deck for panoramic views.", booking:"https://www.overstory-nyc.com/", maps:"Overstory+NYC", reviews:722, price:"$$", reservable:true, stars:4.3 },
-      ],
-      experimental: [
-        { id:"hiderooftop", emoji:"🌆", place:"Hide Rooftop", type:"cocktails", desc:"4.7★ · cocktails", booking:"https://www.hiderooftop.com/", maps:"Hide+Rooftop+NYC", reviews:223, price:"$$", reservable:true, stars:4.7 },
-        { id:"highwaterroo", emoji:"🌆", place:"Highwater Rooftop", type:"rooftop", desc:"4.4★ · rooftop", booking:"https://www.highwaterrooftop.com/", maps:"Highwater+Rooftop+NYC", reviews:310, price:"$$", reservable:true, stars:4.4 },
-        { id:"one40rooftop", emoji:"🌆", place:"One40 Rooftop Restaurant & Bar", type:"rooftop", desc:"4.3★ · rooftop", booking:"https://www.one40rooftop.com/", maps:"One40+Rooftop+Restaurant++Bar+NYC", reviews:288, price:"$$", reservable:true, stars:4.3 },
-      ],
-      speakeasy: [
+      ],      speakeasy: [
         { id:"thelittlesho", emoji:"🕯️", place:"The Little Shop", type:"speakeasy", desc:"Intimate, narrow eatery serving breakfast by day, plus spirits & innovative cocktails by night.", booking:"http://thelittleshopny.com/", maps:"The+Little+Shop+NYC", reviews:273, price:"$$", reservable:true, stars:4.6 },
         { id:"cedarlocal", emoji:"🕯️", place:"Cedar Local", type:"speakeasy", desc:"Warmly lit bar with creative cocktails plus craft beer, happy hour & bar bites.", booking:"https://www.cedarlocal.com/", maps:"Cedar+Local+NYC", reviews:387, price:"$$$", reservable:true, stars:4.5 },
       ],
@@ -1077,9 +1082,7 @@ const DB = {
         { id:"vanguardwine", emoji:"🍷", place:"Vanguard Wine Bar (Upper East Side)", type:"wine bar", desc:"4.6★ · wine bar", booking:"http://www.vanguard-nyc.com/", maps:"Vanguard+Wine+Bar+Upper+East+Side+NYC", reviews:159, price:"$$", reservable:false, stars:4.6 },
         { id:"felice64", emoji:"🍷", place:"Felice 64", type:"wine bar", desc:"Stylish wine bar supplying Italian vintages & fare in a rustic, date-friendly setting.", booking:"https://www.felicerestaurants.com/felice-64/", maps:"Felice+64+NYC", reviews:653, price:"$$", reservable:true, stars:4.5 },
         { id:"pilpil", emoji:"🍷", place:"Pil Pil", type:"wine bar", desc:"Brick walls, tree branches on the ceiling & colored bottles set the scene for Spanish tapas & wine.", booking:"http://pilpilnyc.com/", maps:"Pil+Pil+NYC", reviews:1378, price:"$$", reservable:true, stars:4.4 },
-      ],
-      experimental: [],
-      speakeasy: [
+      ],      speakeasy: [
         { id:"zofiashideou", emoji:"🕯️", place:"Zofia's Hideout", type:"speakeasy", desc:"4.9★ · speakeasy", booking:null, maps:"Zofias+Hideout+NYC", reviews:56, price:"$$", reservable:true, stars:4.9 },
       ],
     },
@@ -1162,9 +1165,7 @@ const DB = {
         { id:"vanguardwine", emoji:"🍷", place:"Vanguard Wine Bar (Upper West Side)", type:"wine bar", desc:"Neighborhood spot offering French wine & small plates amid marble-topped tables & subway tiles.", booking:"http://vanguard-nyc.com/", maps:"Vanguard+Wine+Bar+Upper+West+Side+NYC", reviews:491, price:"$$", reservable:false, stars:4.6 },
         { id:"eliswinebarr", emoji:"🍷", place:"ELIS WINE BAR & RESTAURANT", type:"wine bar", desc:"Homey haunt for Mediterranean-style small plates & mains paired with a global wine list.", booking:"http://www.eliswinebar.com/", maps:"ELIS+WINE+BAR++RESTAURANT+NYC", reviews:332, price:"$$", reservable:true, stars:4.6 },
         { id:"amlieupperwe", emoji:"🍷", place:"Amélie Upper West Side Bistro & Wine Bar", type:"wine bar", desc:"Serene joint with a classy vibe offering small plates & full meals with matching wines.", booking:"http://ameliewinebar.com/", maps:"Amlie+Upper+West+Side+Bistro++Wine+Bar+NYC", reviews:591, price:"$$", reservable:true, stars:4.5 },
-      ],
-      experimental: [],
-      speakeasy: [],
+      ],      speakeasy: [],
     },
     food: {
       japanese: [
@@ -1397,11 +1398,13 @@ const getSpots = (a) => {
 
   if (a.focus === "food") {
     let key;
-    const specificCuisine = ["korean","chinese","mexican","vegan","coffee"].includes(a.foodType);
+    const specificCuisine = ["korean","chinese","japanese","mexican","vegan","coffee","boba","burgers","steakhouse","diner","french","indian","halal","peruvian","colombian"].includes(a.foodType);
     if (specificCuisine) {
-      // Specific cuisine always goes to its bucket regardless of time
-      if (a.foodType === "korean" || a.foodType === "chinese") key = "japanese";
-      else if (a.foodType === "coffee") key = "coffee";
+      if (a.foodType === "korean" || a.foodType === "chinese" || a.foodType === "japanese") key = "japanese";
+      else if (a.foodType === "coffee" || a.foodType === "boba") key = "coffee";
+      else if (a.foodType === "burgers" || a.foodType === "steakhouse" || a.foodType === "diner") key = "american";
+      else if (a.foodType === "french" || a.foodType === "pasta") key = "pasta";
+      else if (a.foodType === "indian" || a.foodType === "halal" || a.foodType === "peruvian" || a.foodType === "colombian") key = "mediterranean";
       else key = "mediterranean";
     } else if (a.foodType === "brunch" || a.timeOfDay === "day") {
       key = "brunch";
@@ -1431,8 +1434,17 @@ const getSpots = (a) => {
         if (a.foodType === "korean")  return combined.includes("korean") || combined.includes("kbbq");
         if (a.foodType === "chinese") return combined.includes("chinese") || combined.includes("sichuan") || combined.includes("dim sum") || combined.includes("cantonese") || combined.includes("szechuan");
         if (a.foodType === "mexican") return combined.includes("mexican") || combined.includes("taqueria") || combined.includes("mezcal") || combined.includes("taco") || combined.includes("latin");
-        if (a.foodType === "vegan")   return combined.includes("vegan") || combined.includes("plant") || combined.includes("vegetarian");
-        if (a.foodType === "coffee")  return combined.includes("coffee") || combined.includes("matcha") || combined.includes("cafe") || combined.includes("café");
+        if (a.foodType === "vegan")      return combined.includes("vegan") || combined.includes("plant") || combined.includes("vegetarian");
+        if (a.foodType === "coffee")     return combined.includes("coffee") || combined.includes("matcha") || combined.includes("cafe") || combined.includes("café");
+        if (a.foodType === "boba")       return combined.includes("boba") || combined.includes("bubble tea") || combined.includes("tea");
+        if (a.foodType === "burgers")    return combined.includes("burger") || combined.includes("smash") || combined.includes("brgr");
+        if (a.foodType === "steakhouse") return combined.includes("steak") || combined.includes("chophouse") || combined.includes("steakhouse");
+        if (a.foodType === "diner")      return combined.includes("diner") || combined.includes("dine") || combined.includes("24");
+        if (a.foodType === "french")     return combined.includes("french") || combined.includes("bistro") || combined.includes("brasserie");
+        if (a.foodType === "indian")     return combined.includes("indian") || combined.includes("curry") || combined.includes("tandoor");
+        if (a.foodType === "halal")      return combined.includes("halal");
+        if (a.foodType === "peruvian")   return combined.includes("peruvian") || combined.includes("ceviche") || combined.includes("peru");
+        if (a.foodType === "colombian")  return combined.includes("colombian") || combined.includes("colombia");
         return true;
       });
       if (typed.length >= 2) pool = typed;
@@ -1727,7 +1739,7 @@ const Skyline = () => (
 );
 
 const MODE_EMOJI = {
-  food: { brunch:"🥐", coffee:"☕", japanese:"🍣", korean:"🥩", chinese:"🥢", pasta:"🍝", pizza:"🍕", mediterranean:"🥙", mexican:"🌮", vegan:"🌿", american:"🥩", latenight:"🌙", default:"🍽️" },
+  food: { brunch:"🥐", coffee:"☕", boba:"🧋", diner:"🍳", burgers:"🍔", steakhouse:"🥩", japanese:"🍣", korean:"🥩", chinese:"🥢", pasta:"🍝", french:"🥐", pizza:"🍕", mediterranean:"🥙", mexican:"🌮", peruvian:"🫙", colombian:"🫘", indian:"🍛", halal:"🌙", vegan:"🌿", american:"🥩", latenight:"🌙", default:"🍽️" },
   drinks: { cocktails:"🍸", beer:"🍺", wine:"🍷", experimental:"🧪", speakeasy:"🕯️", default:"🥂" },
   fooddrinks: { dinner_cocktails:"🍸", wine_plates:"🍷", brunch_drinks:"🥂", late_bites:"🌙", default:"🥂" },
   activity: { outside:"🌿", creative:"🎨", competitive:"🎯", shows:"🎭", active:"💪", default:"✨" },
@@ -1772,6 +1784,17 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
       <div style={{background:"linear-gradient(160deg,#0e0a16,#080610)",border:`1px solid ${nbAccent}55`,borderRadius:"16px",overflow:"hidden",boxShadow:`0 32px 80px rgba(0,0,0,0.9),0 0 0 1px rgba(255,255,255,0.03),inset 0 1px 0 rgba(255,255,255,0.05)`}}>
 
         <div style={{height:"3px",background:`linear-gradient(90deg,transparent,${nbAccent},${nbAccent}88,transparent)`}}/>
+
+        {spot.photo && (
+          <div style={{position:"relative",width:"100%",height:"180px",overflow:"hidden"}}>
+            <img src={spot.photo} alt={spot.place}
+              style={{width:"100%",height:"100%",objectFit:"cover",display:"block",opacity:0.85}}
+              onError={e=>e.currentTarget.style.display="none"}
+            />
+            <div style={{position:"absolute",inset:0,background:`linear-gradient(to bottom,transparent 40%,#0e0a16 100%)`}}/>
+            <div style={{position:"absolute",bottom:"6px",right:"8px",fontSize:"8px",color:"rgba(255,255,255,0.4)",fontFamily:"sans-serif"}}>📷 Google</div>
+          </div>
+        )}
 
         <div style={{padding:"18px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"center"}}>
           <span style={{fontSize:"9px",letterSpacing:"3px",textTransform:"uppercase",color:nbAccent,fontFamily:"sans-serif",opacity:0.9}}>
@@ -1897,16 +1920,16 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
   );
 }
 
+
 export default function App() {
   const [screen, setScreen] = useState("intro");
   const [answers, setAnswers] = useState({});
-  const [questionHistory, setQuestionHistory] = useState([]); // ← back button history
+  const [questionHistory, setQuestionHistory] = useState([]);
   const [currentQ, setCurrentQ] = useState(null);
   const [results, setResults] = useState(null);
   const [hoverNb, setHoverNb] = useState(null);
 
-  const totalSteps = 7;
-  const progress = Math.min((Object.keys(answers).length / totalSteps) * 100, 95);
+  const progress = Math.min((Object.keys(answers).length / 7) * 100, 95);
 
   const advance = (key, val) => {
     const next = { ...answers, [key]: val };
@@ -1936,21 +1959,13 @@ export default function App() {
     setQuestionHistory([]);
     setCurrentQ(null);
     setResults(null);
-    setHoverNb(null);
   };
 
   const resultTitle = () => {
-    if (answers.budget === "free") return "Free Tonight";
-    const timeLabel = answers.timeOfDay === "day" ? "Daytime" : answers.timeOfDay === "late" ? "Late Night" : "Tonight's";
-    const focusMap = {
-      drinks:     `${timeLabel} Bar`,
-      food:       answers.timeOfDay === "day" ? "Brunch Picks" : `${timeLabel} Table`,
-      fooddrinks: `${timeLabel} Food & Drinks`,
-      activity:   (a) => a.activityType === "free" ? "Free Activities" : `${timeLabel} Activity`,
-      happyhour:  "Best Happy Hours"
-    };
-    const val = focusMap[answers.focus];
-    return typeof val === "function" ? val(answers) : val || "Your Picks";
+    if (answers.budget === "free") return answers.dateType === "first" ? "Free First Date Ideas" : "Free Date Ideas";
+    const t = answers.timeOfDay === "day" ? "Daytime" : answers.timeOfDay === "late" ? "Late Night" : "Tonight's";
+    const map = { food:"Table", drinks:"Bar", fooddrinks:"Food & Drinks", activity:"Adventure", happyhour:"Happy Hours", brunch:"Brunch", coffee:"Coffee & Matcha" };
+    return map[answers.focus] ? `${t} ${map[answers.focus]}` : "Your Picks";
   };
 
   const nbLabel = NEIGHBORHOODS.find(n => n.id === answers.neighborhood)?.label || "";
@@ -1964,32 +1979,45 @@ export default function App() {
 
       <div style={{position:"relative",zIndex:1,width:"100%",maxWidth:"520px"}}>
 
-        {/* ── INTRO ── */}
+        {/* INTRO */}
         {screen === "intro" && (
           <div style={{textAlign:"center",animation:"fadeUp 0.7s ease"}}>
-            <div style={{marginTop:"20px",fontSize:"10px",letterSpacing:"6px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif",marginBottom:"8px"}}>New York City</div>
+            <Skyline/>
+            <div style={{marginTop:"20px",fontSize:"10px",letterSpacing:"6px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif",marginBottom:"14px",opacity:0.7}}>New York City</div>
             <h1 style={{fontSize:"clamp(40px,9vw,62px)",fontWeight:"normal",lineHeight:1.0,margin:"0 0 6px",letterSpacing:"-2px"}}>
               Party of<br/>
               <span style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Two</span>
             </h1>
-            <div style={{width:"36px",height:"1px",background:`linear-gradient(90deg,${T.accent},${T.accent2})`,margin:"14px auto"}}/>
-            <p style={{color:T.sub,fontSize:"13px",lineHeight:1.7,fontFamily:"sans-serif",marginBottom:"32px",opacity:0.85}}>Curated dates across NYC.<br/>No tourists. No obvious picks.</p>
-            <button onClick={()=>{setScreen("quiz");setCurrentQ(getQuestion({}));}}
-              style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"14px 42px",fontSize:"11px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s"}}
-              onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.04)";e.currentTarget.style.boxShadow=`0 10px 36px ${T.accent}44`;}}
-              onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="none";}}>
-              Plan Our Night
-            </button>
+            <div style={{width:"36px",height:"1px",background:`linear-gradient(90deg,${T.accent},${T.accent2})`,margin:"16px auto"}}/>
+            <p style={{color:T.sub,fontSize:"13px",lineHeight:1.7,fontFamily:"sans-serif",marginBottom:"16px",opacity:0.85}}>The right place.<br/>Tonight.</p>
+            <a href="https://instagram.com/partyof2nyc" target="_blank" rel="noopener noreferrer"
+              style={{display:"inline-block",fontSize:"11px",color:T.accent,fontFamily:"sans-serif",letterSpacing:"1px",textDecoration:"none",marginBottom:"24px",opacity:0.7}}>
+              @partyof2nyc
+            </a>
+            <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+              <button onClick={()=>{setScreen("quiz");setCurrentQ(getQuestion({}));}}
+                style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"16px 32px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",fontWeight:"800",borderRadius:"4px",transition:"transform 0.2s"}}
+                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.04)"}
+                onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+                Plan Our Night
+              </button>
+              <button onClick={()=>{advance("focus","ourpick");}}
+                style={{background:"transparent",border:`1px solid ${T.border}`,color:T.sub,padding:"12px 32px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"3px",textTransform:"uppercase",borderRadius:"4px",transition:"all 0.2s"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.color=T.accent;}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
+                ⭐ Tonight's Pick
+              </button>
+            </div>
           </div>
         )}
 
-        {/* ── QUIZ ── */}
+        {/* QUIZ */}
         {screen === "quiz" && currentQ && (
           <div style={{animation:"fadeUp 0.35s ease"}}>
             {currentQ.special !== "neighborhood" && (
               <div style={{marginBottom:"28px"}}>
                 <div style={{height:"2px",background:"#111118",borderRadius:"1px",overflow:"hidden"}}>
-                  <div style={{height:"100%",width:`${progress}%`,background:`linear-gradient(90deg,${T.accent},${T.accent2})`,transition:"width 0.5s ease"}}/>
+                  <div style={{height:"100%",width:`${progress}%`,background:`linear-gradient(90deg,${T.accent},${T.accent2})`,transition:"width 0.4s ease"}}/>
                 </div>
               </div>
             )}
@@ -2001,43 +2029,45 @@ export default function App() {
                   <h2 style={{fontSize:"clamp(20px,5vw,26px)",fontWeight:"normal"}}>Pick your neighborhood</h2>
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"10px"}}>
-                  {NEIGHBORHOODS.slice(0,8).map(nb=>{
+                  {NEIGHBORHOODS.slice(0,8).map(nb => {
                     const SilSvg = NB_SILHOUETTES[nb.id];
-                    const acc = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e",bushwick:"#e85d75",fidi:"#6b8bbd",upper_east:"#9b6b9b",upper_west:"#6b9b8b"}[nb.id]||T.accent;
+                    const acc = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e",bushwick:"#e85d75",fidi:"#6b8bbd",upper_east:"#9b6b9b",upper_west:"#6b9b8b"}[nb.id] || T.accent;
                     return (
-                    <button key={nb.id} onClick={()=>advance("neighborhood",nb.id)}
-                      style={{background:hoverNb===nb.id?`linear-gradient(135deg,${acc}22,${acc}08)`:T.card,border:hoverNb===nb.id?`1px solid ${acc}`:`1px solid ${T.border}`,color:T.text,padding:"0",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"stretch",overflow:"hidden"}}
-                      onMouseEnter={()=>setHoverNb(nb.id)}
-                      onMouseLeave={()=>setHoverNb(null)}>
-                      <div style={{padding:"10px 10px 0",background:`${acc}10`}}>
-                        {SilSvg && <SilSvg/>}
-                      </div>
-                      <div style={{padding:"8px 12px 12px",textAlign:"center"}}>
-                        <div style={{fontSize:"12px",fontFamily:"sans-serif",fontWeight:"700",marginBottom:"2px"}}>{nb.label}</div>
-                        <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif"}}>{nb.sub}</div>
-                      </div>
-                    </button>
-                  )})}
+                      <button key={nb.id} onClick={()=>advance("neighborhood",nb.id)}
+                        style={{background:hoverNb===nb.id?`linear-gradient(135deg,${acc}22,${acc}08)`:T.card,border:hoverNb===nb.id?`1px solid ${acc}`:`1px solid ${T.border}`,color:T.text,padding:"0",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"stretch",overflow:"hidden"}}
+                        onMouseEnter={()=>setHoverNb(nb.id)}
+                        onMouseLeave={()=>setHoverNb(null)}>
+                        <div style={{padding:"10px 10px 0",background:`${acc}10`}}>
+                          {SilSvg && <SilSvg/>}
+                        </div>
+                        <div style={{padding:"8px 12px 12px",textAlign:"center"}}>
+                          <div style={{fontSize:"12px",fontFamily:"sans-serif",fontWeight:"700",marginBottom:"2px"}}>{nb.label}</div>
+                          <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif"}}>{nb.sub}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
                 <div style={{display:"flex",justifyContent:"center"}}>
-                  {(()=>{
+                  {(() => {
                     const nb = NEIGHBORHOODS[8];
                     const SilSvg = NB_SILHOUETTES[nb.id];
-                    const acc = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e",bushwick:"#e85d75",fidi:"#6b8bbd",upper_east:"#9b6b9b",upper_west:"#6b9b8b"}[nb.id]||"#c9a96e";
+                    const acc = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e",bushwick:"#e85d75",fidi:"#6b8bbd",upper_east:"#9b6b9b",upper_west:"#6b9b8b"}[nb.id] || "#c9a96e";
                     return (
-                    <button onClick={()=>advance("neighborhood",nb.id)}
-                      style={{background:hoverNb===nb.id?`linear-gradient(135deg,${acc}22,${acc}08)`:T.card,border:hoverNb===nb.id?`1px solid ${acc}`:`1px solid ${T.border}`,color:T.text,padding:"0",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"stretch",overflow:"hidden",width:"48%"}}
-                      onMouseEnter={()=>setHoverNb(nb.id)}
-                      onMouseLeave={()=>setHoverNb(null)}>
-                      <div style={{padding:"8px 10px 0",background:`${acc}10`}}>
-                        {SilSvg && <SilSvg/>}
-                      </div>
-                      <div style={{padding:"6px 12px 10px",textAlign:"center"}}>
-                        <div style={{fontSize:"11px",fontFamily:"sans-serif",fontWeight:"700",marginBottom:"2px"}}>{nb.label}</div>
-                        <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif"}}>{nb.sub}</div>
-                      </div>
-                    </button>
-                  );})()}
+                      <button onClick={()=>advance("neighborhood",nb.id)}
+                        style={{background:hoverNb===nb.id?`linear-gradient(135deg,${acc}22,${acc}08)`:T.card,border:hoverNb===nb.id?`1px solid ${acc}`:`1px solid ${T.border}`,color:T.text,padding:"0",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"stretch",overflow:"hidden",width:"48%"}}
+                        onMouseEnter={()=>setHoverNb(nb.id)}
+                        onMouseLeave={()=>setHoverNb(null)}>
+                        <div style={{padding:"8px 10px 0",background:`${acc}10`}}>
+                          {SilSvg && <SilSvg/>}
+                        </div>
+                        <div style={{padding:"6px 12px 10px",textAlign:"center"}}>
+                          <div style={{fontSize:"11px",fontFamily:"sans-serif",fontWeight:"700",marginBottom:"2px"}}>{nb.label}</div>
+                          <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif"}}>{nb.sub}</div>
+                        </div>
+                      </button>
+                    );
+                  })()}
                 </div>
               </div>
             ) : (
@@ -2046,12 +2076,13 @@ export default function App() {
                   <div style={{fontSize:"28px",marginBottom:"10px"}}>{currentQ.emoji}</div>
                   <h2 style={{fontSize:"clamp(18px,5vw,22px)",fontWeight:"normal",marginBottom:"6px"}}>{currentQ.q}</h2>
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
+                <div style={{display:"grid",gridTemplateColumns:currentQ.opts.length === 3 ? "1fr 1fr 1fr" : currentQ.opts.length <= 2 ? "1fr 1fr" : "1fr 1fr",gap:"10px"}}>
                   {currentQ.opts.map(o => (
                     <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
                       style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"18px 12px",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"8px",fontFamily:"sans-serif"}}
                       onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
                       onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
+                      {o.i && <span style={{fontSize:"22px"}}>{o.i}</span>}
                       <span style={{fontSize:"12px",fontWeight:"600",textAlign:"center",lineHeight:1.3}}>{o.l}</span>
                     </button>
                   ))}
@@ -2059,18 +2090,38 @@ export default function App() {
               </div>
             )}
 
-        {/* ── LOADING ── */}
-        {screen === "loading" && (
-          <div style={{textAlign:"center",animation:"fadeUp 0.4s ease"}}>
-            <div style={{fontSize:"40px",marginBottom:"16px",animation:"pulse 1s ease infinite"}}>🗽</div>
-            <div style={{fontSize:"11px",letterSpacing:"4px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif"}}>Finding your spots...</div>
-            <div style={{marginTop:"16px",display:"flex",gap:"7px",justifyContent:"center"}}>
-              {[0,1,2].map(i=><div key={i} style={{width:"5px",height:"5px",borderRadius:"50%",background:T.accent,animation:`bounce 0.9s ease ${i*0.2}s infinite`}}/>)}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"24px"}}>
+              {questionHistory.length > 0 && (
+                <button onClick={goBack}
+                  style={{background:"transparent",border:"none",color:T.accent,fontSize:"11px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",padding:"0",opacity:0.85}}
+                  onMouseEnter={e=>e.currentTarget.style.opacity="1"}
+                  onMouseLeave={e=>e.currentTarget.style.opacity="0.85"}>
+                  ← back
+                </button>
+              )}
+              <div style={{flex:1}}/>
+              <button onClick={reset}
+                style={{background:"transparent",border:"none",color:T.accent,fontSize:"10px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",padding:"0",opacity:0.85}}
+                onMouseEnter={e=>e.currentTarget.style.opacity="1"}
+                onMouseLeave={e=>e.currentTarget.style.opacity="0.85"}>
+                start over
+              </button>
             </div>
           </div>
         )}
 
-        {/* ── RESULT ── */}
+        {/* LOADING */}
+        {screen === "loading" && (
+          <div style={{textAlign:"center",animation:"fadeUp 0.4s ease"}}>
+            <div style={{fontSize:"40px",marginBottom:"16px",animation:"pulse 1s ease infinite"}}>🗽</div>
+            <div style={{fontSize:"11px",letterSpacing:"4px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif"}}>Finding your spot...</div>
+            <div style={{marginTop:"16px",display:"flex",gap:"7px",justifyContent:"center"}}>
+              {[0,1,2].map(i => <div key={i} style={{width:"5px",height:"5px",borderRadius:"50%",background:T.accent,animation:`bounce 1s ease ${i*0.15}s infinite`}}/>)}
+            </div>
+          </div>
+        )}
+
+        {/* RESULT */}
         {screen === "result" && results && (
           <div style={{animation:"fadeUp 0.5s ease"}}>
             <div style={{textAlign:"center",marginBottom:"20px"}}>
@@ -2078,17 +2129,17 @@ export default function App() {
               <h2 style={{fontSize:"clamp(20px,5vw,26px)",fontWeight:"normal",marginBottom:"4px"}}>{resultTitle()}</h2>
               <div style={{width:"32px",height:"1px",background:T.accent,margin:"8px auto",opacity:0.4}}/>
             </div>
-
             <ResultCards spots={results} mode={answers.focus} dateType={answers.dateType} onReset={reset} neighborhood={answers.neighborhood} answers={answers}/>
           </div>
         )}
+
       </div>
+
       <style>{`
         @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.1);opacity:1}}
         @keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-8px);opacity:1}}
       `}</style>
     </div>
-  </div>
   );
 }
