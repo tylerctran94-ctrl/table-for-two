@@ -1365,7 +1365,7 @@ const getSpots = (a) => {
   // Budget price filter -- unknown price excluded on budget selections
   const priceOk = (spot) => {
     if (!a.budget || a.budget === "splurge") return true;
-    const p = (spot.price || "").replace(/\?/g, "").trim();
+    const p = (spot.price || "").split("?").join("").trim();
     if (!p) return false;
     if (a.budget === "under100") return p === "$" || p === "$$";
     return true;
