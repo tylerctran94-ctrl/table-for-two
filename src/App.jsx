@@ -2083,6 +2083,18 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
 
         <div style={{height:"3px",background:`linear-gradient(90deg,transparent,${nbAccent},${nbAccent}88,transparent)`}}/>
 
+        {spot.photo && !spot.photo.includes('_placeholder') && (
+          <div data-photo="1" style={{position:"relative",width:"100%",height:"180px",overflow:"hidden",background:"#0e0a16"}}>
+            <img src={spot.photo} alt=""
+              style={{width:"100%",height:"100%",objectFit:"cover",display:"block",opacity:0,transition:"opacity 0.3s ease-in"}}
+              onLoad={e=>{e.currentTarget.style.opacity="0.85";}}
+              onError={e=>{const p=e.currentTarget.closest('[data-photo]');if(p)p.style.display="none";}}
+            />
+            <div style={{position:"absolute",inset:0,background:`linear-gradient(to bottom,transparent 40%,#0e0a16 100%)`,pointerEvents:"none"}}/>
+            <div style={{position:"absolute",bottom:"6px",right:"8px",fontSize:"8px",color:"rgba(255,255,255,0.4)",fontFamily:"sans-serif"}}>📷 Google</div>
+          </div>
+        )}
+
         <div style={{padding:"18px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"center"}}>
           <span style={{fontSize:"9px",letterSpacing:"3px",textTransform:"uppercase",color:nbAccent,fontFamily:"sans-serif",opacity:0.9}}>
             {idx === 0 ? "Tonight's Pick" : `Pick ${idx + 1} of ${spots.length}`}
