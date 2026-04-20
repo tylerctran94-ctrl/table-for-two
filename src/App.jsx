@@ -1432,7 +1432,11 @@ const getQuestion = (a) => {
     const isDay  = a.timeOfDay === "day";
     const isLate = a.timeOfDay === "late";
     const opts = isDay ? [
+      {l:"Food",v:"food",i:"🍽️"},
       {l:"Brunch",v:"brunch",i:"🥐"},
+      {l:"Coffee & Matcha",v:"coffee",i:"☕"},
+      {l:"Boba",v:"boba",i:"🥤"},
+      {l:"Diner",v:"diner",i:"🥞"},
       {l:"Activity",v:"activity",i:"🎯"},
       {l:"Our Pick",v:"ourpick",i:"⭐"},
     ] : isLate ? [
@@ -1452,6 +1456,9 @@ const getQuestion = (a) => {
 
   if (a.focus === "brunch")     return null; // daytime brunch = go straight to results
   if (a.focus === "ourpick")    return null;
+  if (a.focus === "coffee")     return null;
+  if (a.focus === "boba")       return null;
+  if (a.focus === "diner")      return null;
   if (a.focus === "drinks"     && !a.drinkType)     return { id:"drinkType",     emoji:"🍹", q:"What are you drinking?",  opts:DRINK_OPTS };
   if (a.focus === "food" && !a.foodType) {
     const nb = DB[a.neighborhood] || {};
@@ -2344,3 +2351,26 @@ export default function App() {
     </div>
   );
 }
+  if (a.focus === "boba") {
+    let pool = [...(nb.food.coffee || [])].filter(s => {
+      const t = (String(s.type||"")+String(s.place||"")).toLowerCase();
+      return t.includes("boba") || t.includes("bubble");
+    });
+    const filtered = pool.filter(s => priceOk(s));
+    if (filtered.length >= 1) pool = filtered;
+    const _seen = new Set(); pool = pool.filter(s => { if(_seen.has(s.id)) return false; _seen.add(s.id); return true; });
+    return shuffle(pool).slice(0,8);
+  }
+
+  if (a.focus === "diner") {
+    let pool = [...(nb.food.american || [])].filter(s => {
+      const t = String(s.type||"").toLowerCase();
+      return t.includes("diner");
+    });
+    if (!pool.length) pool = [...(nb.food.american || [])];
+    const filtered = pool.filter(s => priceOk(s));
+    if (filtered.length >= 1) pool = filtered;
+    const _seen = new Set(); pool = pool.filter(s => { if(_seen.has(s.id)) return false; _seen.add(s.id); return true; });
+    return shuffle(pool).slice(0,8);
+  }
+
