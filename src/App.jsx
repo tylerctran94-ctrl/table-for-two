@@ -2290,9 +2290,9 @@ export default function App() {
               style={{display:"inline-block",fontSize:"11px",color:T.accent,fontFamily:"sans-serif",letterSpacing:"1px",textDecoration:"none",marginBottom:"24px",opacity:0.7}}>
               @partyof2nyc
             </a>
-            <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+            <div style={{display:"flex",flexDirection:"column",gap:"10px",alignItems:"center"}}>
               <button onClick={()=>{setScreen("quiz");setCurrentQ(getQuestion({}));}}
-                style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"16px 32px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",fontWeight:"800",borderRadius:"4px",transition:"transform 0.2s"}}
+                style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"14px 48px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",fontWeight:"800",borderRadius:"4px",transition:"transform 0.2s",width:"auto",alignSelf:"center"}}
                 onMouseEnter={e=>e.currentTarget.style.transform="scale(1.04)"}
                 onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
                 Plan Our Night
@@ -2370,7 +2370,7 @@ export default function App() {
                   <div style={{fontSize:"28px",marginBottom:"10px"}}>{currentQ.emoji}</div>
                   <h2 style={{fontSize:"clamp(18px,5vw,22px)",fontWeight:"normal",marginBottom:"6px"}}>{currentQ.q}</h2>
                 </div>
-                <div style={{display:"grid",gap:"6px",gridTemplateColumns:currentQ.id==="foodType"?"1fr 1fr":(currentQ.opts||[]).length<=3?"repeat("+(currentQ.opts||[]).length+",1fr)":"1fr 1fr",gap:"8px"}}>
+                <div style={{display:"grid",gap:"4px",gridTemplateColumns:currentQ.id==="foodType"?"1fr 1fr":(currentQ.opts||[]).length<=3?"repeat("+(currentQ.opts||[]).length+",1fr)":"1fr 1fr",gap:"8px"}}>
                   {currentQ.id === "foodType" ? (() => {
                     const opts = currentQ.opts;
                     const elems = [];
@@ -2381,16 +2381,16 @@ export default function App() {
                       }
                       elems.push(
                         <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
-                          style={{background:T.card,border:"1px solid "+T.border,color:T.text,padding:"8px 4px",cursor:"pointer",borderRadius:"5px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"3px",fontFamily:"sans-serif"}}
+                          style={{background:T.card,border:"1px solid "+T.border,color:T.text,padding:"4px 2px",cursor:"pointer",borderRadius:"4px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"1px",fontFamily:"sans-serif"}}
                           onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=T.accent+"12";}}
                           onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
-                          <span style={{fontSize:"14px"}}>{o.l.split(" ")[0]}</span>
-                          <span style={{fontSize:"10px",fontWeight:"600",textAlign:"center",lineHeight:1.2}}>{o.l.split(" ").slice(1).join(" ")}</span>
+                          <span style={{fontSize:"12px"}}>{o.l.split(" ")[0]}</span>
+                          <span style={{fontSize:"8px",fontWeight:"600",textAlign:"center",lineHeight:1.1,whiteSpace:"nowrap"}}>{o.l.split(" ").slice(1).join(" ")}</span>
                         </button>
                       );
                     });
                     return elems;
-                  })() : currentQ.opts.map(o =>> (
+                  })() : currentQ.opts.map(o => (
                     <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
                       style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"8px 6px",cursor:"pointer",borderRadius:"5px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"3px",fontFamily:"sans-serif"}}
                       onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
