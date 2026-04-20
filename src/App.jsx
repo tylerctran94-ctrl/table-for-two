@@ -1657,7 +1657,7 @@ const getSpots = (a) => {
     });
     const filtered = pool.filter(s => priceOk(s));
     if (filtered.length >= 1) pool = filtered;
-    const _seen = new Set(); pool = pool.filter(s => { if(_seen.has(s.id)) return false; _seen.add(s.id); return true; });
+    const _seen = new Set(); pool = pool.filter(s => { const k = (s.place||s.id||"").toLowerCase(); if(_seen.has(k)) return false; _seen.add(k); return true; });
     return shuffle(pool).slice(0,8);
   }
 
@@ -1669,7 +1669,7 @@ const getSpots = (a) => {
     if (!pool.length) pool = [...(nb.food.american || [])];
     const filtered = pool.filter(s => priceOk(s));
     if (filtered.length >= 1) pool = filtered;
-    const _seen = new Set(); pool = pool.filter(s => { if(_seen.has(s.id)) return false; _seen.add(s.id); return true; });
+    const _seen = new Set(); pool = pool.filter(s => { const k = (s.place||s.id||"").toLowerCase(); if(_seen.has(k)) return false; _seen.add(k); return true; });
     return shuffle(pool).slice(0,8);
   }
 
@@ -2087,7 +2087,7 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
           <div style={{position:"relative",width:"100%",height:"180px",overflow:"hidden"}}>
             <img src={spot.photo} alt={spot.place}
               style={{width:"100%",height:"100%",objectFit:"cover",display:"block",opacity:0.85}}
-              onError={e=>e.currentTarget.style.display="none"}
+              onError={e=>{e.currentTarget.parentElement.style.display="none";}}
             />
             <div style={{position:"absolute",inset:0,background:`linear-gradient(to bottom,transparent 40%,#0e0a16 100%)`}}/>
             <div style={{position:"absolute",bottom:"6px",right:"8px",fontSize:"8px",color:"rgba(255,255,255,0.4)",fontFamily:"sans-serif"}}>📷 Google</div>
@@ -2181,9 +2181,9 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
         </button>
       )}
       {remaining === 0 && (
-        <button onClick={onReset}
+        <button onClick={()=>setIdx(0)}
           style={{width:"100%",background:"transparent",border:"1px solid rgba(255,255,255,0.1)",color:T.sub,padding:"14px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",borderRadius:"8px"}}>
-          Start From The Top
+          See All Picks Again
         </button>
       )}
 
@@ -2370,39 +2370,37 @@ export default function App() {
                   <div style={{fontSize:"28px",marginBottom:"10px"}}>{currentQ.emoji}</div>
                   <h2 style={{fontSize:"clamp(18px,5vw,22px)",fontWeight:"normal",marginBottom:"6px"}}>{currentQ.q}</h2>
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:currentQ.id==="foodType"?"1fr 1fr":(currentQ.opts||[]).length<=3?"repeat("+(currentQ.opts||[]).length+",1fr)":"1fr 1fr",gap:"8px"}}>
+                <div style={{display:"grid",gap:"6px",gridTemplateColumns:currentQ.id==="foodType"?"1fr 1fr":(currentQ.opts||[]).length<=3?"repeat("+(currentQ.opts||[]).length+",1fr)":"1fr 1fr",gap:"8px"}}>
                   {currentQ.id === "foodType" ? (() => {
                     const opts = currentQ.opts;
-                    // Pre-compute group sizes for centering logic
                     const groupCounts = {};
                     opts.forEach(o => { groupCounts[o.g] = (groupCounts[o.g]||0)+1; });
-                    return opts.map((o, oi) => {
+                    const elems = [];
+                    opts.forEach((o, oi) => {
                       const prevGroup = oi > 0 ? opts[oi-1].g : null;
+                      const nextGroup = oi < opts.length-1 ? opts[oi+1].g : null;
                       const groupBreak = prevGroup && prevGroup !== o.g;
                       const groupSize = groupCounts[o.g] || 1;
-                      // Only center if group has odd count AND this is the last in group
-                      const nextSameGroup = oi < opts.length-1 && opts[oi+1].g === o.g;
-                      const isLastInOddGroup = groupSize % 2 === 1 && !nextSameGroup && groupSize > 1;
-                      return (
-                        <span key={o.v} style={{display:"contents"}}>
-                          {groupBreak && <div style={{gridColumn:"1/-1",height:"1px",background:T.border,opacity:0.25}}/>}
-                          <button onClick={()=>advance(currentQ.id, o.v)}
-                            style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"10px 8px",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"4px",fontFamily:"sans-serif",gridColumn:(groupSize===1||isLastInOddGroup)?"1/-1":"auto"}}
-                            onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
-                            onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
-                            <span style={{fontSize:"16px"}}>{o.l.split(" ")[0]}</span>
-                            <span style={{fontSize:"10px",fontWeight:"600",textAlign:"center",lineHeight:1.3}}>{o.l.split(" ").slice(1).join(" ")}</span>
-                          </button>
-                        </span>
+                      const isLastInOddGroup = groupSize % 2 === 1 && nextGroup !== o.g;
+                      if (groupBreak) elems.push(<div key={"br"+oi} style={{gridColumn:"1/-1",height:"8px",borderTop:"1px solid "+T.border,opacity:0.3}}/>);
+                      elems.push(
+                        <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
+                          style={{background:T.card,border:"1px solid "+T.border,color:T.text,padding:"6px 4px",cursor:"pointer",borderRadius:"5px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"2px",fontFamily:"sans-serif",gridColumn:isLastInOddGroup?"1/-1":"auto",maxWidth:isLastInOddGroup?"calc(50% - 3px)":"100%",justifySelf:isLastInOddGroup?"center":"auto"}}
+                          onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=T.accent+"12";}}
+                          onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
+                          <span style={{fontSize:"13px"}}>{o.l.split(" ")[0]}</span>
+                          <span style={{fontSize:"9px",fontWeight:"600",textAlign:"center",lineHeight:1.2}}>{o.l.split(" ").slice(1).join(" ")}</span>
+                        </button>
                       );
                     });
-                  })() : currentQ.opts.map(o => (
-                    <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
-                      style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"10px 8px",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"5px",fontFamily:"sans-serif"}}
+                    return elems;
+                  })() : currentQ.opts.map(o =>>>> (
+                    <button key={`${ri}-${o.v}`} onClick={()=>advance(currentQ.id, o.v)}
+                      style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"8px 6px",cursor:"pointer",borderRadius:"5px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"3px",fontFamily:"sans-serif"}}
                       onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
                       onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
-                      {o.i && <span style={{fontSize:"22px"}}>{o.i}</span>}
-                      <span style={{fontSize:"12px",fontWeight:"600",textAlign:"center",lineHeight:1.3}}>{o.l}</span>
+                      {o.i && <span style={{fontSize:"16px"}}>{o.i}</span>}
+                      <span style={{fontSize:"10px",fontWeight:"600",textAlign:"center",lineHeight:1.2}}>{o.l}</span>
                     </button>
                   ))}
                 </div>
