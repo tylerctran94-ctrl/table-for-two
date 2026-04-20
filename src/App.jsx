@@ -2373,29 +2373,25 @@ export default function App() {
                 <div style={{display:"grid",gap:"6px",gridTemplateColumns:currentQ.id==="foodType"?"1fr 1fr":(currentQ.opts||[]).length<=3?"repeat("+(currentQ.opts||[]).length+",1fr)":"1fr 1fr",gap:"8px"}}>
                   {currentQ.id === "foodType" ? (() => {
                     const opts = currentQ.opts;
-                    const groupCounts = {};
-                    opts.forEach(o => { groupCounts[o.g] = (groupCounts[o.g]||0)+1; });
                     const elems = [];
                     opts.forEach((o, oi) => {
                       const prevGroup = oi > 0 ? opts[oi-1].g : null;
-                      const nextGroup = oi < opts.length-1 ? opts[oi+1].g : null;
-                      const groupBreak = prevGroup && prevGroup !== o.g;
-                      const groupSize = groupCounts[o.g] || 1;
-                      const isLastInOddGroup = groupSize % 2 === 1 && nextGroup !== o.g;
-                      if (groupBreak) elems.push(<div key={"br"+oi} style={{gridColumn:"1/-1",height:"8px",borderTop:"1px solid "+T.border,opacity:0.3}}/>);
+                      if (prevGroup && prevGroup !== o.g) {
+                        elems.push(<div key={"br"+oi} style={{gridColumn:"1/-1",height:"6px",borderTop:"1px solid rgba(255,255,255,0.08)"}}/>);
+                      }
                       elems.push(
                         <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
-                          style={{background:T.card,border:"1px solid "+T.border,color:T.text,padding:"6px 4px",cursor:"pointer",borderRadius:"5px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"2px",fontFamily:"sans-serif",gridColumn:isLastInOddGroup?"1/-1":"auto",maxWidth:isLastInOddGroup?"calc(50% - 3px)":"100%",justifySelf:isLastInOddGroup?"center":"auto"}}
+                          style={{background:T.card,border:"1px solid "+T.border,color:T.text,padding:"8px 4px",cursor:"pointer",borderRadius:"5px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"3px",fontFamily:"sans-serif"}}
                           onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=T.accent+"12";}}
                           onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
-                          <span style={{fontSize:"13px"}}>{o.l.split(" ")[0]}</span>
-                          <span style={{fontSize:"9px",fontWeight:"600",textAlign:"center",lineHeight:1.2}}>{o.l.split(" ").slice(1).join(" ")}</span>
+                          <span style={{fontSize:"14px"}}>{o.l.split(" ")[0]}</span>
+                          <span style={{fontSize:"10px",fontWeight:"600",textAlign:"center",lineHeight:1.2}}>{o.l.split(" ").slice(1).join(" ")}</span>
                         </button>
                       );
                     });
                     return elems;
-                  })() : currentQ.opts.map(o =>>>> (
-                    <button key={`${ri}-${o.v}`} onClick={()=>advance(currentQ.id, o.v)}
+                  })() : currentQ.opts.map(o =>> (
+                    <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
                       style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"8px 6px",cursor:"pointer",borderRadius:"5px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"3px",fontFamily:"sans-serif"}}
                       onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
                       onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
