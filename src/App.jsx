@@ -1750,353 +1750,156 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
   );
 
   const spot = spots[idx];
-  const gem = gemScore(spot.reviews);
-  const isGem = gem >= 8;
+  const isGem = gemScore(spot.reviews) >= 8;
   const cycleNext = () => setIdx(i => (i + 1) % spots.length);
-
+  const remaining = spots.length - idx - 1;
+  const nbAccent = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e",bushwick:"#e85d75",fidi:"#6b8bbd",upper_east:"#9b6b9b",upper_west:"#6b9b8b"}[neighborhood] || T.accent;
   const starRating = spot.stars || 0;
   const fullStars = Math.floor(starRating);
   const halfStar = starRating - fullStars >= 0.5;
-
-  const SilSvg = NB_SILHOUETTES[neighborhood];
-  const nbAccent = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e",bushwick:"#e85d75",fidi:"#6b8bbd",upper_east:"#9b6b9b",upper_west:"#6b9b8b"}[neighborhood] || T.accent;
-
-  // Don't show desc if it's just the place name or a raw notes tag
-  const SKIP_DESCS = ["brunch","bar","late night","latenight","dinner","activity","pizza","japanese","italian dinner","american dinner","mediterranean","cocktail bar","wine bar","speakeasy","rooftop","happy hour"];
-  const desc = spot.desc && spot.desc !== spot.place && !SKIP_DESCS.includes(spot.desc.toLowerCase().trim()) ? spot.desc : null;
-
-  // Category emoji
+  const SKIP_DESCS = ["brunch","bar","late night","latenight","dinner","activity","pizza","japanese","italian dinner","american dinner","mediterranean","cocktail bar","wine bar","speakeasy","rooftop","happy hour","coffee","matcha","korean","chinese","mexican","vegan","american","food"];
+  const descRaw = spot.desc || "";
+  const isRawType = SKIP_DESCS.includes(descRaw.toLowerCase().trim()) || 
+    /^[\d.]+★/.test(descRaw) || descRaw === spot.type || descRaw === spot.subtype;
+  const desc = descRaw && descRaw !== spot.place && !isRawType && descRaw.length > 10 ? descRaw : null;
   const subtype = answers?.drinkType || answers?.foodType || answers?.foodDrinkType || answers?.activityType || "";
   const catEmoji = getModeEmoji(mode, subtype);
 
   return (
-    <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+    <div style={{display:"flex",flexDirection:"column",gap:"12px"}}>
 
-      {/* ── GRAND REVEAL CARD ── */}
-      <div style={{background:`linear-gradient(160deg,rgba(14,10,22,0.99),rgba(8,6,14,0.99))`,border:`1px solid ${nbAccent}44`,borderRadius:"14px",overflow:"hidden",boxShadow:`0 40px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)`}}>
+      <div style={{background:"linear-gradient(160deg,#0e0a16,#080610)",border:`1px solid ${nbAccent}55`,borderRadius:"16px",overflow:"hidden",boxShadow:`0 32px 80px rgba(0,0,0,0.9),0 0 0 1px rgba(255,255,255,0.03),inset 0 1px 0 rgba(255,255,255,0.05)`}}>
 
-        {/* Top accent line */}
-        <div style={{height:"2px",background:`linear-gradient(90deg,transparent,${nbAccent},transparent)`}}/>
+        <div style={{height:"3px",background:`linear-gradient(90deg,transparent,${nbAccent},${nbAccent}88,transparent)`}}/>
 
-        {/* ── HERO: emoji + pick label + name ── */}
-        <div style={{padding:"22px 22px 0",background:`linear-gradient(180deg,${nbAccent}14 0%,transparent 100%)`}}>
+        <div style={{padding:"18px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"center"}}>
+          <span style={{fontSize:"9px",letterSpacing:"3px",textTransform:"uppercase",color:nbAccent,fontFamily:"sans-serif",opacity:0.9}}>
+            {idx === 0 ? "Tonight's Pick" : `Pick ${idx + 1} of ${spots.length}`}
+          </span>
+          {mode !== "activity" && <span style={{fontSize:"18px",lineHeight:1,opacity:0.6}}>{catEmoji}</span>}
+        </div>
 
-          {/* Pick label + category emoji + featured badge */}
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-            <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
-              <div style={{fontSize:"8px",letterSpacing:"4px",textTransform:"uppercase",color:nbAccent,fontFamily:"sans-serif"}}>
-                {idx === 0 ? "Plan Our Night ✦" : `Pick ${idx + 1} of ${spots.length}`}
+        <div style={{padding:"12px 20px 16px"}}>
+          <h2 style={{fontSize:"clamp(28px,7vw,42px)",fontWeight:"300",lineHeight:1.05,margin:"0 0 8px",letterSpacing:"-0.5px",color:"#fff",fontFamily:"Georgia, serif",textAlign:"center"}}>{spot.place}</h2>
+          <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+            {isGem && (
+              <div style={{display:"inline-flex",alignItems:"center",gap:"4px",background:`${nbAccent}18`,border:`1px solid ${nbAccent}44`,borderRadius:"20px",padding:"3px 10px"}}>
+                <span style={{fontSize:"9px"}}>💎</span>
+                <span style={{fontSize:"9px",letterSpacing:"1.5px",textTransform:"uppercase",color:nbAccent,fontFamily:"sans-serif"}}>Hidden Gem</span>
               </div>
-              {spot.featured && (
-                <div style={{fontSize:"8px",letterSpacing:"1.5px",textTransform:"uppercase",color:"#fff",fontFamily:"sans-serif",background:`linear-gradient(135deg,${nbAccent},${T.accent2})`,padding:"2px 7px",borderRadius:"10px"}}>
-                  ⭐ Featured
-                </div>
-              )}
-            </div>
-            <div style={{fontSize:"28px",lineHeight:1}}>{catEmoji}</div>
-          </div>
-
-          {/* BIG place name — above the silhouette */}
-          <div style={{fontSize:"clamp(28px,8vw,44px)",lineHeight:1.05,letterSpacing:"-1px",fontWeight:"normal",textShadow:`0 2px 30px ${nbAccent}33`,marginBottom:"0"}}>
-            {spot.place}
-          </div>
-        </div>
-
-        {/* ── SILHOUETTE below the name ── */}
-        {SilSvg && (
-          <div style={{opacity:0.25,marginTop:"-4px",pointerEvents:"none"}}>
-            <SilSvg/>
-          </div>
-        )}
-
-        {/* ── DETAILS SECTION ── */}
-        <div style={{padding:"8px 22px 20px"}}>
-
-          {/* Stars + rating */}
-          <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"6px"}}>
-            <div style={{display:"flex",gap:"2px"}}>
-              {[1,2,3,4,5].map(i => (
-                <span key={i} style={{fontSize:"13px",color:i<=fullStars||(i===fullStars+1&&halfStar)?nbAccent:"#2a2420"}}>★</span>
-              ))}
-            </div>
-            {starRating > 0 && <span style={{fontSize:"13px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"700"}}>{starRating.toFixed(1)}</span>}
-            {spot.reviews > 0 && <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>· {Number(spot.reviews).toLocaleString()} reviews</span>}
-            {isGem && <span style={{fontSize:"9px",color:nbAccent,fontFamily:"sans-serif",background:`${nbAccent}18`,border:`1px solid ${nbAccent}44`,padding:"2px 7px",borderRadius:"20px",marginLeft:"4px"}}>💎 Gem</span>}
-          </div>
-
-          {spot.reservable && (
-            <div style={{fontSize:"10px",color:"#6b9b8b",fontFamily:"sans-serif",marginBottom:"12px"}}>✓ Takes Reservations</div>
-          )}
-
-          {/* Divider */}
-          <div style={{height:"1px",background:`linear-gradient(90deg,${nbAccent}44,transparent)`,marginBottom:"14px"}}/>
-
-          {desc && (
-            <p style={{fontSize:"14px",color:"#b8a898",fontFamily:"sans-serif",lineHeight:1.8,margin:"0 0 16px",fontStyle:"italic"}}>{desc}</p>
-          )}
-
-          {mode === "happyhour" && spot.deal && (
-            <div style={{background:`${nbAccent}14`,border:`1px solid ${nbAccent}33`,borderRadius:"6px",padding:"10px 14px",marginBottom:"16px"}}>
-              <div style={{fontSize:"12px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"700"}}>🎉 {spot.deal}</div>
-              <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif",marginTop:"3px"}}>{spot.hours}</div>
-            </div>
-          )}
-
-          <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
-            {spot.booking && (
-              <a href={spot.booking.startsWith("http") ? spot.booking : `https://${spot.booking}`} target="_blank" rel="noopener noreferrer"
-                style={{display:"inline-block",padding:"10px 18px",background:`linear-gradient(135deg,${nbAccent},${T.accent2})`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"2px",textTransform:"uppercase",color:T.bg,textDecoration:"none"}}>
-                📅 Reserve
-              </a>
             )}
-            {dateType === "first" && spot.booking && (
-              <a href={resyUrl(spot.place)} target="_blank" rel="noopener noreferrer"
-                style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.accent2}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.accent2,textDecoration:"none"}}>
-                🍽️ Resy
-              </a>
+            {spot.featured && (
+              <div style={{display:"inline-flex",alignItems:"center",gap:"4px",background:"linear-gradient(135deg,#c9a96e,#b8860b)",borderRadius:"20px",padding:"3px 10px"}}>
+                <span style={{fontSize:"9px",letterSpacing:"1.5px",textTransform:"uppercase",color:"#000",fontFamily:"sans-serif",fontWeight:"700"}}>⭐ Featured</span>
+              </div>
             )}
-            <a href={mapsUrl(spot.maps)} target="_blank" rel="noopener noreferrer"
-              style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.sub,textDecoration:"none"}}>
-              🗺️ Maps
-            </a>
           </div>
         </div>
 
-        <div style={{height:"2px",background:`linear-gradient(90deg,transparent,${nbAccent}66,transparent)`}}/>
-      </div>
+        <div style={{margin:"0 20px",height:"1px",background:`linear-gradient(90deg,${nbAccent}44,transparent)`}}/>
 
-      {spots.length > 1 && (
-        <button onClick={cycleNext}
-          style={{width:"100%",padding:"14px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"8px",color:T.sub,fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",transition:"all 0.2s"}}
-          onMouseEnter={e=>{e.currentTarget.style.borderColor=nbAccent;e.currentTarget.style.color=nbAccent;}}
-          onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
-          {idx < spots.length - 1 ? `Show Another Pick (${spots.length - idx - 1} more)` : "Start from the top"}
-        </button>
-      )}
-
-      <div style={{padding:"8px 12px",fontSize:"10px",color:T.sub,fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
-        🔍 Always verify on Google Maps — NYC spots close unexpectedly.
-      </div>
-    </div>
-  );
-
-
-  return (
-    <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-
-      {/* ── GRAND REVEAL CARD ── */}
-      <div style={{background:`linear-gradient(160deg,rgba(12,8,18,0.99),rgba(8,6,14,0.99))`,border:`1px solid ${nbAccent}33`,borderRadius:"14px",overflow:"hidden",boxShadow:`0 40px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)`}}>
-
-        {/* ── HERO HEADER with silhouette ── */}
-        <div style={{position:"relative",background:`linear-gradient(180deg, ${nbAccent}22 0%, ${nbAccent}08 60%, rgba(8,6,14,0) 100%)`,padding:"28px 22px 0",overflow:"hidden"}}>
-
-          {/* Background silhouette - large and faded */}
-          {SilSvg && (
-            <div style={{position:"absolute",bottom:"-2px",left:0,right:0,opacity:0.35,transform:"scale(1.1)"}}>
-              <SilSvg/>
-            </div>
-          )}
-
-          {/* Top accent line */}
-          <div style={{position:"absolute",top:0,left:0,right:0,height:"2px",background:`linear-gradient(90deg,transparent,${nbAccent},transparent)`}}/>
-
-          {/* Pick label */}
-          <div style={{fontSize:"8px",letterSpacing:"4px",textTransform:"uppercase",color:nbAccent,fontFamily:"sans-serif",marginBottom:"16px",position:"relative"}}>
-            {idx === 0 ? "Plan Our Night ✦" : `Pick ${idx + 1} of ${spots.length}`}
-          </div>
-
-          {/* BIG place name */}
-          <div style={{fontSize:"clamp(30px,9vw,46px)",lineHeight:1.0,letterSpacing:"-1.5px",fontWeight:"normal",position:"relative",paddingBottom:"24px",textShadow:`0 0 60px ${nbAccent}44`}}>
-            {spot.place}
-          </div>
-        </div>
-
-        {/* ── DETAILS SECTION ── */}
-        <div style={{padding:"16px 22px"}}>
-
-          {/* Stars + rating */}
-          <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px"}}>
-            <div style={{display:"flex",gap:"2px"}}>
-              {[1,2,3,4,5].map(i => (
-                <span key={i} style={{fontSize:"14px",color:i<=fullStars||( i===fullStars+1&&halfStar)?nbAccent:"#2a2420"}}>★</span>
-              ))}
-            </div>
-            {starRating > 0 && <span style={{fontSize:"13px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"700"}}>{starRating.toFixed(1)}</span>}
-            {spot.reviews > 0 && <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>· {Number(spot.reviews).toLocaleString()} reviews</span>}
-            {isGem && <span style={{fontSize:"9px",color:nbAccent,fontFamily:"sans-serif",background:`${nbAccent}18`,border:`1px solid ${nbAccent}44`,padding:"2px 7px",borderRadius:"20px",marginLeft:"4px"}}>💎 Gem</span>}
-          </div>
-
-          {/* Reservation badge */}
-          {spot.reservable && (
-            <div style={{fontSize:"10px",color:"#6b9b8b",fontFamily:"sans-serif",letterSpacing:"0.5px",marginBottom:"12px"}}>✓ Takes Reservations</div>
-          )}
-
-          {/* Divider */}
-          <div style={{height:"1px",background:`linear-gradient(90deg,${nbAccent}44,transparent)`,marginBottom:"14px"}}/>
-
-          {/* Description */}
-          {desc && (
-            <p style={{fontSize:"14px",color:"#b8a898",fontFamily:"sans-serif",lineHeight:1.8,margin:"0 0 16px",fontStyle:"italic"}}>{desc}</p>
-          )}
-
-          {/* Happy hour deal */}
-          {mode === "happyhour" && spot.deal && (
-            <div style={{background:`${nbAccent}14`,border:`1px solid ${nbAccent}33`,borderRadius:"6px",padding:"10px 14px",marginBottom:"16px"}}>
-              <div style={{fontSize:"12px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"700"}}>🎉 {spot.deal}</div>
-              <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif",marginTop:"3px"}}>{spot.hours}</div>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
-            {spot.booking && (
-              <a href={spot.booking.startsWith("http") ? spot.booking : `https://${spot.booking}`} target="_blank" rel="noopener noreferrer"
-                style={{display:"inline-block",padding:"10px 18px",background:`linear-gradient(135deg,${nbAccent},${T.accent2})`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"2px",textTransform:"uppercase",color:T.bg,textDecoration:"none"}}>
-                📅 Reserve
-              </a>
-            )}
-            {dateType === "first" && spot.booking && (
-              <a href={resyUrl(spot.place)} target="_blank" rel="noopener noreferrer"
-                style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.accent2}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.accent2,textDecoration:"none"}}>
-                🍽️ Resy
-              </a>
-            )}
-            <a href={mapsUrl(spot.maps)} target="_blank" rel="noopener noreferrer"
-              style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.sub,textDecoration:"none"}}>
-              🗺️ Maps
-            </a>
-          </div>
-        </div>
-
-        {/* Bottom gradient bar */}
-        <div style={{height:"2px",background:`linear-gradient(90deg,transparent,${nbAccent}66,transparent)`}}/>
-      </div>
-
-      {/* Cycle button */}
-      {spots.length > 1 && (
-        <button onClick={cycleNext}
-          style={{width:"100%",padding:"14px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"8px",color:T.sub,fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",transition:"all 0.2s"}}
-          onMouseEnter={e=>{e.currentTarget.style.borderColor=nbAccent;e.currentTarget.style.color=nbAccent;}}
-          onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
-          {idx < spots.length - 1 ? `Show Another Pick (${spots.length - idx - 1} more)` : "Start from the top"}
-        </button>
-      )}
-
-      <div style={{padding:"8px 12px",fontSize:"10px",color:T.sub,fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
-        🔍 Always verify on Google Maps — NYC spots close unexpectedly.
-      </div>
-    </div>
-  );
-
-
-  return (
-    <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-
-      {/* ── GRAND REVEAL CARD ── */}
-      <div style={{background:`linear-gradient(160deg, rgba(15,10,20,0.99) 0%, rgba(10,8,16,0.99) 100%)`,border:`1px solid ${T.accent}44`,borderRadius:"12px",overflow:"hidden",boxShadow:`0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06)`}}>
-
-        {/* Top gradient bar */}
-        <div style={{height:"3px",background:`linear-gradient(90deg,${T.accent2},${T.accent},${T.accent2})`}}/>
-
-        {/* Eyebrow + pick counter */}
-        <div style={{padding:"20px 22px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <div style={{fontSize:"8px",letterSpacing:"3.5px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif"}}>
-            {idx === 0 ? "Plan Our Night ✦" : `Pick ${idx + 1} of ${spots.length}`}
-          </div>
-          {isGem && (
-            <div style={{fontSize:"8px",letterSpacing:"1.5px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif",background:`${T.accent}18`,border:`1px solid ${T.accent}44`,padding:"3px 8px",borderRadius:"20px"}}>
-              💎 Hidden Gem
-            </div>
-          )}
-        </div>
-
-        {/* Place name */}
-        <div style={{padding:"14px 22px 0"}}>
-          <div style={{fontSize:"clamp(28px,8vw,40px)",lineHeight:1.0,letterSpacing:"-1px",fontWeight:"normal"}}>
-            {spot.place}
-          </div>
-        </div>
-
-        {/* Real star rating + review count */}
-        <div style={{padding:"10px 22px 0",display:"flex",alignItems:"center",gap:"8px"}}>
-          <div style={{display:"flex",gap:"2px"}}>
-            {[1,2,3,4,5].map(i => (
-              <span key={i} style={{fontSize:"13px",color: i <= fullStars ? T.accent : i === fullStars+1 && halfStar ? T.accent : "#2a2420",opacity: i <= fullStars || (i === fullStars+1 && halfStar) ? 1 : 0.3}}>
-                {i <= fullStars ? "★" : i === fullStars+1 && halfStar ? "⭑" : "★"}
-              </span>
+        <div style={{padding:"14px 20px",display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"2px"}}>
+            {Array.from({length:5}).map((_,i) => (
+              <span key={i} style={{fontSize:"13px",color:i < fullStars ? "#f4c542" : (i === fullStars && halfStar ? "#f4c542" : "#333")}}>★</span>
             ))}
           </div>
-          {starRating > 0 && <span style={{fontSize:"12px",color:T.accent,fontFamily:"sans-serif",fontWeight:"600"}}>{starRating.toFixed(1)}</span>}
-          {spot.reviews > 0 && <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>· {Number(spot.reviews).toLocaleString()} reviews</span>}
+          <span style={{fontSize:"15px",fontWeight:"600",color:"#fff",fontFamily:"sans-serif"}}>{starRating}</span>
+          {spot.reviews > 0 && (
+            <span style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif"}}>· {Number(spot.reviews).toLocaleString()} reviews</span>
+          )}
+          {spot.price && spot.price !== "?" && (
+            <span style={{fontSize:"11px",color:nbAccent,fontFamily:"sans-serif",marginLeft:"auto",opacity:0.8}}>{spot.price}</span>
+          )}
         </div>
 
-        {/* Reservation badge */}
         {spot.reservable && (
-          <div style={{padding:"8px 22px 0"}}>
-            <span style={{fontSize:"9px",color:"#6b9b8b",fontFamily:"sans-serif",letterSpacing:"0.5px"}}>✓ Takes Reservations</span>
+          <div style={{padding:"0 20px 14px"}}>
+            <span style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif",opacity:0.7}}>✓ Takes Reservations</span>
           </div>
         )}
 
-        {/* Divider */}
-        <div style={{margin:"14px 22px 0",height:"1px",background:`linear-gradient(90deg,${T.accent}44,transparent)`}}/>
-
-        {/* Description */}
-        <div style={{padding:"14px 22px"}}>
-          <p style={{fontSize:"14px",color:"#b0a090",fontFamily:"sans-serif",lineHeight:1.8,margin:"0 0 18px",fontStyle:"italic"}}>{spot.desc}</p>
-
-          {mode === "happyhour" && spot.deal && (
-            <div style={{background:`${T.accent}14`,border:`1px solid ${T.accent}33`,borderRadius:"5px",padding:"10px 14px",marginBottom:"16px"}}>
-              <div style={{fontSize:"12px",color:T.accent,fontFamily:"sans-serif",fontWeight:"700"}}>🎉 {spot.deal}</div>
-              <div style={{fontSize:"10px",color:T.sub,fontFamily:"sans-serif",marginTop:"3px"}}>{spot.hours}</div>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
-            {spot.booking && (
-              <a href={spot.booking.startsWith("http") ? spot.booking : `https://${spot.booking}`} target="_blank" rel="noopener noreferrer"
-                style={{display:"inline-block",padding:"10px 18px",background:`linear-gradient(135deg,${T.accent},${T.accent2})`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"2px",textTransform:"uppercase",color:T.bg,textDecoration:"none"}}>
-                📅 Reserve
-              </a>
-            )}
-            {dateType === "first" && spot.booking && (
-              <a href={resyUrl(spot.place)} target="_blank" rel="noopener noreferrer"
-                style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.accent2}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.accent2,textDecoration:"none"}}>
-                🍽️ Resy
-              </a>
-            )}
-            <a href={mapsUrl(spot.maps)} target="_blank" rel="noopener noreferrer"
-              style={{display:"inline-block",padding:"10px 18px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"4px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.sub,textDecoration:"none"}}>
-              🗺️ Maps
-            </a>
+        {desc && (
+          <div style={{padding:"0 20px 16px"}}>
+            <p style={{margin:0,fontSize:"13px",color:T.sub,fontFamily:"sans-serif",lineHeight:1.6,fontStyle:"italic",opacity:0.85}}>{desc}</p>
           </div>
+        )}
+
+        {spot.deal && (
+          <div style={{margin:"0 20px 16px",background:`${nbAccent}14`,border:`1px solid ${nbAccent}33`,borderRadius:"8px",padding:"10px 14px"}}>
+            <div style={{fontSize:"12px",color:nbAccent,fontFamily:"sans-serif",fontWeight:"600"}}>{spot.deal}</div>
+            {spot.hours && <p style={{fontSize:"11px",color:T.sub,fontFamily:"sans-serif",marginTop:"2px",margin:0}}>{spot.hours}</p>}
+          </div>
+        )}
+
+        <div style={{padding:"4px 20px 22px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
+          {spot.booking && spot.booking !== "null" && (
+            <a href={spot.booking} target="_blank" rel="noopener noreferrer"
+              style={{flex:1,minWidth:"90px",padding:"12px 16px",background:nbAccent,borderRadius:"8px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:"#000",textDecoration:"none",fontWeight:"800",textAlign:"center",display:"block"}}>
+              Reserve
+            </a>
+          )}
+          {dateType === "first" && spot.reservable && (
+            <a href={resyUrl(spot.place)} target="_blank" rel="noopener noreferrer"
+              style={{flex:1,minWidth:"90px",padding:"12px 16px",background:"transparent",border:`1px solid ${nbAccent}66`,borderRadius:"8px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:nbAccent,textDecoration:"none",textAlign:"center",display:"block"}}>
+              Resy
+            </a>
+          )}
+          <a href={mapsUrl(spot.maps)} target="_blank" rel="noopener noreferrer"
+            style={{flex:1,minWidth:"90px",padding:"12px 16px",background:"transparent",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"8px",fontSize:"10px",fontFamily:"sans-serif",letterSpacing:"2px",textTransform:"uppercase",color:T.sub,textDecoration:"none",textAlign:"center",display:"block"}}>
+            Maps
+          </a>
         </div>
 
-        {/* Bottom bar */}
-        <div style={{height:"2px",background:`linear-gradient(90deg,transparent,${T.accent}44,transparent)`}}/>
+        <div style={{height:"1px",background:`linear-gradient(90deg,transparent,${nbAccent}33,transparent)`}}/>
       </div>
 
-      {/* Cycle + Start Over */}
-      {spots.length > 1 && (
+      {remaining > 0 && (
         <button onClick={cycleNext}
-          style={{width:"100%",padding:"14px",background:"transparent",border:`1px solid ${T.border}`,borderRadius:"6px",color:T.sub,fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",transition:"all 0.2s"}}
-          onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.color=T.accent;}}
-          onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
-          {idx < spots.length - 1 ? `Show Another Pick (${spots.length - idx - 1} more)` : "Start from the top"}
+          style={{width:"100%",background:"transparent",border:"1px solid rgba(255,255,255,0.1)",color:T.sub,padding:"14px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",borderRadius:"8px"}}>
+          Show Another Pick ({remaining} more)
+        </button>
+      )}
+      {remaining === 0 && (
+        <button onClick={onReset}
+          style={{width:"100%",background:"transparent",border:"1px solid rgba(255,255,255,0.1)",color:T.sub,padding:"14px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",borderRadius:"8px"}}>
+          Start From The Top
         </button>
       )}
 
-      <div style={{padding:"8px 12px",background:"rgba(255,255,255,0.02)",border:`1px solid ${T.border}`,borderRadius:"4px",fontSize:"10px",color:T.sub+"66",fontFamily:"sans-serif",lineHeight:1.6,textAlign:"center"}}>
+      <p style={{textAlign:"center",fontSize:"10px",color:T.sub,fontFamily:"sans-serif",opacity:0.5,margin:"0"}}>
         🔍 Always verify on Google Maps — NYC spots close unexpectedly.
+      </p>
+
+      <div style={{display:"flex",gap:"10px",marginTop:"2px"}}>
+        <button onClick={onReset}
+          style={{flex:1,background:"transparent",border:"1px solid rgba(255,255,255,0.1)",color:T.sub,padding:"13px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",borderRadius:"8px"}}>
+          ↺ Start Over
+        </button>
+        <button
+          style={{flex:2,background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"13px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",fontWeight:"800",borderRadius:"8px"}}
+          onClick={()=>{
+            const url = "https://partyof2nyc.com";
+            const text = `${spot.place} — found on Party of Two 🍽️`;
+            if (navigator.share) {
+              navigator.share({title:"Party of Two", text, url}).catch(()=>{});
+            } else {
+              try { navigator.clipboard.writeText(url); alert("Link copied!"); }
+              catch(e) { alert("Share: " + url); }
+            }
+          }}>
+          📲 Share
+        </button>
       </div>
+
     </div>
   );
-};
+}
 
 export default function App() {
   const [screen, setScreen] = useState("intro");
   const [answers, setAnswers] = useState({});
-  const [questionHistory, setQuestionHistory] = useState([]);
+  const [questionHistory, setQuestionHistory] = useState([]); // ← back button history
   const [currentQ, setCurrentQ] = useState(null);
   const [results, setResults] = useState(null);
   const [hoverNb, setHoverNb] = useState(null);
@@ -2122,7 +1925,8 @@ export default function App() {
     setQuestionHistory(newHistory);
     setAnswers(newAnswers);
     const q = getQuestion(newAnswers);
-    if (q) { setCurrentQ(q); setScreen("quiz"); } else { setScreen("intro"); }
+    if (q) { setCurrentQ(q); setScreen("quiz"); }
+    else { setScreen("intro"); }
   };
 
   const reset = () => {
@@ -2135,23 +1939,23 @@ export default function App() {
   };
 
   const resultTitle = () => {
-    if (answers.budget === "free") return answers.dateType === "first" ? "Free First Date Ideas" : "Free Date Ideas";
+    if (answers.budget === "free") return "Free Tonight";
     const timeLabel = answers.timeOfDay === "day" ? "Daytime" : answers.timeOfDay === "late" ? "Late Night" : "Tonight's";
     const focusMap = {
       drinks:     `${timeLabel} Bar`,
       food:       answers.timeOfDay === "day" ? "Brunch Picks" : `${timeLabel} Table`,
       fooddrinks: `${timeLabel} Food & Drinks`,
-      activity:   answers.activityType === "free" ? "Free Activities" : `${timeLabel} Activity`,
-      happyhour:  "Best Happy Hours",
-      ourpick:    "Our Pick Tonight",
+      activity:   (a) => a.activityType === "free" ? "Free Activities" : `${timeLabel} Activity`,
+      happyhour:  "Best Happy Hours"
     };
-    return focusMap[answers.focus] || "Your Picks";
+    const val = focusMap[answers.focus];
+    return typeof val === "function" ? val(answers) : val || "Your Picks";
   };
 
   const nbLabel = NEIGHBORHOODS.find(n => n.id === answers.neighborhood)?.label || "";
 
   return (
-    <div style={{minHeight:"100vh",background:T.bg,color:T.text,display:"flex",alignItems:"center",justifyContent:"center",padding:"24px",fontFamily:"'Palatino Linotype',Palatino,serif",position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",background:T.bg,color:T.text,display:"flex",alignItems:"center",justifyContent:"center",padding:"24px",fontFamily:"Georgia,serif",position:"relative",overflow:"hidden"}}>
       <div style={{position:"fixed",inset:0,pointerEvents:"none"}}>
         <div style={{position:"absolute",top:"8%",left:"20%",width:"600px",height:"600px",borderRadius:"50%",background:`radial-gradient(circle,${T.accent}07 0%,transparent 65%)`}}/>
         <div style={{position:"absolute",bottom:"10%",right:"10%",width:"400px",height:"400px",borderRadius:"50%",background:`radial-gradient(circle,${T.accent2}06 0%,transparent 65%)`}}/>
@@ -2159,37 +1963,26 @@ export default function App() {
 
       <div style={{position:"relative",zIndex:1,width:"100%",maxWidth:"520px"}}>
 
+        {/* ── INTRO ── */}
         {screen === "intro" && (
           <div style={{textAlign:"center",animation:"fadeUp 0.7s ease"}}>
-            <Skyline/>
             <div style={{marginTop:"20px",fontSize:"10px",letterSpacing:"6px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif",marginBottom:"8px"}}>New York City</div>
             <h1 style={{fontSize:"clamp(40px,9vw,62px)",fontWeight:"normal",lineHeight:1.0,margin:"0 0 6px",letterSpacing:"-2px"}}>
               Party of<br/>
               <span style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Two</span>
             </h1>
             <div style={{width:"36px",height:"1px",background:`linear-gradient(90deg,${T.accent},${T.accent2})`,margin:"14px auto"}}/>
-            <p style={{color:T.sub,fontSize:"13px",lineHeight:1.7,fontFamily:"sans-serif",marginBottom:"16px",opacity:0.85}}>The right place.<br/>Tonight.</p>
-            <a href="https://instagram.com/partyof2nyc" target="_blank" rel="noopener noreferrer"
-              style={{display:"inline-block",fontSize:"11px",color:T.accent,fontFamily:"sans-serif",letterSpacing:"1px",textDecoration:"none",marginBottom:"24px",opacity:0.7,transition:"opacity 0.2s"}}
-              onMouseEnter={e=>e.currentTarget.style.opacity="1"}
-              onMouseLeave={e=>e.currentTarget.style.opacity="0.7"}>
-              @partyof2nyc
-            </a>
+            <p style={{color:T.sub,fontSize:"13px",lineHeight:1.7,fontFamily:"sans-serif",marginBottom:"32px",opacity:0.85}}>Curated dates across NYC.<br/>No tourists. No obvious picks.</p>
             <button onClick={()=>{setScreen("quiz");setCurrentQ(getQuestion({}));}}
-              style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"14px 42px",fontSize:"11px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s",display:"block",margin:"0 auto"}}
+              style={{background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"14px 42px",fontSize:"11px",fontFamily:"sans-serif",fontWeight:"800",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s"}}
               onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.04)";e.currentTarget.style.boxShadow=`0 10px 36px ${T.accent}44`;}}
               onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="none";}}>
               Plan Our Night
             </button>
-            <button onClick={()=>{setAnswers({focus:"ourpick",timeOfDay:"evening"});setCurrentQ({id:"neighborhood",special:"neighborhood"});setScreen("quiz");}}
-              style={{background:"transparent",border:`1px solid ${T.accent}44`,color:T.accent,padding:"11px 28px",fontSize:"10px",fontFamily:"sans-serif",fontWeight:"600",letterSpacing:"2.5px",textTransform:"uppercase",cursor:"pointer",borderRadius:"2px",transition:"all 0.2s",display:"block",margin:"12px auto 0"}}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}11`;}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor=`${T.accent}44`;e.currentTarget.style.background="transparent";}}>
-              ⭐ Tonight's Pick
-            </button>
           </div>
         )}
 
+        {/* ── QUIZ ── */}
         {screen === "quiz" && currentQ && (
           <div style={{animation:"fadeUp 0.35s ease"}}>
             {currentQ.special !== "neighborhood" && (
@@ -2226,10 +2019,10 @@ export default function App() {
                   )})}
                 </div>
                 <div style={{display:"flex",justifyContent:"center"}}>
-                  {(() => {
+                  {(()=>{
                     const nb = NEIGHBORHOODS[8];
                     const SilSvg = NB_SILHOUETTES[nb.id];
-                    const acc = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e",bushwick:"#e85d75",fidi:"#6b8bbd",upper_east:"#9b6b9b",upper_west:"#6b9b8b"}[nb.id] || "#c9a96e";
+                    const acc = {williamsburg:"#c9a96e",east_village:"#9b6b9b",west_village:"#6b9b8b",midtown:"#ff8c42",lic:"#c9a96e",bushwick:"#e85d75",fidi:"#6b8bbd",upper_east:"#9b6b9b",upper_west:"#6b9b8b"}[nb.id]||"#c9a96e";
                     return (
                     <button onClick={()=>advance("neighborhood",nb.id)}
                       style={{background:hoverNb===nb.id?`linear-gradient(135deg,${acc}22,${acc}08)`:T.card,border:hoverNb===nb.id?`1px solid ${acc}`:`1px solid ${T.border}`,color:T.text,padding:"0",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"stretch",overflow:"hidden",width:"48%"}}
@@ -2247,52 +2040,36 @@ export default function App() {
                 </div>
               </div>
             ) : (
-              <>
-                <div style={{fontSize:"34px",textAlign:"center",marginBottom:"8px"}}>{currentQ.emoji}</div>
-                <h2 style={{fontSize:"clamp(19px,5vw,24px)",fontWeight:"normal",textAlign:"center",marginBottom:"24px",lineHeight:1.25}}>{currentQ.q}</h2>
-                <div style={{display:"grid",gridTemplateColumns:currentQ.opts.length<=3?`repeat(${currentQ.opts.length},1fr)`:"1fr 1fr",gap:"10px"}}>
-                  {currentQ.opts.map(opt=>(
-                    <button key={opt.v} onClick={()=>advance(currentQ.id,opt.v)}
-                      style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"18px 12px",cursor:"pointer",borderRadius:"3px",transition:"all 0.18s",display:"flex",flexDirection:"column",alignItems:"center",gap:"7px"}}
-                      onMouseEnter={e=>{e.currentTarget.style.background=`${T.accent2}12`;e.currentTarget.style.borderColor=`${T.accent2}55`;e.currentTarget.style.transform="translateY(-2px)";}}
-                      onMouseLeave={e=>{e.currentTarget.style.background=T.card;e.currentTarget.style.borderColor=T.border;e.currentTarget.style.transform="translateY(0)";}}>
-                      <span style={{fontSize:"22px"}}>{opt.i}</span>
-                      <span style={{fontSize:"12px",fontFamily:"sans-serif",fontWeight:"600",lineHeight:1.3,textAlign:"center"}}>{opt.l}</span>
+              <div>
+                <div style={{textAlign:"center",marginBottom:"28px"}}>
+                  <div style={{fontSize:"28px",marginBottom:"10px"}}>{currentQ.emoji}</div>
+                  <h2 style={{fontSize:"clamp(18px,5vw,22px)",fontWeight:"normal",marginBottom:"6px"}}>{currentQ.q}</h2>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
+                  {currentQ.opts.map(o => (
+                    <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
+                      style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"18px 12px",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"8px",fontFamily:"sans-serif"}}
+                      onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
+                      <span style={{fontSize:"12px",fontWeight:"600",textAlign:"center",lineHeight:1.3}}>{o.l}</span>
                     </button>
                   ))}
                 </div>
-              </>
+              </div>
             )}
 
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"24px"}}>
-              {questionHistory.length > 0 && (
-              <button onClick={goBack}
-                style={{background:"transparent",border:"none",color:T.accent,fontSize:"11px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",transition:"opacity 0.15s",padding:"0",opacity:0.85}}
-                onMouseEnter={e=>e.currentTarget.style.opacity="1"}
-                onMouseLeave={e=>e.currentTarget.style.opacity="0.85"}>
-                ← back
-              </button>
-              )}
-              <button onClick={reset}
-                style={{background:"transparent",border:"none",color:T.accent,fontSize:"10px",fontFamily:"sans-serif",cursor:"pointer",letterSpacing:"1px",transition:"opacity 0.15s",padding:"0",opacity:0.85}}
-                onMouseEnter={e=>e.currentTarget.style.color=T.sub}
-                onMouseLeave={e=>e.currentTarget.style.color=T.sub+"88"}>
-                start over
-              </button>
-            </div>
-          </div>
-        )}
-
+        {/* ── LOADING ── */}
         {screen === "loading" && (
           <div style={{textAlign:"center",animation:"fadeUp 0.4s ease"}}>
             <div style={{fontSize:"40px",marginBottom:"16px",animation:"pulse 1s ease infinite"}}>🗽</div>
-            <div style={{fontSize:"11px",letterSpacing:"4px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif"}}>Finding your spot...</div>
+            <div style={{fontSize:"11px",letterSpacing:"4px",textTransform:"uppercase",color:T.accent,fontFamily:"sans-serif"}}>Finding your spots...</div>
             <div style={{marginTop:"16px",display:"flex",gap:"7px",justifyContent:"center"}}>
               {[0,1,2].map(i=><div key={i} style={{width:"5px",height:"5px",borderRadius:"50%",background:T.accent,animation:`bounce 0.9s ease ${i*0.2}s infinite`}}/>)}
             </div>
           </div>
         )}
 
+        {/* ── RESULT ── */}
         {screen === "result" && results && (
           <div style={{animation:"fadeUp 0.5s ease"}}>
             <div style={{textAlign:"center",marginBottom:"20px"}}>
@@ -2302,28 +2079,6 @@ export default function App() {
             </div>
 
             <ResultCards spots={results} mode={answers.focus} dateType={answers.dateType} onReset={reset} neighborhood={answers.neighborhood} answers={answers}/>
-
-            <div style={{display:"flex",gap:"10px",marginTop:"16px"}}>
-              <button onClick={reset}
-                style={{flex:1,background:"transparent",border:`1px solid ${T.border}`,color:T.sub,padding:"12px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",borderRadius:"4px",transition:"all 0.2s"}}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.color=T.accent;}}
-                onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.color=T.sub;}}>
-                ↺ Start Over
-              </button>
-              <button
-                style={{flex:2,background:`linear-gradient(135deg,${T.accent},${T.accent2})`,border:"none",color:T.bg,padding:"12px",cursor:"pointer",fontFamily:"sans-serif",fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",fontWeight:"800",borderRadius:"4px"}}
-                onClick={()=>{
-                  const url = "https://partyof2nyc.com";
-                  const text = `Tonight's pick in ${nbLabel}: ${results[0]?.place || "a great spot"} 🍽️`;
-                  if (navigator.share) {
-                    navigator.share({title:"Plan Our Night", text, url}).catch(()=>{});
-                  } else {
-                    try { navigator.clipboard.writeText(url); alert("Link copied! Paste into your Instagram story."); }
-                    catch(e) { alert("Share link: " + url); }
-                  }
-                }}>
-                📲 Share
-              </button>
             </div>
           </div>
         )}
