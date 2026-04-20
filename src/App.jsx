@@ -1760,7 +1760,7 @@ const ResultCards = ({ spots, mode, dateType, onReset, neighborhood, answers }) 
   const SKIP_DESCS = ["brunch","bar","late night","latenight","dinner","activity","pizza","japanese","italian dinner","american dinner","mediterranean","cocktail bar","wine bar","speakeasy","rooftop","happy hour","coffee","matcha","korean","chinese","mexican","vegan","american","food"];
   const descRaw = spot.desc || "";
   const isRawType = SKIP_DESCS.includes(descRaw.toLowerCase().trim()) || 
-    /^[\d.]+★/.test(descRaw) || descRaw === spot.type || descRaw === spot.subtype;
+    /^[\d.]+/.test(descRaw) || descRaw === spot.type || descRaw === spot.subtype;
   const desc = descRaw && descRaw !== spot.place && !isRawType && descRaw.length > 10 ? descRaw : null;
   const subtype = answers?.drinkType || answers?.foodType || answers?.foodDrinkType || answers?.activityType || "";
   const catEmoji = getModeEmoji(mode, subtype);
