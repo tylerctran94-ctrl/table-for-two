@@ -32,26 +32,26 @@ const DRINK_OPTS = [
   { v:"wine", l:"🍷 Wine" },  { v:"speakeasy", l:"🕯️ Speakeasy" },
 ];
 const FOOD_OPTS = [
-  { v:"coffee",        l:"☕ Coffee & Matcha" },
-  { v:"boba",          l:"🥤 Boba" },
-  { v:"brunch",        l:"🥐 Brunch",   _break:true },
-  { v:"diner",         l:"🥞 Diner" },
-  { v:"burgers",       l:"🍔 Burgers",  _break:true },
-  { v:"steakhouse",    l:"🥩 Steakhouse" },
-  { v:"american",      l:"🍽️ American" },
-  { v:"pasta",         l:"🍝 Italian",  _break:true },
-  { v:"french",        l:"🥐 French" },
-  { v:"mediterranean", l:"🥙 Mediterranean" },
-  { v:"pizza",         l:"🍕 Pizza" },
-  { v:"japanese",      l:"🍣 Japanese", _break:true },
-  { v:"korean",        l:"🥩 Korean" },
-  { v:"chinese",       l:"🥢 Chinese" },
-  { v:"indian",        l:"🍛 Indian" },
-  { v:"mexican",       l:"🌮 Mexican",  _break:true },
-  { v:"peruvian",      l:"🦙 Peruvian" },
-  { v:"colombian",     l:"🌺 Colombian" },
-  { v:"halal",         l:"🌙 Halal",    _break:true },
-  { v:"vegan",         l:"🌿 Vegan" },
+  { v:"coffee",        l:"☕ Coffee & Matcha",  g:"cafe" },
+  { v:"boba",          l:"🥤 Boba",              g:"cafe" },
+  { v:"brunch",        l:"🥐 Brunch",            g:"morning" },
+  { v:"diner",         l:"🥞 Diner",             g:"morning" },
+  { v:"burgers",       l:"🍔 Burgers",           g:"american" },
+  { v:"steakhouse",    l:"🥩 Steakhouse",        g:"american" },
+  { v:"american",      l:"🍽️ American",          g:"american" },
+  { v:"pasta",         l:"🍝 Italian",           g:"european" },
+  { v:"french",        l:"🥐 French",            g:"european" },
+  { v:"mediterranean", l:"🥙 Mediterranean",     g:"european" },
+  { v:"pizza",         l:"🍕 Pizza",             g:"european" },
+  { v:"japanese",      l:"🍣 Japanese",          g:"asian" },
+  { v:"korean",        l:"🥩 Korean",            g:"asian" },
+  { v:"chinese",       l:"🥢 Chinese",           g:"asian" },
+  { v:"indian",        l:"🍛 Indian",            g:"asian" },
+  { v:"mexican",       l:"🌮 Mexican",           g:"latin" },
+  { v:"peruvian",      l:"🦙 Peruvian",          g:"latin" },
+  { v:"colombian",     l:"🌺 Colombian",         g:"latin" },
+  { v:"halal",         l:"🌙 Halal",             g:"other" },
+  { v:"vegan",         l:"🌿 Vegan",             g:"other" },
 ];
 const FOOD_DRINK_OPTS = [
   { v:"dinner_cocktails", l:"🍸 Dinner + Cocktails" },
@@ -1433,7 +1433,6 @@ const getQuestion = (a) => {
     const isLate = a.timeOfDay === "late";
     const opts = isDay ? [
       {l:"Brunch",v:"brunch",i:"🥐"},
-      {l:"Coffee & Matcha",v:"coffee",i:"☕"},
       {l:"Activity",v:"activity",i:"🎯"},
       {l:"Our Pick",v:"ourpick",i:"⭐"},
     ] : isLate ? [
@@ -1498,10 +1497,10 @@ const getSpots = (a) => {
   const dateOk = (spot) => {
     if (!spot.reviews) return true;
     const type = String(spot.type||spot.subtype||"").toLowerCase();
-    const isCafe = type.includes("coffee") || type.includes("matcha") || type.includes("cafe") || type.includes("café");
+    const isCafe = type.includes("coffee") || type.includes("matcha") || type.includes("cafe") || type.includes("café") || type.includes("boba");
     const isActivity = ["creative","competitive","active","shows","outside"].includes(type);
     if (a.dateType === "first")  return isCafe || isActivity ? spot.reviews >= 50 : spot.reviews >= 500;
-    if (a.dateType === "couple") return spot.reviews <= 2000;
+    if (a.dateType === "couple") return spot.reviews <= 5000;
     return true;
   };
 
@@ -2253,26 +2252,35 @@ export default function App() {
                   <div style={{fontSize:"28px",marginBottom:"10px"}}>{currentQ.emoji}</div>
                   <h2 style={{fontSize:"clamp(18px,5vw,22px)",fontWeight:"normal",marginBottom:"6px"}}>{currentQ.q}</h2>
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:currentQ.opts.length === 3 ? "1fr 1fr 1fr" : currentQ.opts.length <= 2 ? "1fr 1fr" : "1fr 1fr",gap:"8px"}}>
-                  {currentQ.id === "foodType" ? currentQ.opts.reduce((acc, o, oi, arr) => {
-                    if (o._break) acc.push(<div key={`br${oi}`} style={{gridColumn:"1/-1",height:"1px",background:`${T.border}`,opacity:0.3,margin:"4px 0"}}/>);
-                    // Check if this is the only item left in its group (odd item = full width centered)
-                    const nextBreakOrEnd = arr.slice(oi+1).findIndex(x => x._break || oi+1 >= arr.length);
-                    const prevBreak = oi === 0 || arr[oi-1]?._break;
-                    const isAlone = !o._break && prevBreak && (oi === arr.length-1 || arr[oi+1]?._break);
-                    acc.push(
-                      <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
-                        style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"14px 10px",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"6px",fontFamily:"sans-serif",gridColumn:isAlone?"1/-1":"auto"}}
-                        onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
-                        onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
-                        <span style={{fontSize:"18px"}}>{o.l.split(' ')[0]}</span>
-                        <span style={{fontSize:"11px",fontWeight:"600",textAlign:"center",lineHeight:1.3}}>{o.l.split(' ').slice(1).join(' ')}</span>
-                      </button>
-                    );
-                    return acc;
-                  }, []) : currentQ.opts.mapo => (
+                <div style={{display:"grid",gridTemplateColumns:currentQ.id==="foodType"?"1fr 1fr":(currentQ.opts||[]).length<=3?"repeat("+(currentQ.opts||[]).length+",1fr)":"1fr 1fr",gap:"8px"}}>
+                  {currentQ.id === "foodType" ? (() => {
+                    const opts = currentQ.opts;
+                    // Pre-compute group sizes for centering logic
+                    const groupCounts = {};
+                    opts.forEach(o => { groupCounts[o.g] = (groupCounts[o.g]||0)+1; });
+                    return opts.map((o, oi) => {
+                      const prevGroup = oi > 0 ? opts[oi-1].g : null;
+                      const groupBreak = prevGroup && prevGroup !== o.g;
+                      const groupSize = groupCounts[o.g] || 1;
+                      // Only center if group has odd count AND this is the last in group
+                      const nextSameGroup = oi < opts.length-1 && opts[oi+1].g === o.g;
+                      const isLastInOddGroup = groupSize % 2 === 1 && !nextSameGroup && groupSize > 1;
+                      return (
+                        <span key={o.v} style={{display:"contents"}}>
+                          {groupBreak && <div style={{gridColumn:"1/-1",height:"1px",background:T.border,opacity:0.25}}/>}
+                          <button onClick={()=>advance(currentQ.id, o.v)}
+                            style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"10px 8px",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"4px",fontFamily:"sans-serif",gridColumn:(groupSize===1||isLastInOddGroup)?"1/-1":"auto"}}
+                            onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
+                            onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
+                            <span style={{fontSize:"16px"}}>{o.l.split(" ")[0]}</span>
+                            <span style={{fontSize:"10px",fontWeight:"600",textAlign:"center",lineHeight:1.3}}>{o.l.split(" ").slice(1).join(" ")}</span>
+                          </button>
+                        </span>
+                      );
+                    });
+                  })() : currentQ.opts.map(o => (
                     <button key={o.v} onClick={()=>advance(currentQ.id, o.v)}
-                      style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"16px 12px",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"8px",fontFamily:"sans-serif"}}
+                      style={{background:T.card,border:`1px solid ${T.border}`,color:T.text,padding:"10px 8px",cursor:"pointer",borderRadius:"6px",transition:"all 0.2s",display:"flex",flexDirection:"column",alignItems:"center",gap:"5px",fontFamily:"sans-serif"}}
                       onMouseEnter={e=>{e.currentTarget.style.borderColor=T.accent;e.currentTarget.style.background=`${T.accent}12`;}}
                       onMouseLeave={e=>{e.currentTarget.style.borderColor=T.border;e.currentTarget.style.background=T.card;}}>
                       {o.i && <span style={{fontSize:"22px"}}>{o.i}</span>}
