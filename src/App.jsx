@@ -2080,7 +2080,6 @@ export default function App() {
             </div>
 
             <ResultCards spots={results} mode={answers.focus} dateType={answers.dateType} onReset={reset} neighborhood={answers.neighborhood} answers={answers}/>
-            </div>
           </div>
         )}
       </div>
