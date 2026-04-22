@@ -1662,7 +1662,6 @@ const getQuestion = (a) => {
     ] : [
       {l:"Food",v:"food",i:"🍽️",has:hasAnyFood},
       {l:"Drinks",v:"drinks",i:"🍸",has:hasAnyBars},
-      {l:"Food & Drinks",v:"fooddrinks",i:"🥂",has:hasAnyFood&&hasAnyBars},
       {l:"Activity",v:"activity",i:"🎯",has:hasAnyActs},
       {l:"Happy Hour",v:"happyhour",i:"🎉",has:hasHappyHour},
       {l:"Our Pick",v:"ourpick",i:"⭐",has:hasAnyFood||hasAnyBars||hasAnyActs},
@@ -1728,7 +1727,6 @@ const getQuestion = (a) => {
     });
     return { id:"foodType", emoji:"🍽️", q:"What are you feeling?", opts:filteredOpts };
   }
-  if (a.focus === "fooddrinks" && !a.foodDrinkType)  return { id:"foodDrinkType", emoji:"🥂", q:"What kind of combo?",      opts:FOOD_DRINK_OPTS };
   if (a.focus === "activity" && !a.activityType) {
     const nb = DB[a.neighborhood] || {};
     const acts = nb.activities || {};
