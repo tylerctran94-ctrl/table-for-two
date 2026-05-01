@@ -9,34 +9,36 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing photo reference" });
   }
 
-  // Sanitize — only allow valid base64-ish photo reference strings
-  if (!/^[A-Za-z0-9_\-]+$/.test(ref)) {
-    return res.status(400).json({ error: "Invalid photo reference" });
-  }
-
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: "API key not configured" });
   }
 
-  const url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=${maxwidth}&photo_reference=${ref}&key=${apiKey}`;
+  // Decode in case it was URL-encoded by the browser
+  const decodedRef = decodeURIComponent(ref);
+
+  const url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=${maxwidth}&photo_reference=${encodeURIComponent(decodedRef)}&key=${apiKey}`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: { "User-Agent": "PartyOfTwo/1.0" }
+    });
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: "Google API error" });
+      const text = await response.text().catch(() => "");
+      console.error(`Google photo API ${response.status}:`, text.slice(0, 200));
+      return res.status(response.status).json({ error: "Google API error", status: response.status });
     }
 
     const contentType = response.headers.get("content-type") || "image/jpeg";
     const buffer = await response.arrayBuffer();
 
-    // Cache aggressively — photo refs don't change
     res.setHeader("Cache-Control", "public, max-age=86400, s-maxage=604800");
     res.setHeader("Content-Type", contentType);
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.send(Buffer.from(buffer));
   } catch (err) {
     console.error("Photo proxy error:", err);
-    res.status(500).json({ error: "Proxy fetch failed" });
+    res.status(500).json({ error: "Proxy fetch failed", message: err.message });
   }
 }
